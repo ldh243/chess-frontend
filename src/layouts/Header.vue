@@ -1,12 +1,12 @@
 <template>
-  <Carousel />
+  <Nav />
 </template>
 
 <script>
-import Carousel from '@/components/Carousel'
+import Nav from '@/components/Header/Nav'
 export default {
   components: {
-    Carousel
+    Nav
   }
 }
 </script>

@@ -1,18 +1,12 @@
 <template>
-  <div>
-    <Home />
-  </div>
+  <v-app>
+    <router-view></router-view>
+  </v-app>
 </template>
 
 <style></style>
 
 <script>
-import Home from '@/layouts/Home'
-
-export default {
-  components: {
-    Home
-  }
-}
+export default {}
 </script>
 <style></style>
