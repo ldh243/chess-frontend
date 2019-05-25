@@ -2,13 +2,14 @@
   <v-content class="login-layouts">
     <v-layout row justify-center align-center fill-height>
       <v-flex xs3>
-        <v-card class="py-5" height="600">
+        <v-card class="pb-5" height="600">
           <v-layout column>
-            <v-flex xs12 mb-5>
-              <v-img contain height="200" :src="chessLogo"></v-img>
+            <v-flex xs12 mb-5 py-4 class="login-box-header">
+              <v-img class="mb-2" contain height="100" :src="chessLogo" />
+              <span class="headline">CHESS BOARD</span>
             </v-flex>
             <v-flex x12>
-              <span class="text-truncate black--text display-1">LOGIN</span>
+              <span class="text-truncate black--text display-1">SIGN IN</span>
             </v-flex>
             <v-flex xs6>
               <v-btn
@@ -39,7 +40,7 @@ export default {
   data() {
     return {
       googleLogo: require('@/assets/images/google-logo.png'),
-      chessLogo: require('@/assets/images/chess-logo.jpg')
+      chessLogo: require('@/assets/images/chess-logo.png')
     }
   }
 }
@@ -51,5 +52,8 @@ export default {
 }
 .login-layouts {
   height: 94%;
+}
+.login-box-header {
+  background-color: #eceff1;
 }
 </style>

@@ -8,7 +8,6 @@
 <script>
 import LoginBox from '@/layouts/LoginBox'
 import Header from '@/layouts/Header'
-
 export default {
   components: {
     LoginBox,
@@ -30,5 +29,4 @@ export default {
   }
 }
 </script>
-
 <style></style>
