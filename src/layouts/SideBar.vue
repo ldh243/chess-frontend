@@ -11,7 +11,7 @@
     <v-toolbar flat class="transparent">
       <v-list class="pa-0">
         <v-list-tile>
-          <v-list-tile-content>
+          <v-list-tile-content class="title-header-parent">
             <v-list-tile-title class="title-header">COLS</v-list-tile-title>
           </v-list-tile-content>
         </v-list-tile>
@@ -74,5 +74,8 @@ export default {
 <style>
 .title-header {
   text-align: center !important;
+}
+.title-header-parent {
+  opacity: 1 !important;
 }
 </style>

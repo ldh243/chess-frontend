@@ -1,64 +1,96 @@
 <template>
-  <v-form v-model="valid">
-    <v-container>
-      <v-layout column>
-        <v-flex>
-          <v-text-field
-            v-model="firstname"
-            :rules="phoneRules"
-            :counter="10"
-            label="Số điện thoại"
-            required
-          ></v-text-field>
-        </v-flex>
+  <v-form ref="form" v-model="valid" lazy-validation>
+    <v-card class="hide-overflow">
+      <v-toolbar card>
+        <v-icon>perm_contact_calendar</v-icon>
+        <v-toolbar-title class="font-weight-light"
+          >Thông tin liên lạc</v-toolbar-title
+        >
+        <v-spacer></v-spacer>
+        <v-btn color="darken-3" fab small @click="isEditing = !isEditing">
+          <v-icon v-if="isEditing">mdi-close</v-icon>
+          <v-icon v-else>mdi-pencil</v-icon>
+        </v-btn>
+      </v-toolbar>
+      <v-card-text>
+        <v-text-field
+          v-model="phoneNumber"
+          prefix="+84"
+          :disabled="!isEditing"
+          :rules="phoneRules"
+          label="Số điện thoại"
+          required
+        ></v-text-field>
+        <v-text-field
+          v-model="website"
+          :disabled="!isEditing"
+          :rules="websiteRules"
+          label="Website"
+          required
+        ></v-text-field>
+        <v-select
+          v-model="province"
+          :items="listCity"
+          :disabled="!isEditing"
+          :rules="provinceRules"
+          label="Tỉnh (Thành phố)"
+        ></v-select>
+        <v-select
+          v-model="district"
+          :items="listCity"
+          :rules="districtRules"
+          :disabled="!isEditing"
+          label="Quận (Huyện)"
+        ></v-select>
+      </v-card-text>
 
-        <v-flex xs12 md4>
-          <v-text-field
-            v-model="lastname"
-            :rules="nameRules"
-            :counter="10"
-            label="Last name"
-            required
-          ></v-text-field>
-        </v-flex>
-
-        <v-flex xs12 md4>
-          <v-text-field
-            v-model="email"
-            :rules="emailRules"
-            label="E-mail"
-            required
-          ></v-text-field>
-        </v-flex>
-      </v-layout>
-    </v-container>
+      <v-divider></v-divider>
+      <v-card-actions>
+        <v-spacer></v-spacer>
+        <v-btn :disabled="!valid || !isEditing" color="success" @click="save"
+          >Lưu</v-btn
+        >
+      </v-card-actions>
+      <v-snackbar v-model="hasSaved" :timeout="2000" absolute bottom left
+        >Thông tin đã được cập nhật</v-snackbar
+      >
+    </v-card>
   </v-form>
 </template>
 
 <script>
+import listCity from '@/data/city.json'
 export default {
   data() {
     return {
-      valid: false,
-      firstname: '',
-      lastname: '',
-      lastnameRules: [
-        v => !!v || 'Vui lòng điền họ',
-        v => v.length <= 10 || 'Họ phải ít hơn 10 kí tự'
+      phoneNumber: '',
+      website: '',
+      province: '',
+      district: '',
+      websiteRules: [
+        v => !!v || 'Vui lòng điền website',
+        v =>
+          /[-a-zA-Z0-9@:%_+.~#?&//=]{2,256}\.[a-z]{2,4}\b(\/[-a-zA-Z0-9@:%_+.~#?&//=]*)?/gi.test(
+            v
+          ) || 'Website không hợp lệ'
       ],
-      firstnameRules: [
-        v => !!v || 'Vui lòng điền tên',
-        v => v.length <= 10 || 'Tên phải ít hơn 10 kí tự'
-      ],
+      provinceRules: [v => !!v || 'Vui lòng chọn Tỉnh (Thành phố)'],
+      districtRules: [v => !!v || 'Vui lòng chọn Quận (Huyện)'],
       phoneRules: [
         v => !!v || 'Vui lòng điền số điện thoại',
-        v => /#######/.test(v) || 'Số điện thoại không hợp lệ'
+        v => /^[0-9]{9}$/.test(v) || 'Số điện thoại không hợp lệ'
       ],
-      email: '',
-      emailRules: [
-        v => !!v || 'Vui lòng điền e-mail',
-        v => /.+@.+/.test(v) || 'Địa chỉ e-mail không hợp lệ'
-      ]
+      hasSaved: false,
+      isEditing: null,
+      listCity
+    }
+  },
+  methods: {
+    save() {
+      if (this.$refs.form.validate()) {
+        this.isEditing = !this.isEditing
+        this.hasSaved = true
+      }
     }
   }
 }
