@@ -13,11 +13,15 @@
         </v-flex>
         <v-flex xs4></v-flex>
 
-        <v-flex xs4 mr-3>
-          <LeftFrom />
-        </v-flex>
-        <v-flex xs4>
-          <RightForm />
+        <v-flex xs10>
+          <v-layout>
+            <v-flex xs6 mr-4>
+              <LeftFrom />
+            </v-flex>
+            <v-flex xs6>
+              <RightForm />
+            </v-flex>
+          </v-layout>
         </v-flex>
         <v-flex xs10 mt-4>
           <Certificate />
