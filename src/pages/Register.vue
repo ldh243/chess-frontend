@@ -1,17 +1,17 @@
 <template>
   <v-content :data-image="backgroundImage" :style="sidebarStyle">
     <Header/>
-    <LoginBox/>
+    <RegisterBox/>
   </v-content>
 </template>
 
 <script>
-import LoginBox from '@/layouts/LoginBox'
+import RegisterBox from '@/layouts/RegisterBox'
 import Header from '@/layouts/Header'
 
 export default {
   components: {
-    LoginBox,
+    RegisterBox,
     Header
   },
   data() {

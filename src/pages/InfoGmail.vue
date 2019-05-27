@@ -1,18 +1,15 @@
 <template>
-  <v-content :data-image="backgroundImage" :style="sidebarStyle">
-    <Header/>
-    <LoginBox/>
+  <v-content>
+    <InfoGmailBox/>
   </v-content>
 </template>
 
 <script>
-import LoginBox from '@/layouts/LoginBox'
-import Header from '@/layouts/Header'
+import InfoGmailBox from '@/layouts/InfoGmailBox'
 
 export default {
   components: {
-    LoginBox,
-    Header
+    InfoGmailBox
   },
   data() {
     return {

@@ -1,5 +1,5 @@
 <template>
-  <v-toolbar flat height="50px" color="white" class="text-xs-center">
+  <v-toolbar flat height="60px" color="#EEEEEE" class="text-xs-center">
     <v-btn id="menu-btn" color="orange darken-3" flat :ripple="false">
       <v-icon dark left>mdi-menu</v-icon>DANH MỤC
     </v-btn>
