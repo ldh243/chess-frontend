@@ -62,13 +62,17 @@ export default {
     return {
       drawer: true,
       items: [
-        { title: 'Thống kê', icon: 'mdi-view-dashboard', path: '/profile2' },
+        {
+          title: 'Thống kê',
+          icon: 'mdi-view-dashboard',
+          path: '/dashboard/statistics'
+        },
         {
           title: 'Khóa học',
           icon: 'mdi-file-document-box-outline',
-          path: '/profile2'
+          path: '/dashboard/courses'
         },
-        { title: 'User', icon: 'mdi-account', path: '/profile' }
+        { title: 'Tài khoản', icon: 'mdi-account', path: '/dashboard/profile' }
       ],
       mini: true,
       right: false

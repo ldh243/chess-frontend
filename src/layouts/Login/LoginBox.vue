@@ -12,7 +12,7 @@
               <span class="text-truncate black--text display-1">SIGN IN</span>
             </v-flex>
             <v-flex xs6>
-              <router-link to="/instructor">
+              <router-link to="/dashboard">
                 <v-btn
                   black--text
                   color="white"

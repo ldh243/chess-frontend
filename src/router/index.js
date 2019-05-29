@@ -2,10 +2,11 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import Login from '@/pages/Login'
 import LoginBox from '@/layouts/Login/LoginBox'
-import Instructor from '@/pages/Instructor'
+import Dashboard from '@/pages/DashboardLayout'
 import InfoGmail from '@/pages/Unused/InfoGmail'
 import ProfileAdmin from '@/pages/Unused/ProfileAdmin'
-import ProfileInstructor from '@/layouts/Instructor/Profile'
+import Profile from '@/layouts/Dashboard/Profile'
+import Statistics from '@/layouts/Dashboard/Statistics'
 Vue.use(Router)
 
 export default new Router({
@@ -27,22 +28,18 @@ export default new Router({
       ]
     },
     {
-      path: '/instructor',
-      component: Instructor,
+      path: '/dashboard',
+      component: Dashboard,
       children: [
         {
-          path: '',
-          component: ProfileInstructor //temporary
+          path: 'profile',
+          component: Profile
         },
         {
-          path: 'profile',
-          component: ProfileInstructor
+          path: 'statistics',
+          component: Statistics
         }
       ]
-    },
-    {
-      path: '/profile',
-      component: ProfileInstructor
     },
     {
       path: '/infogmail',
@@ -51,10 +48,6 @@ export default new Router({
     {
       path: '/profileadmin',
       component: ProfileAdmin
-    },
-    {
-      path: '/profileinstructor',
-      component: ProfileInstructor
     }
   ]
 })
