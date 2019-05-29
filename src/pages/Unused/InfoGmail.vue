@@ -1,18 +1,15 @@
 <template>
-  <v-content :data-image="backgroundImage" :style="sidebarStyle">
-    <Header/>
-    <RegisterBox/>
+  <v-content>
+    <InfoGmailBox />
   </v-content>
 </template>
 
 <script>
-import RegisterBox from '@/layouts/RegisterBox'
-import Header from '@/layouts/Header'
+import InfoGmailBox from '@/layouts/Unused/InfoGmailBox'
 
 export default {
   components: {
-    RegisterBox,
-    Header
+    InfoGmailBox
   },
   data() {
     return {

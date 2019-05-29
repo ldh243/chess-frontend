@@ -15,13 +15,13 @@
     <v-container>
       <v-layout>
         <v-flex xs12 md4>
-          <v-text-field label="Email" Email></v-text-field>
+          <v-text-field label="Email" email></v-text-field>
         </v-flex>
         <v-flex xs12 md4>
-          <v-text-field label="Họ" FirstName></v-text-field>
+          <v-text-field label="Họ" first-name></v-text-field>
         </v-flex>
         <v-flex xs12 md4>
-          <v-text-field label="Tên" LastName></v-text-field>
+          <v-text-field label="Tên" last-name></v-text-field>
         </v-flex>
       </v-layout>
     </v-container>
@@ -34,13 +34,13 @@
     <v-container>
       <v-layout>
         <v-flex xs12 md4>
-          <v-text-field label="Số điện thoại" PhoneNumber></v-text-field>
+          <v-text-field label="Số điện thoại" phone-number></v-text-field>
         </v-flex>
         <v-flex xs12 md4>
-          <v-text-field label="Tỉnh(Thành phố)" City></v-text-field>
+          <v-text-field label="Tỉnh(Thành phố)" city></v-text-field>
         </v-flex>
         <v-flex xs12 md4>
-          <v-text-field label="Quận(Huyện)" District></v-text-field>
+          <v-text-field label="Quận(Huyện)" district></v-text-field>
         </v-flex>
       </v-layout>
     </v-container>
@@ -48,7 +48,10 @@
       <v-layout>
         <v-flex xs12 md4></v-flex>
         <v-flex xs12 md10>
-          <v-checkbox v-model="checkbox " :label="`Chọn để đăng ký làm người hướng dẫn`"></v-checkbox>
+          <v-checkbox
+            v-model="checkbox"
+            :label="`Chọn để đăng ký làm người hướng dẫn`"
+          ></v-checkbox>
         </v-flex>
       </v-layout>
     </v-container>
@@ -58,7 +61,12 @@
           <h4>Thành tích</h4>
         </v-flex>
         <v-flex xs12 md10>
-          <v-textarea outline name="input-7-4" label="Giải thưởng" value></v-textarea>
+          <v-textarea
+            outline
+            name="input-7-4"
+            label="Giải thưởng"
+            value
+          ></v-textarea>
         </v-flex>
       </v-layout>
       <v-layout>
@@ -71,7 +79,12 @@
           <div>
             <div class="large-12 medium-12 small-12 cell">
               <label>
-                <input type="file" id="file" ref="file" v-on:change="handleFileUpload()">
+                <input
+                  id="file"
+                  ref="file"
+                  type="file"
+                  @change="handleFileUpload()"
+                />
               </label>
             </div>
           </div>
@@ -81,7 +94,12 @@
           <div>
             <div class="large-12 medium-12 small-12 cell">
               <label>
-                <input type="file" id="file" ref="file" v-on:change="handleFileUpload()">
+                <input
+                  id="file"
+                  ref="file"
+                  type="file"
+                  @change="handleFileUpload()"
+                />
               </label>
             </div>
           </div>
@@ -91,7 +109,12 @@
           <div>
             <div class="large-12 medium-12 small-12 cell">
               <label>
-                <input type="file" id="file" ref="file" v-on:change="handleFileUpload()">
+                <input
+                  id="file"
+                  ref="file"
+                  type="file"
+                  @change="handleFileUpload()"
+                />
               </label>
             </div>
           </div>
@@ -113,7 +136,7 @@ export default {
     }
   },
   image: {
-    chessLogo: require('@/assets/images/chess-logo.jpg')
+    chessLogo: require('@/assets/images/chess-logo.png')
   },
 
   methods: {
@@ -121,7 +144,7 @@ export default {
       let formData = new FormData()
       formData.append('file', this.file)
 
-      axios
+      this.axios
         .post('/single-file', formData, {
           headers: {
             'Content-Type': 'multipart/form-data'

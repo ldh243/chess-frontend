@@ -3,7 +3,9 @@
     <v-layout justify-center wrap>
       <material-card class="v-card-profile">
         <v-avatar class="mx-auto d-block" size="130">
-          <img src="https://demos.creative-tim.com/vue-material-dashboard/img/marc.aba54d65.jpg">
+          <img
+            src="https://demos.creative-tim.com/vue-material-dashboard/img/marc.aba54d65.jpg"
+          />
         </v-avatar>
         <v-card-text class="text-xs-center">
           <h4 class="category text-gray font-weight-thin mb-3">John Leider</h4>
@@ -33,16 +35,25 @@
                 />
               </v-flex>
               <v-flex xs12 md4>
-                <v-text-field label="Ngày sinh" class="purple-input" value="11/11/2011" disabled/>
+                <v-text-field
+                  label="Ngày sinh"
+                  class="purple-input"
+                  value="11/11/2011"
+                  disabled
+                />
               </v-flex>
               <v-flex xs12 md6>
-                <v-text-field label="Họ và tên" class="purple-input" value/>
+                <v-text-field label="Họ và tên" class="purple-input" value />
               </v-flex>
               <v-flex xs12 md6>
-                <v-text-field label="Số điện thoại" class="purple-input" value/>
+                <v-text-field
+                  label="Số điện thoại"
+                  class="purple-input"
+                  value
+                />
               </v-flex>
               <v-flex xs12 md12>
-                <v-text-field label="Địa chỉ" class="purple-input" value/>
+                <v-text-field label="Địa chỉ" class="purple-input" value />
               </v-flex>
               <v-flex xs12>
                 <v-textarea
@@ -52,7 +63,9 @@
                 />
               </v-flex>
               <v-flex xs12 text-xs-right>
-                <v-btn class="mx-0 font-weight-light" color="success">Update Profile</v-btn>
+                <v-btn class="mx-0 font-weight-light" color="success"
+                  >Update Profile</v-btn
+                >
               </v-flex>
             </v-layout>
           </v-container>
@@ -66,5 +79,4 @@
 export default {}
 </script>
 
-<style>
-</style>
+<style></style>

@@ -1,5 +1,5 @@
 <template>
-  <v-content class="login-layouts">
+  <v-content class="register-layouts">
     <v-layout row justify-center align-center fill-height>
       <v-flex xs3>
         <v-card class="py-5" height="650" width="400">
@@ -9,7 +9,7 @@
             </v-flex>
             <v-flex x12>
               <span class="text-truncate black--text display-1">
-                <h3>Đăng Nhập</h3>
+                <h3>Đăng Ký</h3>
               </span>
             </v-flex>
             <v-flex xs6>
@@ -19,12 +19,18 @@
                 large
                 class="pl-3 subheading font-weight-medium my-5"
               >
-                <v-img :src="googleLogo" height="35" width="35" contain class="mr-4"/>Đăng Nhập với tài khoản Google
+                <v-img
+                  :src="googleLogo"
+                  height="35"
+                  width="35"
+                  contain
+                  class="mr-4"
+                />Đăng ký với tài khoản Google
               </v-btn>
             </v-flex>
           </v-layout>
-          <a href="/register">
-            <h3>Bấm để đăng ký ngay</h3>
+          <a href="/">
+            <h3>Bạn đã có tài khoản? Bấm để đăng nhập</h3>
           </a>
         </v-card>
       </v-flex>
@@ -38,7 +44,7 @@ export default {
   data() {
     return {
       googleLogo: require('@/assets/images/google-logo.png'),
-      chessLogo: require('@/assets/images/chess-logo.jpg')
+      chessLogo: require('@/assets/images/chess-logo.png')
     }
   }
 }
@@ -48,7 +54,7 @@ export default {
 .flex {
   text-align: center;
 }
-.login-layouts {
+.register-layouts {
   height: 94%;
 }
 </style>

@@ -16,10 +16,10 @@
         <v-flex xs10>
           <v-layout>
             <v-flex xs6 mr-4>
-              <LeftFrom />
+              <FixedProfile />
             </v-flex>
             <v-flex xs6>
-              <RightForm />
+              <MutableProfile />
             </v-flex>
           </v-layout>
         </v-flex>
@@ -32,13 +32,13 @@
 </template>
 
 <script>
-import LeftFrom from '@/components/Instructor/Profile/LeftForm'
-import RightForm from '@/components/Instructor/Profile/RightForm'
-import Certificate from '@/components/Instructor/Profile/Certificate'
+import FixedProfile from '@/components/Profile/FixedProfile'
+import MutableProfile from '@/components/Profile/MutableProfile'
+import Certificate from '@/components/Profile/Certificate'
 export default {
   components: {
-    LeftFrom,
-    RightForm,
+    FixedProfile,
+    MutableProfile,
     Certificate
   }
 }

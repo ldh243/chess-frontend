@@ -1,12 +1,19 @@
 <template>
-  <Foot/>
+  <v-footer :inset="footer.inset" app>
+    <span class="px-3">&copy; {{ new Date().getFullYear() }}</span>
+  </v-footer>
 </template>
 
 <script>
-import Foot from '@/components/Footer/Foot'
 export default {
-  components: {
-    Foot
+  data() {
+    return {
+      dark: true,
+      drawers: ['Default (no property)', 'Permanent', 'Temporary'],
+      footer: {
+        inset: false
+      }
+    }
   }
 }
 </script>

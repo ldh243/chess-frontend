@@ -1,5 +1,5 @@
 <template>
-  <v-form ref="form" v-model="valid" lazy-validation>
+  <v-form ref="form" lazy-validation>
     <v-card class="hide-overflow">
       <v-toolbar card>
         <v-icon>mdi-account</v-icon>
@@ -47,9 +47,7 @@
       <v-divider></v-divider>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn :disabled="!valid || !isEditing" color="success" @click="save"
-          >Lưu</v-btn
-        >
+        <v-btn :disabled="!isEditing" color="success" @click="save">Lưu</v-btn>
       </v-card-actions>
       <v-snackbar v-model="hasSaved" :timeout="2000" absolute bottom left
         >Thông tin đã được cập nhật</v-snackbar

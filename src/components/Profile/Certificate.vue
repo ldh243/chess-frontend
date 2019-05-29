@@ -20,11 +20,12 @@
 
     <v-divider></v-divider>
     <v-card-actions>
-      <upload-btn large :disabled="!isEditing">
+      <!-- <upload-btn large :disabled="!isEditing" :max_files="5">
         <template slot="icon">
           <v-icon>add</v-icon>
         </template>
-      </upload-btn>
+      </upload-btn>-->
+      <upload-image url :max_files="5"></upload-image>
       <v-spacer></v-spacer>
       <v-btn :disabled="!isEditing" color="success" @click="save">Lưu</v-btn>
     </v-card-actions>
@@ -35,10 +36,12 @@
 </template>
 
 <script>
-import UploadButton from 'vuetify-upload-button'
+import UploadImage from 'vue-upload-image'
+// import UploadButton from 'vuetify-upload-button'
 export default {
   components: {
-    'upload-btn': UploadButton
+    // 'upload-btn': UploadButton
+    UploadImage
   },
   data() {
     return {

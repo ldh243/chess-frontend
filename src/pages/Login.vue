@@ -1,17 +1,17 @@
 <template>
-  <v-content :data-image="backgroundImage" :style="sidebarStyle">
-    <Header/>
-    <LoginBox/>
-  </v-content>
+  <v-app>
+    <v-content :data-image="backgroundImage" :style="sidebarStyle">
+      <Header />
+      <router-view></router-view>
+    </v-content>
+  </v-app>
 </template>
 
 <script>
-import LoginBox from '@/layouts/LoginBox'
 import Header from '@/layouts/Header'
 
 export default {
   components: {
-    LoginBox,
     Header
   },
   data() {

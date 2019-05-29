@@ -1,7 +1,7 @@
 <template>
   <v-content>
-    <SideBar/>
-    <ProfileInstructorBox/>
+    <SideBar />
+    <ProfileAdminBox />
     <v-footer :inset="footer.inset" app>
       <span class="px-3">&copy; {{ new Date().getFullYear() }}</span>
     </v-footer>
@@ -9,13 +9,13 @@
 </template>
 
 <script>
+import ProfileAdminBox from '@/layouts/Unused/ProfileAdminBox'
 import SideBar from '@/layouts/SideBar'
-import ProfileInstructorBox from '@/layouts/ProfileInstructorBox'
 
 export default {
   components: {
     SideBar,
-    ProfileInstructorBox
+    ProfileAdminBox
   },
   data: () => ({
     dark: true,

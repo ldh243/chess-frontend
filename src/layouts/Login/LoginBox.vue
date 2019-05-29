@@ -12,20 +12,22 @@
               <span class="text-truncate black--text display-1">SIGN IN</span>
             </v-flex>
             <v-flex xs6>
-              <v-btn
-                black--text
-                color="white"
-                large
-                class="pl-3 subheading font-weight-medium my-5"
-              >
-                <v-img
-                  :src="googleLogo"
-                  height="35"
-                  width="35"
-                  contain
-                  class="mr-4"
-                />Login with Google
-              </v-btn>
+              <router-link to="/instructor">
+                <v-btn
+                  black--text
+                  color="white"
+                  large
+                  class="pl-3 subheading font-weight-medium my-5"
+                >
+                  <v-img
+                    :src="googleLogo"
+                    height="35"
+                    width="35"
+                    contain
+                    class="mr-4"
+                  />Login with Google
+                </v-btn>
+              </router-link>
             </v-flex>
           </v-layout>
         </v-card>
