@@ -38,9 +38,4 @@ export default {
 }
 </script>
 
-<style>
-.v-sheet--offset {
-  top: -24px;
-  position: relative;
-}
-</style>
+<style></style>

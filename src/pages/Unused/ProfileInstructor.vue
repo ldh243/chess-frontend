@@ -9,12 +9,12 @@
 </template>
 
 <script>
-import SideBar from '@/layouts/SideBar'
+import Drawer from '@/layouts/Drawer'
 import ProfileInstructorBox from '@/layouts/Unused/ProfileInstructorBox'
 
 export default {
   components: {
-    SideBar,
+    Drawer,
     ProfileInstructorBox
   },
   data: () => ({

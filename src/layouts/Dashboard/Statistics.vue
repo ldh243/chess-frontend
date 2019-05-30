@@ -1,5 +1,9 @@
 <template>
-  <LineChart />
+  <v-content>
+    <v-container fluid>
+      <LineChart />
+    </v-container>
+  </v-content>
 </template>
 
 <script>

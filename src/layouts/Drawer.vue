@@ -19,8 +19,8 @@
     </v-toolbar>
     <v-divider></v-divider>
     <v-toolbar flat class="transparent">
-      <v-list class="pa-0" two-line subheader>
-        <v-list-tile avatar>
+      <v-list class="pa-0" subheader>
+        <v-list-tile avatar :to="accountProfile">
           <v-list-tile-avatar>
             <img
               src="https://demos.creative-tim.com/vue-material-dashboard/img/marc.aba54d65.jpg"
@@ -61,6 +61,7 @@ export default {
   data() {
     return {
       drawer: true,
+      accountProfile: '/dashboard/profile',
       items: [
         {
           title: 'Thống kê',
@@ -72,7 +73,11 @@ export default {
           icon: 'mdi-file-document-box-outline',
           path: '/dashboard/courses'
         },
-        { title: 'Tài khoản', icon: 'mdi-account', path: '/dashboard/profile' }
+        {
+          title: 'Quản lý tài khoản',
+          icon: 'mdi-account',
+          path: '/dashboard/accounts'
+        }
       ],
       mini: true,
       right: false

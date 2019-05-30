@@ -1,19 +1,19 @@
 <template>
   <v-app id="sandbox">
-    <SideBar />
+    <Drawer />
     <Header />
     <DashboardContent />
     <Footer />
   </v-app>
 </template>
 <script>
-import SideBar from '@/layouts/SideBar'
+import Drawer from '@/layouts/Drawer'
 import DashboardContent from '@/layouts/DashboardContent'
 import Footer from '@/layouts/Footer'
 import Header from '@/layouts/Dashboard/Header'
 export default {
   components: {
-    SideBar,
+    Drawer,
     DashboardContent,
     Footer,
     Header
