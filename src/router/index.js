@@ -7,6 +7,8 @@ import InfoGmail from '@/pages/Unused/InfoGmail'
 import ProfileAdmin from '@/pages/Unused/ProfileAdmin'
 import Profile from '@/layouts/Dashboard/Profile'
 import Statistics from '@/layouts/Dashboard/Statistics'
+import UserManagement from '@/layouts/Dashboard/UserManagement'
+import ProfileUser from '@/components/Users/ProfileUser'
 Vue.use(Router)
 
 export default new Router({
@@ -38,6 +40,10 @@ export default new Router({
         {
           path: 'statistics',
           component: Statistics
+        },
+        {
+          path: 'accounts',
+          component: UserManagement
         }
       ]
     },
@@ -48,6 +54,10 @@ export default new Router({
     {
       path: '/profileadmin',
       component: ProfileAdmin
+    },
+    {
+      path: '/profileuser',
+      component: ProfileUser
     }
   ]
 })
