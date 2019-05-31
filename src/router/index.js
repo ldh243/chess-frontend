@@ -1,12 +1,18 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Login from '@/pages/Login'
-import LoginBox from '@/layouts/Login/LoginBox'
+// page
+import Home from '@/pages/Home'
 import Dashboard from '@/pages/DashboardLayout'
 import InfoGmail from '@/pages/Unused/InfoGmail'
+import Introduce from '@/pages/Introduce'
+import LearnChess from '@/pages/LearnChess'
 import ProfileAdmin from '@/pages/Unused/ProfileAdmin'
+
+//layout
+import LoginBox from '@/layouts/Login/LoginBox'
 import Profile from '@/layouts/Dashboard/Profile'
 import Statistics from '@/layouts/Dashboard/Statistics'
+import Courses from '@/layouts/Dashboard/Courses'
 Vue.use(Router)
 
 export default new Router({
@@ -15,11 +21,11 @@ export default new Router({
   routes: [
     {
       path: '/',
-      component: Login
+      component: Introduce
     },
     {
       path: '/login',
-      component: Login,
+      component: Home,
       children: [
         {
           path: '',
@@ -38,8 +44,16 @@ export default new Router({
         {
           path: 'statistics',
           component: Statistics
+        },
+        {
+          path: 'courses',
+          component: Courses
         }
       ]
+    },
+    {
+      path: '/learn-chess',
+      component: LearnChess
     },
     {
       path: '/infogmail',

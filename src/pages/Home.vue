@@ -1,7 +1,7 @@
 <template>
   <v-app>
-    <v-content :data-image="backgroundImage" :style="sidebarStyle">
-      <Header />
+    <Header />
+    <v-content :style="homeBackground">
       <router-view></router-view>
     </v-content>
   </v-app>
@@ -20,11 +20,12 @@ export default {
     }
   },
   computed: {
-    sidebarStyle() {
+    homeBackground() {
       return {
         backgroundImage: `url(${this.backgroundImage})`,
         backgroundPosition: `center center`,
-        backgroundSize: `cover`
+        backgroundSize: `cover`,
+        filter: `brightness(0.6)`
       }
     }
   }

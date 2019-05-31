@@ -10,7 +10,7 @@
 import Drawer from '@/layouts/Drawer'
 import DashboardContent from '@/layouts/DashboardContent'
 import Footer from '@/layouts/Footer'
-import Header from '@/layouts/Dashboard/Header'
+import Header from '@/layouts/Header'
 export default {
   components: {
     Drawer,
