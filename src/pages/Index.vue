@@ -27,11 +27,11 @@ export default {
   },
   methods: {
     getToken() {
-      var url = window.location.href
-      if (url.includes('token=')) {
-        var index = url.search('token=')
-        var token = url.substr(34 + 6)
-        var originUri = url.substr(0, index - 1)
+      var url = new URL(window.location.href)
+      var token = url.searchParams.get('token')
+
+      if (token) {
+        var originUri = url.origin + url.pathname
         history.pushState(null, '', originUri)
         localStorage.setItem('access-token', token)
       }
