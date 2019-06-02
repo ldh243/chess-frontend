@@ -1,7 +1,21 @@
 <template>
   <v-app>
-    <v-content :style="homeBackground">
-      <v-layout align-end justify-center row fill-height xs12>
+    <v-content>
+      <v-layout
+        align-end
+        justify-center
+        row
+        fill-height
+        xs12
+        :style="homeBackground"
+      ></v-layout>
+      <v-layout
+        align-end
+        justify-center
+        row
+        fill-height
+        class="introduce-container xs12"
+      >
         <v-flex xs3></v-flex>
         <v-flex v-for="(item, index) in categoryItem" :key="index" xs3 mb-5>
           <Category :content="item" />
@@ -45,11 +59,19 @@ export default {
       return {
         backgroundImage: `url(${this.backgroundImage})`,
         backgroundPosition: `center center`,
-        backgroundSize: `cover`
+        backgroundSize: `cover`,
+        filter: `brightness(0.5)`
       }
     }
   }
 }
 </script>
 
-<style></style>
+<style scoped>
+.introduce-container {
+  position: absolute;
+  left: 0px;
+  top: 0px;
+  width: 100%;
+}
+</style>

@@ -23,6 +23,7 @@
           color="white"
           :style="btnLoginGoogle"
           class="mr-0"
+          @click="loginWithGoogle()"
           >Sign in</v-btn
         >
       </v-layout>
@@ -58,6 +59,14 @@ export default {
         backgroundSize: `30px`,
         paddingLeft: `50px`
       }
+    }
+  },
+  methods: {
+    loginWithGoogle() {
+      var api = this.$store.state.hostname + this.$store.state.api.login
+      api = this.addParam(api, 'redirect_uri', this.getCurrentPage())
+      console.log(api)
+      window.location.href = api
     }
   }
 }
