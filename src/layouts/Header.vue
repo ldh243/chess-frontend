@@ -78,7 +78,7 @@ export default {
 </script>
 
 <style scoped>
->>> .v-toolbar__content {
+.v-toolbar__content {
   max-width: 1125.9375px;
   -webkit-box-flex: 1;
   -ms-flex: 1 1 100%;

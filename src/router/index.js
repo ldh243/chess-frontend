@@ -7,6 +7,8 @@ import InfoGmail from '@/pages/Unused/InfoGmail'
 import Introduce from '@/pages/Introduce'
 import LearnChess from '@/pages/LearnChess'
 import ProfileAdmin from '@/pages/Unused/ProfileAdmin'
+import ProfileCourse from '@/pages/ProfileCourse'
+import EnrolCourse from '@/pages/EnrolCourse'
 
 //layout
 import LoginBox from '@/layouts/Login/LoginBox'
@@ -14,7 +16,7 @@ import Profile from '@/layouts/Dashboard/Profile'
 import Statistics from '@/layouts/Dashboard/Statistics'
 import Courses from '@/layouts/Dashboard/Courses'
 import UserManagement from '@/layouts/Dashboard/UserManagement'
-import ProfileUser from '@/components/Users/ProfileUser'
+
 Vue.use(Router)
 
 export default new Router({
@@ -68,6 +70,14 @@ export default new Router({
     {
       path: '/profileadmin',
       component: ProfileAdmin
+    },
+    {
+      path: '/profilecourse',
+      component: ProfileCourse
+    },
+    {
+      path: '/enrolcourse',
+      component: EnrolCourse
     }
   ]
 })
