@@ -24,8 +24,7 @@
           :style="btnLoginGoogle"
           class="mr-0"
           @click="loginWithGoogle()"
-          >Sign in</v-btn
-        >
+        >Sign in</v-btn>
       </v-layout>
     </v-flex>
   </v-toolbar>
@@ -73,7 +72,7 @@ export default {
 </script>
 
 <style scoped>
->>> .v-toolbar__content {
+.v-toolbar__content {
   max-width: 1125.9375px;
   -webkit-box-flex: 1;
   -ms-flex: 1 1 100%;
