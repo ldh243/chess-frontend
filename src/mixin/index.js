@@ -1,6 +1,6 @@
 import Vue from 'vue'
 const axios = require('axios')
-Vue.mixin({
+export default Vue.mixin({
   methods: {
     addParam(url, name, value) {
       if (url.includes('?')) {
@@ -10,14 +10,15 @@ Vue.mixin({
       }
     },
 
-    async callAxios(method, url) {
+    async callAxios(method, url, data) {
       //get token from localStorage
-      var token = localStorage.getItem('access-token')
+      var token = this.getToken()
 
       //set config for axios
       let config = {
         method: method,
         url: url,
+        data: data,
         headers: {
           Authorization: 'Chess ' + token
         }
@@ -27,6 +28,10 @@ Vue.mixin({
 
     getCurrentPage() {
       return window.location.href
+    },
+
+    getToken() {
+      return localStorage.getItem('access-token')
     }
   }
 })

@@ -18,14 +18,14 @@
     <v-flex xs3>
       <v-layout justify-end>
         <v-btn
+          v-if="!isLogin"
           black--text
           round
           color="white"
           :style="btnLoginGoogle"
           class="mr-0"
           @click="loginWithGoogle()"
-          >Sign in</v-btn
-        >
+        >Sign in</v-btn>
       </v-layout>
     </v-flex>
   </v-toolbar>
@@ -33,6 +33,11 @@
 
 <script>
 export default {
+  created() {
+    if (this.getToken()) {
+      this.isLogin = true
+    }
+  },
   data() {
     return {
       loginBackgroundImage: require('@/assets/images/google-logo.png'),
@@ -48,7 +53,8 @@ export default {
         { title: 'Click Me' },
         { title: 'Click Me' },
         { title: 'Click Me 2' }
-      ]
+      ],
+      isLogin: false
     }
   },
   computed: {
@@ -65,7 +71,6 @@ export default {
     loginWithGoogle() {
       var api = this.$store.state.hostname + this.$store.state.api.login
       api = this.addParam(api, 'redirect_uri', this.getCurrentPage())
-      console.log(api)
       window.location.href = api
     }
   }

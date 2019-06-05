@@ -16,11 +16,13 @@
         fill-height
         class="introduce-container xs12"
       >
-        <v-flex xs3></v-flex>
-        <v-flex v-for="(item, index) in categoryItem" :key="index" xs3 mb-5>
-          <Category :content="item" />
+        <v-flex xs8 mb-5>
+          <v-layout row>
+            <v-flex v-for="(item, index) in categoryItem" :key="index" xs4>
+              <Category :content="item" />
+            </v-flex>
+          </v-layout>
         </v-flex>
-        <v-flex xs3></v-flex>
       </v-layout>
     </v-content>
   </v-app>
@@ -44,7 +46,7 @@ export default {
         {
           title: 'Chơi thử',
           imageURL: require('@/assets/images/chess-play.jpg'),
-          url: '/home'
+          url: '/dashboard/courses'
         },
         {
           title: 'Trở thành người hướng dẫn',

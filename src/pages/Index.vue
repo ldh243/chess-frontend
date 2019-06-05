@@ -8,10 +8,10 @@
 export default {
   created() {
     //get token from URL
-    this.getToken()
+    this.getTokenAndSave()
 
     //check from localStorage
-    if (this.checkToken()) {
+    if (this.getToken()) {
       //token exist
       var api =
         this.$store.state.hostname + this.$store.state.api.getCurrentUserDetail
@@ -26,7 +26,7 @@ export default {
     }
   },
   methods: {
-    getToken() {
+    getTokenAndSave() {
       var url = new URL(window.location.href)
       var token = url.searchParams.get('token')
 
@@ -34,13 +34,6 @@ export default {
         var originUri = url.origin + url.pathname
         history.pushState(null, '', originUri)
         localStorage.setItem('access-token', token)
-      }
-    },
-    checkToken() {
-      if (localStorage.getItem('access-token')) {
-        return true
-      } else {
-        return false
       }
     }
   }
