@@ -1,30 +1,15 @@
 <template>
-  <v-app>
-    <v-content>
-      <v-layout
-        align-end
-        justify-center
-        row
-        fill-height
-        xs12
-        :style="homeBackground"
-      ></v-layout>
-      <v-layout
-        align-end
-        justify-center
-        row
-        fill-height
-        class="introduce-container xs12"
-      >
-        <v-flex xs8 mb-5>
-          <v-layout row>
-            <v-flex v-for="(item, index) in categoryItem" :key="index" xs4>
-              <Category :content="item" />
-            </v-flex>
-          </v-layout>
-        </v-flex>
-      </v-layout>
-    </v-content>
+  <v-app style="margin-top: -64px">
+    <v-layout align-end justify-center row fill-height xs12 :style="homeBackground"></v-layout>
+    <v-layout align-end justify-center row fill-height class="introduce-container xs12">
+      <v-flex xs12 md9 mb-5>
+        <v-layout row justify-center>
+          <v-flex v-for="(item, index) in categoryItem" :key="index" xs3 mx-3>
+            <Category :content="item"/>
+          </v-flex>
+        </v-layout>
+      </v-flex>
+    </v-layout>
   </v-app>
 </template>
 
@@ -46,7 +31,7 @@ export default {
         {
           title: 'Chơi thử',
           imageURL: require('@/assets/images/chess-play.jpg'),
-          url: '/dashboard/courses'
+          url: '/play-chess'
         },
         {
           title: 'Trở thành người hướng dẫn',

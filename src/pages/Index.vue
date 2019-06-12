@@ -1,11 +1,22 @@
 <template>
-  <router-view></router-view>
+  <v-app>
+    <Header/>
+    <v-content>
+      <router-view></router-view>
+    </v-content>
+    <Footer/>
+  </v-app>
 </template>
 
-<style></style>
 
 <script>
+import Header from '@/layouts/Header'
+import Footer from '@/layouts/Footer'
 export default {
+  components: {
+    Header,
+    Footer
+  },
   created() {
     //get token from URL
     this.getTokenAndSave()

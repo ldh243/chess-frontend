@@ -1,17 +1,12 @@
 <template>
-  <v-app>
-    <Header />
-    <CourseOverview />
-  </v-app>
+  <CourseOverview/>
 </template>
 
 <script>
-import Header from '@/layouts/Header'
 import CourseOverview from '@/layouts/Learner/CourseOverview'
 
 export default {
   components: {
-    Header,
     CourseOverview
   }
 }

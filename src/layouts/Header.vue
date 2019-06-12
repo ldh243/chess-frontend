@@ -3,10 +3,10 @@
     <v-flex xs3>
       <v-menu offset-y>
         <template v-slot:activator="{ on }">
-          <v-btn class="ml-0" color="primary" dark v-on="on">Dropdown</v-btn>
+          <v-btn class="ml-0" color="primary" dark v-on="on">Học</v-btn>
         </template>
         <v-list>
-          <v-list-tile v-for="(item, index) in items" :key="index" @click>
+          <v-list-tile v-for="(item, index) in learnMenu" :key="index" @click>
             <v-list-tile-title>{{ item.title }}</v-list-tile-title>
           </v-list-tile>
         </v-list>
@@ -48,12 +48,7 @@ export default {
         floating: false,
         mini: false
       },
-      items: [
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me' },
-        { title: 'Click Me 2' }
-      ],
+      learnMenu: [{ title: 'Học lý thuyết' }, { title: 'Học thế cờ' }],
       isLogin: false
     }
   },
@@ -78,7 +73,7 @@ export default {
 </script>
 
 <style scoped>
-.v-toolbar__content {
+>>> .v-toolbar__content {
   max-width: 1125.9375px;
   -webkit-box-flex: 1;
   -ms-flex: 1 1 100%;

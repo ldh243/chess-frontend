@@ -1,19 +1,17 @@
 <template>
-  <v-content>
-    <v-container>
-      <v-layout row wrap>
-        <v-flex
-          v-for="(item, index) in listCourses"
-          :key="index"
-          class="course-item"
-          :style="{ marginRight: index % 3 != 2 ? 'calc(1%)' : '0px' }"
-          mb-3
-        >
-          <CoursesOverviewItem :content="item" />
-        </v-flex>
-      </v-layout>
-    </v-container>
-  </v-content>
+  <v-container>
+    <v-layout row wrap>
+      <v-flex
+        v-for="(item, index) in listCourses"
+        :key="index"
+        class="course-item"
+        :style="{ marginRight: index % 3 != 2 ? 'calc(1%)' : '0px' }"
+        mb-3
+      >
+        <CoursesOverviewItem :content="item"/>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
@@ -140,7 +138,7 @@ export default {
 </script>
 
 <style scoped>
-.course-item {
+>>> .course-item {
   flex-basis: 32.6666666%;
   -webkit-box-flex: 0;
   -ms-flex-positive: 0;
