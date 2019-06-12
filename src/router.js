@@ -17,6 +17,11 @@ import Statistics from '@/layouts/Dashboard/Statistics'
 import Courses from '@/layouts/Dashboard/Courses'
 import UserManagement from '@/layouts/Dashboard/UserManagement'
 
+//components
+import LearningByvideo from '@/components/LearningCourse/LearningByvideo'
+
+import LearningBychessboard from '@/components/LearningCourse/LearningBychessboard'
+
 Vue.use(Router)
 
 export default new Router({
@@ -78,6 +83,14 @@ export default new Router({
     {
       path: '/enrolcourse',
       component: EnrolCourse
+    },
+    {
+      path: '/learningvideo',
+      component: LearningByvideo
+    },
+    {
+      path: '/learningchessboard',
+      component: LearningBychessboard
     }
   ]
 })

@@ -1,10 +1,6 @@
 <template>
   <v-hover>
-    <v-card
-      class="black--text"
-      slot-scope="{ hover }"
-      :class="`elevation-${hover ? 12 : 2}`"
-    >
+    <v-card class="black--text" slot-scope="{ hover }" :class="`elevation-${hover ? 12 : 2}`">
       <v-layout row wrap>
         <v-flex xs12>
           <v-img :src="content.imageURL" height="175px"></v-img>
@@ -12,15 +8,15 @@
         <v-flex xs12>
           <v-card-title primary-title class="pt-2">
             <v-flex xs12>
-              <span class="course-title">{{ content.title }}</span>
+              <span class="course-title">{{ content.courseName }}</span>
             </v-flex>
             <v-flex xs2>
               <v-avatar :size="50">
-                <img :src="content.avatar" alt="avatar" />
+                <img :src="content.avatar" alt="avatar">
               </v-avatar>
             </v-flex>
             <v-flex xs9 ml-3>
-              <span class="ml-1 course-author">{{ content.author }}</span>
+              <span class="ml-1 course-author">{{ content.authorName }}</span>
               <v-layout row>
                 <v-flex xs6>
                   <v-rating
@@ -46,7 +42,7 @@
       <v-divider light></v-divider>
       <v-card-actions class="px-3">
         <v-spacer></v-spacer>
-        <span class="course-point">{{ content.pointRequire }} điểm</span>
+        <span class="course-point">{{ content.point }} điểm</span>
       </v-card-actions>
     </v-card>
   </v-hover>
@@ -72,7 +68,7 @@ export default {
   letter-spacing: normal !important;
   font-family: 'Open Sans', sans-serif !important;
 }
->>> .v-rating .v-icon {
+.v-rating .v-icon {
   padding: 3px;
 }
 
