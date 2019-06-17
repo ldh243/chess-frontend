@@ -23,10 +23,10 @@
 export default {
   data() {
     return {
-      logoFPT: require("@/assets/images/fpt-university-logo.png")
-    };
+      logoFPT: require('@/assets/images/fpt-university-logo.png')
+    }
   }
-};
+}
 </script>
 
 <style scoped>

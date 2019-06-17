@@ -24,7 +24,10 @@
 <script>
 export default {
   props: {
-    content: Object
+    content: {
+      type: Object,
+      default: null
+    }
   },
   data() {
     return {

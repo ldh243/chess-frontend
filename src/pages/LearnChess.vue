@@ -1,9 +1,13 @@
 <template>
-  <CourseOverview/>
+  <v-container>
+    <v-layout>
+      <CourseOverview />
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
-import CourseOverview from '@/layouts/Learner/CourseOverview'
+import CourseOverview from '@/layouts/LearnChess/CourseOverview'
 
 export default {
   components: {

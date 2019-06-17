@@ -1,8 +1,5 @@
 <template>
-  <v-form v-model="valid">
-    <v-flex>
-      <v-img contain height="100" :src="chessLogo"></v-img>
-    </v-flex>
+  <v-form>
     <v-flex class="h1">
       <h1>Thông tin tài khoản Gmail</h1>
     </v-flex>
@@ -134,9 +131,6 @@ export default {
       checkbox: true,
       file: ''
     }
-  },
-  image: {
-    chessLogo: require('@/assets/images/chess-logo.png')
   },
 
   methods: {

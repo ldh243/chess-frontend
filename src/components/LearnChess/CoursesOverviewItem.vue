@@ -1,8 +1,8 @@
 <template>
   <v-hover>
     <v-card
-      class="black--text"
       slot-scope="{ hover }"
+      class="black--text"
       :class="`elevation-${hover ? 12 : 2}`"
     >
       <v-layout row wrap>
@@ -12,7 +12,7 @@
         <v-flex xs12>
           <v-card-title primary-title class="pt-2">
             <v-flex xs12>
-              <span class="course-title">{{ content.title }}</span>
+              <span class="course-title">{{ content.courseName }}</span>
             </v-flex>
             <v-flex xs2>
               <v-avatar :size="50">
@@ -20,11 +20,11 @@
               </v-avatar>
             </v-flex>
             <v-flex xs9 ml-3>
-              <span class="ml-1 course-author">{{ content.author }}</span>
+              <span class="ml-1 course-author">{{ content.authorName }}</span>
               <v-layout row>
                 <v-flex xs6>
                   <v-rating
-                    v-model="content.rating"
+                    v-model="rateScore"
                     readonly
                     small
                     empty-icon="$vuetify.icons.ratingFull"
@@ -33,7 +33,7 @@
                 </v-flex>
                 <v-flex>
                   <v-layout align-center fill-height>
-                    <span class="course-score">{{ content.rating }}</span>
+                    <span class="course-score">4.2</span>
                     <span class="ml-2 course-total-rate">(1724)</span>
                   </v-layout>
                 </v-flex>
@@ -46,7 +46,7 @@
       <v-divider light></v-divider>
       <v-card-actions class="px-3">
         <v-spacer></v-spacer>
-        <span class="course-point">{{ content.pointRequire }} điểm</span>
+        <span class="course-point">{{ content.point }} điểm</span>
       </v-card-actions>
     </v-card>
   </v-hover>
@@ -55,7 +55,15 @@
 <script>
 export default {
   props: {
-    content: Object
+    content: {
+      type: Object,
+      default: null
+    }
+  },
+  data() {
+    return {
+      rateScore: 4.2
+    }
   }
 }
 </script>

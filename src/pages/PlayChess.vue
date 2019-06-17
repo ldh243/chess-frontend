@@ -5,7 +5,7 @@
     </v-card-title>
     <v-layout row wrap>
       <v-flex xs9>
-        <chessboard :showThreats="true" :onPromotion="promote"/>
+        <chessboard :show-threats="true" :on-promotion="promote" />
       </v-flex>
       <v-flex xs3>
         <button id="startBtn">Start Position</button>
@@ -15,10 +15,12 @@
       <v-card>
         <v-card-title class="headline">Phong tốt</v-card-title>
         <v-card-text>Bạn muốn chọn con gì để phong tốt</v-card-text>
-        <v-select :items="items" v-model="promoteTo"></v-select>
+        <v-select v-model="promoteTo" :items="items"></v-select>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="green darken-1" flat @click="dialog = false">Xác nhận</v-btn>
+          <v-btn color="green darken-1" flat @click="dialog = false"
+            >Xác nhận</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -27,6 +29,13 @@
 
 <script>
 export default {
+  data() {
+    return {
+      dialog: false,
+      promoteTo: 'q',
+      items: ['q', 'b', 'r', 'k']
+    }
+  },
   created() {},
   methods: {
     async handleData() {
@@ -49,13 +58,6 @@ export default {
     sleep(ms) {
       return new Promise(resolve => setTimeout(resolve, ms))
     }
-  },
-  data() {
-    return {
-      dialog: false,
-      promoteTo: 'q',
-      items: ['q', 'b', 'r', 'k']
-    }
   }
 }
 </script>
@@ -64,13 +66,5 @@ export default {
 >>> piece,
 .blue {
   background-color: transparent !important;
-}
->>> .cg-board-wrap {
-  width: 500px !important;
-  height: 500px !important;
-}
-
->>> .cg-board-wrap coords {
-  font-size: 20px !important;
 }
 </style>
