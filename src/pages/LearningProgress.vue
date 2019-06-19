@@ -2,14 +2,21 @@
   <div class="trainingTemplate">
     <v-navigation-drawer v-model="drawer" fixed app>
       <v-subheader class="courseProgress">
-        <v-progress-linear v-model="percentageCompleted" height="15"></v-progress-linear>
+        <v-progress-linear
+          v-model="percentageCompleted"
+          height="15"
+        ></v-progress-linear>
       </v-subheader>
       <div class="courseProgressText">
         <strong>Hoàn thành {{ percentageCompleted }}%</strong>
       </div>
 
       <v-list>
-        <v-list v-for="item in courseContentList" :key="item.moduleTitle" :value="item.active">
+        <v-list
+          v-for="item in courseContentList"
+          :key="item.moduleTitle"
+          :value="item.active"
+        >
           <v-list-tile slot="item">
             <v-list-tile-content>
               <v-list-tile-title>{{ item.moduleTitle }}</v-list-tile-title>
@@ -22,14 +29,19 @@
             @click="loadContent(subItem.lessonID)"
           >
             <v-list-tile-action>
-              <v-icon v-if="subItem.active" class="blue--text">mdi-play-circle-outline</v-icon>
-              <v-icon v-else-if="subItem.lessonComplete" class="green--text">mdi-done</v-icon>
+              <v-icon v-if="subItem.active" class="blue--text"
+                >mdi-play-circle-outline</v-icon
+              >
+              <v-icon v-else-if="subItem.lessonComplete" class="green--text"
+                >mdi-done</v-icon
+              >
               <v-icon v-else>mdi-radio-button-unchecked</v-icon>
             </v-list-tile-action>
             <v-list-tile-content>
               <v-list-tile-title
                 :class="{ lessonComplete: subItem.lessonComplete }"
-              >{{ subItem.lessonTitle }}</v-list-tile-title>
+                >{{ subItem.lessonTitle }}</v-list-tile-title
+              >
             </v-list-tile-content>
           </v-list-tile>
         </v-list>
@@ -49,7 +61,9 @@
               <v-card>
                 <v-card-title primary-title>
                   <div>
-                    <h3 class="headline mb-0">{{ activeLesson.lessonTitle }}</h3>
+                    <h3 class="headline mb-0">
+                      {{ activeLesson.lessonTitle }}
+                    </h3>
                     <div>{{ activeLesson.lessonDescription }}</div>
                   </div>
                 </v-card-title>
@@ -61,15 +75,21 @@
                     large
                     class="elevation-0 hidden-sm-and-down"
                     @click="completeLesson(activeLesson.lessonID)"
-                  >Hoàn thành và Qua bài kế tiếp</v-btn>
+                    >Hoàn thành và Qua bài kế tiếp</v-btn
+                  >
                 </v-card-actions>
 
                 <div class="clearfix"></div>
 
                 <div v-if="activeLesson.lessonType == 'video'">
                   <v-card-media class="cardMediaFormatting">
-                    <video width="100%" height="100%" controls :poster="activeLesson.posterImage">
-                      <source :src="activeLesson.contentURL" type="video/mp4">
+                    <video
+                      width="100%"
+                      height="100%"
+                      controls
+                      :poster="activeLesson.posterImage"
+                    >
+                      <source :src="activeLesson.contentURL" type="video/mp4" />
                     </video>
                   </v-card-media>
                 </div>

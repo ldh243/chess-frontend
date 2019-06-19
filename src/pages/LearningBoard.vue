@@ -2,7 +2,7 @@
   <v-container>
     <v-layout row>
       <v-flex mr-4 xs8>
-        <chessboard @onMove="showInfo" :fen="currentFen"/>
+        <chessboard :fen="currentFen" @onMove="showInfo" />
       </v-flex>
 
       <v-flex xs4>
@@ -12,25 +12,33 @@
               <span class="title font-weight-bold">Nước đi</span>
             </v-card-title>
             <div class="move-history-content">
-              <div v-for="(item,index) in chessHistory.moveHistory" :key="index">
-                <div class="index">{{item.index}}</div>
+              <div v-for="(item, index) in moveHistory" :key="index">
+                <div class="index">{{ item.index }}</div>
                 <div
-                  class="move"
                   :id="item.whiteMove.moveCount"
-                  @click="loadFen(item.whiteMove.fen, $event)"
-                >{{item.whiteMove.move}}</div>
-                <div
                   class="move"
-                  :id="item.blackMove.moveCount"
+                  @click="loadFen(item.whiteMove.fen, $event)"
+                >
+                  {{ item.whiteMove.move }}
+                </div>
+                <div
                   v-if="item.blackMove"
+                  :id="item.blackMove.moveCount"
+                  class="move"
                   @click="loadFen(item.blackMove.fen, $event)"
-                >{{item.blackMove.move}}</div>
+                >
+                  {{ item.blackMove.move }}
+                </div>
               </div>
             </div>
           </v-flex>
           <v-flex mb-4>
             <v-layout row>
-              <v-btn flat :disabled="statusPreviousMove" @click="turnToFirstMove()">
+              <v-btn
+                flat
+                :disabled="statusPreviousMove"
+                @click="turnToFirstMove()"
+              >
                 <v-icon>fa-fast-backward</v-icon>
               </v-btn>
               <v-btn
@@ -42,7 +50,12 @@
                 <v-icon>fa-backward</v-icon>
               </v-btn>
 
-              <v-btn flat class="main-button" @click="turnToNextMove()" :disabled="statusNextMove">
+              <v-btn
+                flat
+                class="main-button"
+                :disabled="statusNextMove"
+                @click="turnToNextMove()"
+              >
                 <v-icon>fa-forward</v-icon>
               </v-btn>
               <v-btn flat :disabled="statusNextMove" @click="turnToLastMove()">
@@ -55,7 +68,7 @@
               <span class="title font-weight-bold">Nội dung</span>
             </v-card-title>
             <v-card height="300">
-              <v-card-title>{{loadLesson}}</v-card-title>
+              <v-card-title>{{ loadLesson }}</v-card-title>
             </v-card>
           </v-flex>
           <v-flex>
@@ -86,23 +99,11 @@
 
 <script>
 export default {
-  updated() {
-    if (this.updateMove) {
-      this.currentMove = this.totalMove
-      this.setCurrentMove()
-    }
-    this.updateMove = true
-  },
   data() {
     return {
-      positionInfo: null,
-      chessHistory: {
-        moveHistory: [],
-        positionHistory: []
-      },
-      chessboardBackground: require('@/assets/images/chessboard-background.jpg'),
-      currentFen: '',
+      moveHistory: [],
       defaultFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
+      currentFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
       updateMove: true,
       currentMove: 0,
       totalMove: 0,
@@ -114,6 +115,48 @@ export default {
       activeLesson: 0
     }
   },
+  computed: {
+    statusNextMove() {
+      if (this.currentMove === this.totalMove) {
+        return true
+      }
+      return false
+    },
+    statusPreviousMove() {
+      if (this.currentMove <= 1) {
+        return true
+      }
+      return false
+    },
+    statusNextLesson() {
+      if (this.activeLesson === this.lessons.length - 1) {
+        return true
+      }
+      return false
+    },
+    statusPreviousLesson() {
+      if (this.activeLesson <= 0) {
+        return true
+      }
+      return false
+    },
+    loadLesson() {
+      return this.lessons[this.activeLesson]
+    }
+  },
+  updated() {
+    if (this.updateMove) {
+      this.currentMove = this.totalMove
+      this.setCurrentMove()
+      if (!this.currentFen) {
+        this.currentFen = this.defaultFen
+      }
+    }
+    this.updateMove = true
+  },
+  created() {
+    this.currentFen = this.defaultFen
+  },
   methods: {
     loadFen(fen, event) {
       this.updateMove = false
@@ -123,7 +166,6 @@ export default {
 
         //Lấy id của nó parse sang int
         this.currentMove = this.getIdNumberOfMove(divTarget)
-
         this.setCurrentMove()
       }
     },
@@ -145,9 +187,8 @@ export default {
       //     }
       // ]
 
-      this.positionInfo = data
       const black = 'black'
-      let moveHistory = this.chessHistory.moveHistory
+      let moveHistory = this.moveHistory
 
       //Lấy nước đi mới
       let newMove = data.history[data.history.length - 1]
@@ -155,7 +196,7 @@ export default {
       //Lấy nước đi cuối cùng
       let lastMove = moveHistory[moveHistory.length - 1]
 
-      if (newMove === undefined) return
+      if (newMove === undefined || !this.currentFen) return
 
       //   newMove = this.changeChessKey(newMove)
 
@@ -183,7 +224,6 @@ export default {
         }
       }
       this.currentMove = this.totalMove
-      this.currentFen = data.fen
     },
     setCurrentMove() {
       //set highlight div dựa trên this.current move hiện tại
@@ -254,44 +294,9 @@ export default {
       }
     },
     resetBoardAndResetHistory() {
-      this.currentFen = this.defaultFen
-      this.chessHistory = {
-        moveHistory: [],
-        positionHistory: []
-      }
+      this.currentFen = ''
+      this.moveHistory = []
     }
-  },
-  computed: {
-    statusNextMove() {
-      if (this.currentMove === this.totalMove) {
-        return true
-      }
-      return false
-    },
-    statusPreviousMove() {
-      if (this.currentMove <= 1) {
-        return true
-      }
-      return false
-    },
-    statusNextLesson() {
-      if (this.activeLesson === this.lessons.length - 1) {
-        return true
-      }
-      return false
-    },
-    statusPreviousLesson() {
-      if (this.activeLesson <= 0) {
-        return true
-      }
-      return false
-    },
-    loadLesson() {
-      return this.lessons[this.activeLesson]
-    }
-  },
-  created() {
-    this.currentFen = this.defaultFen
   }
 }
 </script>
