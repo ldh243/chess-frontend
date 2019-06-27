@@ -2,7 +2,7 @@
   <v-container>
     <v-layout row>
       <v-flex lg6 offset-lg1>
-        <chessboard :move="'e2e4'" :fen="currentFen" @onMove="showInfo"/>
+        <chessboard :move="move" :orientation="userColor" :fen="currentFen" @onMove="showInfo"/>
       </v-flex>
       <v-flex xs4 offset-xs1>
         <v-layout column>
@@ -113,6 +113,8 @@
                         v-model="time"
                         format="24hr"
                         full-width
+                        min="00:01:00"
+                        max="12:59:59"
                         use-seconds
                         scrollable
                         :allowed-hours="allowedHours"
@@ -150,13 +152,15 @@
 </template>
 
 <script>
+import Chessboard from '../vue-chessboard'
 import Clock from '../components/PlayChess/Clock'
 import Player from '../components/PlayChess/Player'
 import { setInterval, clearInterval } from 'timers'
 export default {
   components: {
     Clock,
-    Player
+    Player,
+    Chessboard
   },
   data() {
     return {
@@ -169,7 +173,7 @@ export default {
       startDialog: false,
       tickLabels: [1, 2, 3, 4, 5],
       player: JSON.parse(localStorage.getItem('user')),
-      time: '00:00:00',
+      time: '01:00:00',
       timePicker: false,
       level: 3,
       botImgLink: '',
@@ -177,12 +181,14 @@ export default {
       userColor: 'white',
       botTime: '',
       playerTime: '',
-      isWhiteTurn: false,
+      turn: 'white',
       interval: null,
       isPlayerWin: false,
       tmpMoves: ['e7e5', 'h7h5', 'g7g5'],
+      turnNum: 0,
       move: '',
-      isStart: false
+      isStart: false,
+      isBotTurn: false
     }
   },
   watch: {
@@ -191,28 +197,12 @@ export default {
     },
     level: function(level) {
       this.level = level
-      console.log(level)
       this.botImgLink = require('@/assets/images/' + this.level + '.png')
     },
-    isWhiteTurn: function(isWhiteTurn) {
-      this.isWhiteTurn = isWhiteTurn
-      const white = 'white'
-      let time = ''
-      if (this.userColor == white) {
-        if (isWhiteTurn) {
-          clearInterval(this.interval)
-          this.interval = setInterval(() => {
-            time = this.playerTime
-            this.playerTime = this.countDownTime(time)
-          }, 1000)
-        } else {
-          clearInterval(this.interval)
-          this.interval = setInterval(() => {
-            time = this.botTime
-            this.botTime = this.countDownTime(time)
-          }, 1000)
-        }
-      }
+    turn: function(turn) {
+      this.turn = turn
+      clearInterval(this.interval)
+      this.interval = setInterval(this.runClock, 1000)
     },
     playerTime: function(playerTime) {
       playerTime == '00:00:00' ? this.isPlayerWin = false : this.isPlayerWin = true
@@ -225,6 +215,14 @@ export default {
         console.log("Player")
       } else {
         console.log("Bot")
+      }
+    },
+    isBotTurn: function(isBotTurn) {
+      this.isBotTurn = isBotTurn
+      console.log("bot move" + this.isBotTurn)
+      if (this.isBotTurn) {
+        this.move = this.tmpMoves[this.turnNum]
+        this.turnNum++
       }
     }
   },
@@ -258,6 +256,13 @@ export default {
     this.botTime = this.playerTime = this.time
   },
   methods: {
+    resetBoard() {
+      this.updateMove = true
+      this.currentFen = this.defaultFen
+      this.currentMove = 0
+      this.totalMove = 0
+      this.turn = 'white'
+    },
     loadFen(fen, event) {
       this.updateMove = false
       this.currentFen = fen
@@ -294,16 +299,10 @@ export default {
       if (newMove === undefined || !this.currentFen) return
       //   newMove = this.changeChessKey(newMove)
       //Lấy turn hiện tại
-      const turn = data.turn
+      this.turn = data.turn
       this.totalMove++
-      if (turn === black) {
+      if (this.turn === black) {
         //tạo thêm turn mới
-        if (this.isStart) {
-          if (this.userColor != black) {
-          this.move = this.tmpMoves[this.currentMove]
-          
-        }
-        }
         const newTurn = {
           index: moveHistory.length + 1,
           whiteMove: {
@@ -323,7 +322,8 @@ export default {
         }
       }
       this.currentMove = this.totalMove
-      this.isWhiteTurn = !this.isWhiteTurn
+      console.log(data)
+      this.isBotTurn = !this.isBotTurn
     },
     setCurrentMove() {
       //set highlight div dựa trên this.current move hiện tại
@@ -385,10 +385,13 @@ export default {
     },
     //handle Time Picker
     allowedHours: v => v >= 0 && v <= 12,
-    allowedMinutes: v => v >= 0 && v <= 60,
+    allowedMinutes: v => v >= 1 && v <= 60,
     allowedSeconds: v => v >= 0 && v <= 60,
     //new a game
     startGame() {
+      this.moveHistory = []
+      this.resetBoard()
+      this.loadFen()
       switch (this.colorPicker) {
         case 0:
           this.userColor = 'white'
@@ -401,20 +404,18 @@ export default {
           break
       }
       this.botTime = this.playerTime = this.time
-      console.log(this.botTime)
-      console.log(this.playerTime)
       this.startDialog = false
       this.isStart = true
-      this.isWhiteTurn = true
-      this.currentFen = this.defaultFen
       console.log(this.currentFen)
+      clearInterval(this.interval)
+      this.interval = setInterval(this.runClock, 1000)
+      this.userColor === turn ? this.isBotTurn = false : this.isBotTurn = true
     },
     countDownTime(time) {
       const timeArr = time.split(':')
       let hour = parseInt(timeArr[0]),
         min = parseInt(timeArr[1]),
         second = parseInt(timeArr[2])
-      console.log(hour + '-' + min + '-' + second)
       if (second != 0 || min != 0 || hour != 0) {
         if (second > 0) {
           second--
@@ -423,10 +424,10 @@ export default {
             min--
             second = 59
           } else {
-            if (hour > 0) {
-              min = 59
-              hour--
-            }
+            //hour > 0, min = 0
+            min = 59
+            hour--
+            second = 59
           } 
         }
       } else {
@@ -438,6 +439,12 @@ export default {
       min < 10 ? (min = '0' + min) : min
       second < 10 ? (second = '0' + second) : second
       return hour + ':' + min + ':' + second
+    },
+    runClock() {
+      if (this.isStart) {
+        this.userColor === this.turn ? 
+      this.playerTime = this.countDownTime(this.playerTime) : this.botTime = this.countDownTime(this.botTime)
+      }
     }
   }
 }

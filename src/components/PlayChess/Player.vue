@@ -1,7 +1,6 @@
 <template>
     <v-layout row mb-2>
         <v-avatar
-          :tile="tile"
           size="45"
           color="grey lighten-4" class="mr-3 ml-3"
         >

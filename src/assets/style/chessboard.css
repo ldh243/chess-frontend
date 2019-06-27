@@ -1,7 +1,8 @@
 >>> piece,
-.blue {
+.blue, >>> coords {
   background-color: transparent !important;
 }
+ 
 /* for learning-board ============================*/
 .move-history-content, .lesson-content {
   background-color: #fff;
@@ -60,7 +61,7 @@
   color: #1f1f1f;
 }
 /*for playing page ===========================*/
-/* reset background color */
+/* reset background color for dialog */
 .black, .white {
   background-color: transparent !important;
 }
