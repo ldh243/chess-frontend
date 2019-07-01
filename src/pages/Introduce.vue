@@ -28,7 +28,7 @@ export default {
         {
           title: 'Học cờ cơ bản',
           imageURL: require('@/assets/images/chess-basic-course.png'),
-          url: '/learn-chess'
+          url: '/course'
         },
         {
           title: 'Chơi thử',

@@ -6,17 +6,21 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     api: {
-      login: 'http://cols-be.ml/oauth2/authorize/google',
-      getCurrentUserDetail: 'http://cols-be.ml/user/get-current-user-detail',
-
-      //course
-      getCoursesPagination: 'http://cols-be.ml/course/get-course-pagination'
+      login: 'http://cols-be.ml/oauth2/authorize/google'
     },
-    user: JSON.parse(localStorage.getItem('user'))
+    user: JSON.parse(localStorage.getItem('user')),
+    userToken: localStorage.getItem('access-token'),
+    dialog: {
+      enrolDialog: false,
+      confirmEnrolDialog: false
+    }
   },
   mutations: {
-    changeUser(state, payload) {
+    setUser(state, payload) {
       state.user = payload
+    },
+    setUserToken(state, payload) {
+      state.userToken = payload
     }
   },
   actions: {},

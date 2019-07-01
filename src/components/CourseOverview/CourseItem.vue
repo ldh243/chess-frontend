@@ -4,23 +4,28 @@
       slot-scope="{ hover }"
       class="black--text"
       :class="`elevation-${hover ? 12 : 2}`"
+      @click="showEnrolDialog()"
     >
       <v-layout row wrap>
         <v-flex xs12>
-          <v-img :src="content.imageURL" height="175px"></v-img>
+          <v-img :src="courseDetail.courseImage" height="175px"></v-img>
         </v-flex>
         <v-flex xs12>
           <v-card-title primary-title class="pt-2">
             <v-flex xs12>
-              <span class="course-title">{{ content.courseName }}</span>
+              <span class="course-title">{{ courseDetail.courseName }}</span>
             </v-flex>
             <v-flex xs2>
               <v-avatar :size="50">
-                <img :src="content.avatar" alt="avatar" />
+                <img :src="courseDetail.authorAvatar" alt="avatar">
               </v-avatar>
             </v-flex>
             <v-flex xs9 ml-3>
-              <span class="ml-1 course-author">{{ content.authorName }}</span>
+              <span class="ml-1 course-author">
+                {{
+                courseDetail.authorName
+                }}
+              </span>
               <v-layout row>
                 <v-flex xs6>
                   <v-rating
@@ -46,7 +51,7 @@
       <v-divider light></v-divider>
       <v-card-actions class="px-3">
         <v-spacer></v-spacer>
-        <span class="course-point">{{ content.point }} điểm</span>
+        <span class="course-point">{{ courseDetail.point }} điểm</span>
       </v-card-actions>
     </v-card>
   </v-hover>
@@ -55,7 +60,7 @@
 <script>
 export default {
   props: {
-    content: {
+    courseDetail: {
       type: Object,
       default: null
     }
@@ -63,6 +68,11 @@ export default {
   data() {
     return {
       rateScore: 4.2
+    }
+  },
+  methods: {
+    showEnrolDialog() {
+      this.$emit('showEnrolDialog', this.courseDetail.courseId)
     }
   }
 }

@@ -1,8 +1,8 @@
 <template>
-  <v-container>
+  <v-container px-0>
     <v-layout row>
       <v-flex mr-4 xs8>
-        <chessboard :fen="currentFen" @onMove="showInfo" />
+        <chessboard :fen="currentFen" @onMove="showInfo"/>
       </v-flex>
 
       <v-flex xs4>
@@ -18,27 +18,19 @@
                   :id="item.whiteMove.moveCount"
                   class="move"
                   @click="loadFen(item.whiteMove.fen, $event)"
-                >
-                  {{ item.whiteMove.move }}
-                </div>
+                >{{ item.whiteMove.move }}</div>
                 <div
                   v-if="item.blackMove"
                   :id="item.blackMove.moveCount"
                   class="move"
                   @click="loadFen(item.blackMove.fen, $event)"
-                >
-                  {{ item.blackMove.move }}
-                </div>
+                >{{ item.blackMove.move }}</div>
               </div>
             </div>
           </v-flex>
           <v-flex mb-4>
             <v-layout row>
-              <v-btn
-                flat
-                :disabled="statusPreviousMove"
-                @click="turnToFirstMove()"
-              >
+              <v-btn flat :disabled="statusPreviousMove" @click="turnToFirstMove()">
                 <v-icon>fa-fast-backward</v-icon>
               </v-btn>
               <v-btn
@@ -50,12 +42,7 @@
                 <v-icon>fa-backward</v-icon>
               </v-btn>
 
-              <v-btn
-                flat
-                class="main-button"
-                :disabled="statusNextMove"
-                @click="turnToNextMove()"
-              >
+              <v-btn flat class="main-button" :disabled="statusNextMove" @click="turnToNextMove()">
                 <v-icon>fa-forward</v-icon>
               </v-btn>
               <v-btn flat :disabled="statusNextMove" @click="turnToLastMove()">

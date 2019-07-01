@@ -1,11 +1,11 @@
 <template>
-  <v-container>
+  <v-container px-0>
     <v-card-title>
       <h2>Chơi cờ</h2>
     </v-card-title>
     <v-layout row wrap>
       <v-flex xs9>
-        <chessboard :show-threats="true" :on-promotion="promote" />
+        <chessboard :show-threats="true" :on-promotion="promote"/>
       </v-flex>
       <v-flex xs3>
         <button id="startBtn">Start Position</button>
@@ -18,9 +18,7 @@
         <v-select v-model="promoteTo" :items="items"></v-select>
         <v-card-actions>
           <v-spacer></v-spacer>
-          <v-btn color="green darken-1" flat @click="dialog = false"
-            >Xác nhận</v-btn
-          >
+          <v-btn color="green darken-1" flat @click="dialog = false">Xác nhận</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>

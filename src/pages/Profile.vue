@@ -1,11 +1,11 @@
 <template>
-  <v-container>
-    <ProfileField />
+  <v-container px-0>
+    <ProfileField/>
   </v-container>
 </template>
 
 <script>
-import ProfileField from '@/layouts/ProfileField'
+import ProfileField from '@/components/ProfileField'
 
 export default {
   components: {

@@ -3,7 +3,7 @@
     <v-flex xs1>
       <router-link to="/">
         <v-layout justify-center align-center fill-height>
-          <img :src="chessLogo" />
+          <img :src="chessLogo">
           <span class="white--text text-logo ml-2">COLS</span>
         </v-layout>
       </router-link>
@@ -14,18 +14,14 @@
           <v-btn class="ml-0" color="primary" dark v-on="on">Học</v-btn>
         </template>
         <v-list>
-          <v-list-tile
-            v-for="(item, index) in learnMenu"
-            :key="index"
-            :to="item.href"
-          >
+          <v-list-tile v-for="(item, index) in learnMenu" :key="index" :to="item.href">
             <v-list-tile-title>{{ item.title }}</v-list-tile-title>
           </v-list-tile>
         </v-list>
       </v-menu>
     </v-flex>
     <v-spacer></v-spacer>
-    <v-flex v-if="user == null" xs3 offset-xs6>
+    <v-flex v-if="user === null" xs3 offset-xs6>
       <v-layout justify-end>
         <v-btn
           black--text
@@ -34,8 +30,7 @@
           :style="btnLoginGoogle"
           class="mr-0"
           @click="loginWithGoogle()"
-          >Sign in</v-btn
-        >
+        >Đăng nhập</v-btn>
       </v-layout>
     </v-flex>
     <v-flex v-else xs3 offset-xs6>
@@ -45,29 +40,37 @@
             <a v-on="on">
               <v-layout justify-center align-center fill-height>
                 <v-avatar :size="40">
-                  <img :src="user.avatar" />
+                  <img :src="user.avatar">
                 </v-avatar>
                 <span class="white--text ml-2">{{ user.fullName }}</span>
               </v-layout>
             </a>
           </template>
           <v-list>
-            <v-list-tile
-              v-for="(item, index) in userMenu"
-              :key="index"
-              :to="item.href"
-            >
+            <v-list-tile v-for="(item, index) in userMenu" :key="index" :to="item.href">
               <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+            </v-list-tile>
+            <v-list-tile @click="logout()">
+              <v-list-tile-title>Đăng xuất</v-list-tile-title>
             </v-list-tile>
           </v-list>
         </v-menu>
       </v-layout>
     </v-flex>
+    <Loader v-if="loader"/>
   </v-toolbar>
 </template>
 
 <script>
+import { mapState } from 'vuex'
+import Repository, { setAuthorizationHeader } from '@/repository/Repository.js'
+import Loader from '@/components/Loader'
+import { RepositoryFactory } from '@/repository/RepositoryFactory'
+let userRepository = RepositoryFactory.get('user')
 export default {
+  components: {
+    Loader
+  },
   data() {
     return {
       chessLogo: require('@/assets/images/chess.png'),
@@ -80,18 +83,15 @@ export default {
         mini: false
       },
       learnMenu: [
-        { title: 'Học lý thuyết', href: '/learning' },
+        { title: 'Học lý thuyết', href: '/learning-theory' },
         { title: 'Học thế cờ', href: '/learning-board' }
       ],
-      user: this.$store.state.user,
-      loader: 0,
-      userMenu: [
-        { title: 'Thông tin cá nhân', href: '/profile' },
-        { title: 'Đăng xuất', href: '' }
-      ]
+      loader: false,
+      userMenu: [{ title: 'Thông tin cá nhân', href: '/profile', method: '' }]
     }
   },
   computed: {
+    ...mapState({ user: state => state.user }),
     btnLoginGoogle() {
       return {
         backgroundImage: `url(${this.loginBackgroundImage})`,
@@ -102,30 +102,41 @@ export default {
     }
   },
   mounted() {
-    if (localStorage.getItem('access-token') != null) {
-      this.loader++
-      let method = 'GET'
-      let url = this.$store.state.api.getCurrentUserDetail
-      this.callAxios(method, url).then(result => {
-        let obj = result.data.data
-        obj.roleName = this.getRoleName(obj.roleId)
-        obj.status = this.getStatusUser(obj.active)
-        this.user = obj
-        this.$store.commit('changeUser', obj)
-        let data = JSON.stringify(obj)
-        localStorage.setItem('user', data)
-        localStorage.removeItem('role')
-        this.loader--
-      })
-    } else {
-      this.$store.commit('changeUser', null)
+    this.loader = true
+    if (
+      localStorage.getItem('access-token') != null &&
+      this.$store.state.user === null
+    ) {
+      setAuthorizationHeader(Repository, localStorage.getItem('access-token'))
+      this.getCurrentUserDetail()
     }
+    this.loader = false
   },
   methods: {
     loginWithGoogle() {
       var api = this.$store.state.api.login
-      api = this.addParam(api, 'redirect_uri', this.getCurrentPage())
+      api += '?redirect_uri=' + this.getCurrentPage()
       window.location.href = api
+    },
+    async getCurrentUserDetail() {
+      const { data } = await userRepository.getCurrentUserDetail()
+      let user = data.data
+      user.roleName = this.getRoleName(user.roleId)
+      user.status = this.getStatusUser(user.active)
+      localStorage.setItem('user', JSON.stringify(user))
+      this.setUserState()
+    },
+    setUserState() {
+      const user = localStorage.getItem('user')
+      const userToken = localStorage.getItem('access-token')
+      this.$store.commit('setUser', JSON.parse(user))
+      this.$store.commit('setUserToken', userToken)
+    },
+    logout() {
+      localStorage.removeItem('access-token')
+      localStorage.removeItem('user')
+      this.$store.commit('setUser', null)
+      this.$store.commit('setUserToken', null)
     }
   }
 }
@@ -140,6 +151,8 @@ export default {
   margin: auto;
   padding: 24px;
   width: 100%;
+  padding-left: 0 !important;
+  padding-right: 0 !important;
 }
 .text-logo {
   font-weight: bold;
