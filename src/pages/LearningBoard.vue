@@ -1,14 +1,12 @@
 <template>
   <v-container px-0>
     <v-layout row>
-      <v-flex mr-4 xs8>
-        <chessboard :fen="currentFen" @onMove="showInfo"/>
+      <v-flex lg6 offset-lg1>
+        <chessboard :move="move" :orientation="userColor" :fen="currentFen" @onMove="showInfo"/>
       </v-flex>
-
-      <v-flex xs4>
+      <v-flex xs4 offset-xs1>
         <v-layout column>
           <v-flex class="move-history">
-            <v-card-title class="pl-0 py-2">
               <span class="title font-weight-bold">Nước đi</span>
             </v-card-title>
             <div class="move-history-content">
@@ -18,19 +16,27 @@
                   :id="item.whiteMove.moveCount"
                   class="move"
                   @click="loadFen(item.whiteMove.fen, $event)"
-                >{{ item.whiteMove.move }}</div>
+                >
+                  {{ item.whiteMove.move }}
+                </div>
                 <div
                   v-if="item.blackMove"
                   :id="item.blackMove.moveCount"
                   class="move"
                   @click="loadFen(item.blackMove.fen, $event)"
-                >{{ item.blackMove.move }}</div>
+                >
+                  {{ item.blackMove.move }}
+                </div>
               </div>
             </div>
           </v-flex>
           <v-flex mb-4>
             <v-layout row>
-              <v-btn flat :disabled="statusPreviousMove" @click="turnToFirstMove()">
+              <v-btn
+                flat
+                :disabled="statusPreviousMove"
+                @click="turnToFirstMove()"
+              >
                 <v-icon>fa-fast-backward</v-icon>
               </v-btn>
               <v-btn
@@ -42,7 +48,12 @@
                 <v-icon>fa-backward</v-icon>
               </v-btn>
 
-              <v-btn flat class="main-button" :disabled="statusNextMove" @click="turnToNextMove()">
+              <v-btn
+                flat
+                class="main-button"
+                :disabled="statusNextMove"
+                @click="turnToNextMove()"
+              >
                 <v-icon>fa-forward</v-icon>
               </v-btn>
               <v-btn flat :disabled="statusNextMove" @click="turnToLastMove()">
@@ -50,16 +61,16 @@
               </v-btn>
             </v-layout>
           </v-flex>
-          <v-flex class="lession-content" mb-2>
+          <v-flex class="lesson-area" mb-2>
             <v-card-title class="pl-0 py-2">
               <span class="title font-weight-bold">Nội dung</span>
             </v-card-title>
-            <v-card height="300">
+            <div class="lesson-content">
               <v-card-title>{{ loadLesson }}</v-card-title>
-            </v-card>
+            </div>
           </v-flex>
           <v-flex>
-            <v-layout>
+            <v-layout row justify-space-between>
               <v-btn
                 class="font-weight-bold"
                 :disabled="statusPreviousLesson"
@@ -67,7 +78,6 @@
               >
                 <v-icon class="mr-2">fa-angle-left</v-icon>Bài trước
               </v-btn>
-              <v-spacer></v-spacer>
               <v-btn
                 class="font-weight-bold"
                 :disabled="statusNextLesson"
@@ -150,7 +160,6 @@ export default {
       this.currentFen = fen
       if (event != undefined) {
         const divTarget = event.srcElement
-
         //Lấy id của nó parse sang int
         this.currentMove = this.getIdNumberOfMove(divTarget)
         this.setCurrentMove()
@@ -173,20 +182,14 @@ export default {
       //         }
       //     }
       // ]
-
       const black = 'black'
       let moveHistory = this.moveHistory
-
       //Lấy nước đi mới
       let newMove = data.history[data.history.length - 1]
-
       //Lấy nước đi cuối cùng
       let lastMove = moveHistory[moveHistory.length - 1]
-
       if (newMove === undefined || !this.currentFen) return
-
       //   newMove = this.changeChessKey(newMove)
-
       //Lấy turn hiện tại
       const turn = data.turn
       this.totalMove++
@@ -233,10 +236,8 @@ export default {
     turnToNextMove() {
       if (this.currentMove !== this.totalMove) {
         this.currentMove++
-
         const divTarget = this.getMoveByIdNumber()
         divTarget.click()
-
         this.updateMove = false
         this.setCurrentMove()
       }
@@ -288,67 +289,7 @@ export default {
 }
 </script>
 
-<style scoped>
->>> piece,
-.blue {
-  background-color: transparent !important;
-}
-.lession-content {
-  height: 30%;
-}
-.move-history-content {
-  background-color: #fff;
-  border-color: #fff;
-  color: rgba(0, 0, 0, 0.87);
-  height: 180px;
-  border-radius: 2px;
-  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
-    0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
-  overflow: auto;
-}
-.move-history-content div {
-  flex-wrap: wrap;
-  display: flex;
-}
-.v-btn {
-  height: 30px;
-  min-width: 20%;
-  margin: 0px;
-}
+<style scoped src="@/assets/style/chessboard.css">
 
-.main-button {
-  min-width: 30% !important;
-}
-.chess-move-history {
-  min-width: 50%;
-}
-.index {
-  flex: 0 0 14%;
-  border-right: 1px solid #d9d9d9;
-  background: #f7f6f5;
-  color: #b3b3b3;
-  justify-content: center;
-  align-content: center;
-  font-size: 15px;
-}
-.move {
-  flex: 0 0 43%;
-  font-size: 1.185em;
-  padding-left: 10px;
-  height: 30px;
-  align-content: center;
-  font-size: 18px;
-}
 
-.move:hover {
-  cursor: pointer;
-  background-color: #1b83e4;
-  color: white;
-}
-
-.current-move {
-  font-weight: bold;
-  background: #d1e6fa;
-  color: #1f1f1f;
-}
 </style>
