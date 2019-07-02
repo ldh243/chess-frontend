@@ -2,7 +2,7 @@
   <v-container>
     <v-layout row>
       <v-flex lg6 offset-lg1>
-        <chessboard :move="move" :orientation="userColor" :fen="currentFen" @onMove="showInfo"/>
+        <chessboard :move="move" :showThreats="true" :orientation="userColor" :fen="currentFen" @onMove="showInfo"/>
       </v-flex>
       <v-flex xs4 offset-xs1>
         <v-layout column>
@@ -152,7 +152,7 @@
 </template>
 
 <script>
-import Chessboard from '../vue-chessboard'
+import Chessboard from '@/components/vue-chessboard/index.vue'
 import Clock from '../components/PlayChess/Clock'
 import Player from '../components/PlayChess/Player'
 import { setInterval, clearInterval } from 'timers'
@@ -184,17 +184,14 @@ export default {
       turn: 'white',
       interval: null,
       isPlayerWin: false,
-      tmpMoves: ['e7e5', 'h7h5', 'g7g5'],
       turnNum: 0,
       move: '',
+      moves: '',
       isStart: false,
       isBotTurn: false
     }
   },
   watch: {
-    currentFen: function(fen) {
-      this.currentFen = fen
-    },
     level: function(level) {
       this.level = level
       this.botImgLink = require('@/assets/images/' + this.level + '.png')
@@ -202,7 +199,9 @@ export default {
     turn: function(turn) {
       this.turn = turn
       clearInterval(this.interval)
-      this.interval = setInterval(this.runClock, 1000)
+      if (this.turn != null) {
+        this.interval = setInterval(this.runClock, 1000)
+      }
     },
     playerTime: function(playerTime) {
       playerTime == '00:00:00' ? this.isPlayerWin = false : this.isPlayerWin = true
@@ -219,10 +218,8 @@ export default {
     },
     isBotTurn: function(isBotTurn) {
       this.isBotTurn = isBotTurn
-      console.log("bot move" + this.isBotTurn)
       if (this.isBotTurn) {
-        this.move = this.tmpMoves[this.turnNum]
-        this.turnNum++
+        this.calculateMove()
       }
     }
   },
@@ -254,14 +251,19 @@ export default {
     this.currentFen = this.defaultFen
     this.botImgLink = require('@/assets/images/' + this.level + '.png')
     this.botTime = this.playerTime = this.time
+    this.engine = new Worker('stockfish.js')
+    this.sendUCI("uci")
   },
   methods: {
     resetBoard() {
+      this.moveHistory = []
+      this.moves = ''
       this.updateMove = true
       this.currentFen = this.defaultFen
       this.currentMove = 0
       this.totalMove = 0
       this.turn = 'white'
+      clearInterval(this.interval)
     },
     loadFen(fen, event) {
       this.updateMove = false
@@ -290,6 +292,10 @@ export default {
       //         }
       //     }
       // ]
+
+      // get all moves
+      this.moves = data.hisMoves
+      this.currentFen = data.fen
       const black = 'black'
       let moveHistory = this.moveHistory
       //Lấy nước đi mới
@@ -323,7 +329,9 @@ export default {
       }
       this.currentMove = this.totalMove
       console.log(data)
-      this.isBotTurn = !this.isBotTurn
+      if (this.isStart) {
+        this.isBotTurn = !this.isBotTurn
+      }
     },
     setCurrentMove() {
       //set highlight div dựa trên this.current move hiện tại
@@ -389,9 +397,7 @@ export default {
     allowedSeconds: v => v >= 0 && v <= 60,
     //new a game
     startGame() {
-      this.moveHistory = []
       this.resetBoard()
-      this.loadFen()
       switch (this.colorPicker) {
         case 0:
           this.userColor = 'white'
@@ -406,10 +412,11 @@ export default {
       this.botTime = this.playerTime = this.time
       this.startDialog = false
       this.isStart = true
-      console.log(this.currentFen)
-      clearInterval(this.interval)
       this.interval = setInterval(this.runClock, 1000)
-      this.userColor === turn ? this.isBotTurn = false : this.isBotTurn = true
+      console.log(this.turn)
+      this.userColor === this.turn ? this.isBotTurn = false : this.isBotTurn = true
+      console.log("Turn: ")
+      console.log(this.isBotTurn)
     },
     countDownTime(time) {
       const timeArr = time.split(':')
@@ -444,6 +451,24 @@ export default {
       if (this.isStart) {
         this.userColor === this.turn ? 
       this.playerTime = this.countDownTime(this.playerTime) : this.botTime = this.countDownTime(this.botTime)
+      }
+    },
+    sendUCI(str) {
+      console.log("Send: " + str)
+      this.engine.postMessage(str)
+    },
+    calculateMove() {
+      let self = this
+      this.sendUCI("setoption name Skill Level value " + this.level)
+      this.sendUCI("position startpos moves" + this.moves)
+      this.sendUCI("go depth 1")
+      this.engine.onmessage = function(event) {
+        console.log(event.data)
+        let line = event.data
+        if (event.data.indexOf('bestmove') > -1) {
+          let match = line.match(/^bestmove ([a-h][1-8])([a-h][1-8])(qrbn)?/)
+          match[3] != undefined ? self.move = match[1] + match[2] + match[3] : self.move = match[1] + match[2]
+        }
       }
     }
   }
