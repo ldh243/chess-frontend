@@ -2,11 +2,17 @@
   <v-container px-0>
     <v-layout row>
       <v-flex lg6 offset-lg1>
-        <chessboard :move="move" :orientation="userColor" :fen="currentFen" @onMove="showInfo"/>
+        <chessboard
+          :move="move"
+          :orientation="userColor"
+          :fen="currentFen"
+          @onMove="showInfo"
+        />
       </v-flex>
       <v-flex xs4 offset-xs1>
         <v-layout column>
           <v-flex class="move-history">
+            <v-card-title>
               <span class="title font-weight-bold">Nước đi</span>
             </v-card-title>
             <div class="move-history-content">
@@ -289,7 +295,4 @@ export default {
 }
 </script>
 
-<style scoped src="@/assets/style/chessboard.css">
-
-
-</style>
+<style scoped src="@/assets/style/chessboard.css"></style>

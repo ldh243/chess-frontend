@@ -1,6 +1,6 @@
 <template>
-  <v-layout wrap row v-if="courseDetail.courseId">
-    <Loader v-if="loader"/>
+  <v-layout v-if="courseDetail.courseId" wrap row>
+    <Loader v-if="loader" />
     <v-flex xs12>
       <v-parallax :src="courseDetail.image" height="300">
         <v-container px-0>
@@ -13,26 +13,31 @@
               </v-breadcrumbs>
             </v-flex>
             <v-flex xs12>
-              <span class="display-2">{{courseDetail.name}}</span>
+              <span class="display-2">{{ courseDetail.name }}</span>
             </v-flex>
             <v-flex xs12>
               <v-layout align-end fill-height wrap row>
                 <v-flex xs5>
                   <v-avatar :size="50">
-                    <img :src="courseDetail.authorAvatar">
+                    <img :src="courseDetail.authorAvatar" />
                   </v-avatar>
-                  <span class="white--text ml-2 subheading">{{ courseDetail.authorName }}</span>
+                  <span class="white--text ml-2 subheading">{{
+                    courseDetail.authorName
+                  }}</span>
                 </v-flex>
                 <v-flex xs2 py-2>
                   <v-layout align-center fill-height justify-end>
                     <v-icon class="white--text mr-2">fa-users</v-icon>
-                    <span>{{courseDetail.userDetailViewModels.length}} Học viên</span>
+                    <span
+                      >{{ courseDetail.userDetailViewModels.length }} Học
+                      viên</span
+                    >
                   </v-layout>
                 </v-flex>
                 <v-flex xs5 py-2>
                   <v-layout align-center fill-height justify-end>
                     <v-icon class="white--text mr-2">fa-book</v-icon>
-                    <span>{{courseDetail.totalLesson}} Bài học</span>
+                    <span>{{ courseDetail.totalLesson }} Bài học</span>
                   </v-layout>
                 </v-flex>
               </v-layout>
@@ -51,7 +56,10 @@
                   <v-card-title primary-title>
                     <div>
                       <div class="headline">Thông tin chung</div>
-                      <span>Listen to your favorite artists and albums whenever and wherever, online and offline.</span>
+                      <span
+                        >Listen to your favorite artists and albums whenever and
+                        wherever, online and offline.</span
+                      >
                     </div>
                   </v-card-title>
                 </v-card>
@@ -61,7 +69,10 @@
                   <v-card-title primary-title>
                     <div>
                       <div class="headline">Nội dung khóa học</div>
-                      <span>Listen to your favorite artists and albums whenever and wherever, online and offline.</span>
+                      <span
+                        >Listen to your favorite artists and albums whenever and
+                        wherever, online and offline.</span
+                      >
                     </div>
                   </v-card-title>
                 </v-card>
@@ -71,7 +82,10 @@
                   <v-card-title primary-title>
                     <div>
                       <div class="headline">Giảng viên</div>
-                      <span>Listen to your favorite artists and albums whenever and wherever, online and offline.</span>
+                      <span
+                        >Listen to your favorite artists and albums whenever and
+                        wherever, online and offline.</span
+                      >
                     </div>
                   </v-card-title>
                 </v-card>
@@ -82,20 +96,29 @@
             <v-layout row wrap>
               <v-flex xs12 mb-3>
                 <v-card>
-                  <v-btn block flat class="ma-0" to="/learning-theory">Học lý thuyết</v-btn>
-                  <v-btn block flat class="ma-0" to="/learning-board">Học học thực hành</v-btn>
+                  <v-btn block flat class="ma-0" to="/learning-theory"
+                    >Học lý thuyết</v-btn
+                  >
+                  <v-btn block flat class="ma-0" to="/learning-board"
+                    >Học học thực hành</v-btn
+                  >
                 </v-card>
               </v-flex>
               <v-flex xs12>
                 <v-card>
                   <v-timeline>
-                    <v-timeline-item v-for="n in 4" :key="n" color="red lighten-2" large>
+                    <v-timeline-item
+                      v-for="n in 4"
+                      :key="n"
+                      color="red lighten-2"
+                      large
+                    >
                       <template v-slot:opposite>
                         <span>Tus eu perfecto</span>
                       </template>
                       <v-card class="elevation-2">
                         <v-card-title class="headline py-0">Lorem</v-card-title>
-                        <v-card-text>Bài học {{n}}</v-card-text>
+                        <v-card-text>Bài học {{ n }}</v-card-text>
                       </v-card>
                     </v-timeline-item>
                   </v-timeline>
@@ -139,6 +162,11 @@ export default {
       ]
     }
   },
+  mounted() {
+    this.loader = true
+    this.getCourseById()
+    this.loader = false
+  },
   methods: {
     async getCourseById() {
       const courseId = this.$route.params.courseId
@@ -149,11 +177,6 @@ export default {
       ].text = this.courseDetail.name
       console.log(this.courseDetail)
     }
-  },
-  mounted() {
-    this.loader = true
-    this.getCourseById()
-    this.loader = false
   }
 }
 </script>

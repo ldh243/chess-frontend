@@ -1,6 +1,6 @@
 <template>
   <v-container px-0>
-    <ProfileField/>
+    <ProfileField />
   </v-container>
 </template>
 

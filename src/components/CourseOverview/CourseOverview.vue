@@ -1,7 +1,7 @@
 <template>
   <v-layout row wrap>
-    <Loader v-if="loader"/>
-    <EnrolCourseItem :course-enrol="courseEnrol"/>
+    <Loader v-if="loader" />
+    <EnrolCourseItem :course-enrol="courseEnrol" />
     <v-flex
       v-for="(item, index) in listCourses"
       :key="index"
@@ -9,7 +9,7 @@
       :style="{ marginRight: index % 3 != 2 ? 'calc(1%)' : '0px' }"
       mb-3
     >
-      <CourseItem :course-detail="item" @showEnrolDialog="showEnrolDialog"/>
+      <CourseItem :course-detail="item" @showEnrolDialog="showEnrolDialog" />
     </v-flex>
   </v-layout>
 </template>

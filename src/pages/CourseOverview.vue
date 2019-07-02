@@ -9,7 +9,7 @@
         </v-breadcrumbs>
       </v-flex>
       <v-flex xs12>
-        <CourseOverview/>
+        <CourseOverview />
       </v-flex>
     </v-layout>
   </v-container>

@@ -1,12 +1,25 @@
 <template>
   <v-app style="margin-top: -64px">
-    <v-layout align-end justify-center row fill-height xs12 :style="homeBackground"></v-layout>
-    <v-layout align-end justify-center row fill-height class="introduce-container xs12">
+    <v-layout
+      align-end
+      justify-center
+      row
+      fill-height
+      xs12
+      :style="homeBackground"
+    ></v-layout>
+    <v-layout
+      align-end
+      justify-center
+      row
+      fill-height
+      class="introduce-container xs12"
+    >
       <v-flex xs12 md9 mb-5>
         <v-container>
           <v-layout row justify-center>
             <v-flex v-for="(item, index) in categoryItem" :key="index" xs4 mx-3>
-              <Category :content="item"/>
+              <Category :content="item" />
             </v-flex>
           </v-layout>
         </v-container>

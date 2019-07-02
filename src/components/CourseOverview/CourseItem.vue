@@ -17,14 +17,12 @@
             </v-flex>
             <v-flex xs2>
               <v-avatar :size="50">
-                <img :src="courseDetail.authorAvatar" alt="avatar">
+                <img :src="courseDetail.authorAvatar" alt="avatar" />
               </v-avatar>
             </v-flex>
             <v-flex xs9 ml-3>
               <span class="ml-1 course-author">
-                {{
-                courseDetail.authorName
-                }}
+                {{ courseDetail.authorName }}
               </span>
               <v-layout row>
                 <v-flex xs6>

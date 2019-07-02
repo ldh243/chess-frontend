@@ -4,7 +4,7 @@
       <v-card-title class="headline">Đăng ký</v-card-title>
       <v-card-text>
         Bạn có chắc chắn muốn sử dụng
-        <b>{{courseEnrol.point}} điểm</b> để đăng ký khóa học này?
+        <b>{{ courseEnrol.point }} điểm</b> để đăng ký khóa học này?
       </v-card-text>
       <v-card-actions>
         <v-spacer></v-spacer>
@@ -13,13 +13,17 @@
           color="red darken-1"
           flat="flat"
           @click="$store.state.dialog.confirmEnrolDialog = false"
-        >Hủy bỏ</v-btn>
+          >Hủy bỏ</v-btn
+        >
         <v-btn
           class="font-weight-bold"
           color="green darken-1"
           flat="flat"
-          @click="enrollCourse(), $store.state.dialog.confirmEnrolDialog = false"
-        >Đồng ý</v-btn>
+          @click="
+            enrollCourse(), ($store.state.dialog.confirmEnrolDialog = false)
+          "
+          >Đồng ý</v-btn
+        >
       </v-card-actions>
     </v-card>
   </v-dialog>
@@ -48,5 +52,4 @@ export default {
 }
 </script>
 
-<style>
-</style>
+<style></style>

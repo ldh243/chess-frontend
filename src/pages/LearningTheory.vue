@@ -21,13 +21,18 @@
             <template v-for="(item, index) in lessons">
               <v-list-tile :key="index" avatar ripple @click="doNothing()">
                 <v-list-tile-content>
-                  <v-list-tile-title>{{ index + 1 }}. {{ item.title }}</v-list-tile-title>
+                  <v-list-tile-title
+                    >{{ index + 1 }}. {{ item.title }}</v-list-tile-title
+                  >
                 </v-list-tile-content>
                 <v-list-tile-action>
                   <!-- <v-icon color="grey lighten-1">fa-check</v-icon> -->
                 </v-list-tile-action>
               </v-list-tile>
-              <v-divider v-if="index + 1 < lessons.length" :key="`divider-${index}`"></v-divider>
+              <v-divider
+                v-if="index + 1 < lessons.length"
+                :key="`divider-${index}`"
+              ></v-divider>
             </template>
           </v-list>
         </v-card>

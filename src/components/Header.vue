@@ -3,7 +3,7 @@
     <v-flex xs1>
       <router-link to="/">
         <v-layout justify-center align-center fill-height>
-          <img :src="chessLogo">
+          <img :src="chessLogo" />
           <span class="white--text text-logo ml-2">COLS</span>
         </v-layout>
       </router-link>
@@ -14,7 +14,11 @@
           <v-btn class="ml-0" color="primary" dark v-on="on">Học</v-btn>
         </template>
         <v-list>
-          <v-list-tile v-for="(item, index) in learnMenu" :key="index" :to="item.href">
+          <v-list-tile
+            v-for="(item, index) in learnMenu"
+            :key="index"
+            :to="item.href"
+          >
             <v-list-tile-title>{{ item.title }}</v-list-tile-title>
           </v-list-tile>
         </v-list>
@@ -30,7 +34,8 @@
           :style="btnLoginGoogle"
           class="mr-0"
           @click="loginWithGoogle()"
-        >Đăng nhập</v-btn>
+          >Đăng nhập</v-btn
+        >
       </v-layout>
     </v-flex>
     <v-flex v-else xs3 offset-xs6>
@@ -40,14 +45,18 @@
             <a v-on="on">
               <v-layout justify-center align-center fill-height>
                 <v-avatar :size="40">
-                  <img :src="user.avatar">
+                  <img :src="user.avatar" />
                 </v-avatar>
                 <span class="white--text ml-2">{{ user.fullName }}</span>
               </v-layout>
             </a>
           </template>
           <v-list>
-            <v-list-tile v-for="(item, index) in userMenu" :key="index" :to="item.href">
+            <v-list-tile
+              v-for="(item, index) in userMenu"
+              :key="index"
+              :to="item.href"
+            >
               <v-list-tile-title>{{ item.title }}</v-list-tile-title>
             </v-list-tile>
             <v-list-tile @click="logout()">
@@ -57,7 +66,7 @@
         </v-menu>
       </v-layout>
     </v-flex>
-    <Loader v-if="loader"/>
+    <Loader v-if="loader" />
   </v-toolbar>
 </template>
 

@@ -2,11 +2,17 @@
   <v-container>
     <v-layout row>
       <v-flex lg6 offset-lg1>
-        <chessboard :move="move" :showThreats="true" :orientation="userColor" :fen="currentFen" @onMove="showInfo"/>
+        <chessboard
+          :move="move"
+          :show-threats="true"
+          :orientation="userColor"
+          :fen="currentFen"
+          @onMove="showInfo"
+        />
       </v-flex>
       <v-flex xs4 offset-xs1>
         <v-layout column>
-          <player :time="botTime" :imageLink="botImgLink"></player>
+          <player :time="botTime" :image-link="botImgLink"></player>
           <v-flex class="move-history">
             <v-card-title class="pl-0 py-2">
               <span class="title font-weight-bold">Nước đi</span>
@@ -18,19 +24,27 @@
                   :id="item.whiteMove.moveCount"
                   class="move"
                   @click="loadFen(item.whiteMove.fen, $event)"
-                >{{ item.whiteMove.move }}</div>
+                >
+                  {{ item.whiteMove.move }}
+                </div>
                 <div
                   v-if="item.blackMove"
                   :id="item.blackMove.moveCount"
                   class="move"
                   @click="loadFen(item.blackMove.fen, $event)"
-                >{{ item.blackMove.move }}</div>
+                >
+                  {{ item.blackMove.move }}
+                </div>
               </div>
             </div>
           </v-flex>
           <v-flex mb-2>
             <v-layout row>
-              <v-btn flat :disabled="statusPreviousMove" @click="turnToFirstMove()">
+              <v-btn
+                flat
+                :disabled="statusPreviousMove"
+                @click="turnToFirstMove()"
+              >
                 <v-icon>fa-fast-backward</v-icon>
               </v-btn>
               <v-btn
@@ -42,7 +56,12 @@
                 <v-icon>fa-backward</v-icon>
               </v-btn>
 
-              <v-btn flat class="main-button" :disabled="statusNextMove" @click="turnToNextMove()">
+              <v-btn
+                flat
+                class="main-button"
+                :disabled="statusNextMove"
+                @click="turnToNextMove()"
+              >
                 <v-icon>fa-forward</v-icon>
               </v-btn>
               <v-btn flat :disabled="statusNextMove" @click="turnToLastMove()">
@@ -57,8 +76,19 @@
               </div>
             </v-card>
           </v-flex>
-          <player :time="playerTime" :imageLink="player.avatar" :point="player.point"></player>
-          <v-btn block color="primary" @click="startDialog = true" dark class="pa-2">Ván đấu mới</v-btn>
+          <player
+            :time="playerTime"
+            :image-link="player.avatar"
+            :point="player.point"
+          ></player>
+          <v-btn
+            block
+            color="primary"
+            dark
+            class="pa-2"
+            @click="startDialog = true"
+            >Ván đấu mới</v-btn
+          >
           <v-dialog v-model="startDialog" persistent max-width="600px">
             <v-card>
               <v-card-title>
@@ -80,11 +110,21 @@
                     ></v-slider>
                   </v-flex>
                   <v-flex xs7>
-                    <v-subheader class="pl-0">Chọn màu quân (mặc định ngẫu nhiên)</v-subheader>
+                    <v-subheader class="pl-0"
+                      >Chọn màu quân (mặc định ngẫu nhiên)</v-subheader
+                    >
                     <div>
                       <v-btn-toggle v-model="colorPicker">
-                        <v-btn :value="1" style="width: 100px" class="white king pick-color pa-1"></v-btn>
-                        <v-btn :value="2" style="width: 100px" class="king black pick-color pa-1"></v-btn>
+                        <v-btn
+                          :value="1"
+                          style="width: 100px"
+                          class="white king pick-color pa-1"
+                        ></v-btn>
+                        <v-btn
+                          :value="2"
+                          style="width: 100px"
+                          class="king black pick-color pa-1"
+                        ></v-btn>
                       </v-btn-toggle>
                     </div>
                   </v-flex>
@@ -104,8 +144,8 @@
                           label="Chọn thời gian đấu"
                           prepend-icon="fa-clock"
                           readonly
-                          v-on="on"
                           class="mt-4"
+                          v-on="on"
                         ></v-text-field>
                       </template>
                       <v-time-picker
@@ -122,8 +162,15 @@
                         :allowed-seconds="allowedSeconds"
                       >
                         <v-spacer></v-spacer>
-                        <v-btn flat color="primary" @click="timePicker = false">Cancel</v-btn>
-                        <v-btn flat color="primary" @click="$refs.dialog.save(time)">OK</v-btn>
+                        <v-btn flat color="primary" @click="timePicker = false"
+                          >Cancel</v-btn
+                        >
+                        <v-btn
+                          flat
+                          color="primary"
+                          @click="$refs.dialog.save(time)"
+                          >OK</v-btn
+                        >
                       </v-time-picker>
                     </v-dialog>
                   </v-flex>
@@ -140,8 +187,12 @@
               </v-container>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" flat @click="startDialog = false">Đóng</v-btn>
-                <v-btn color="blue darken-1" flat @click="startGame">Bắt đầu</v-btn>
+                <v-btn color="blue darken-1" flat @click="startDialog = false"
+                  >Đóng</v-btn
+                >
+                <v-btn color="blue darken-1" flat @click="startGame"
+                  >Bắt đầu</v-btn
+                >
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -153,12 +204,10 @@
 
 <script>
 import Chessboard from '@/components/vue-chessboard/index.vue'
-import Clock from '../components/PlayChess/Clock'
 import Player from '../components/PlayChess/Player'
 import { setInterval, clearInterval } from 'timers'
 export default {
   components: {
-    Clock,
     Player,
     Chessboard
   },
@@ -191,6 +240,20 @@ export default {
       isBotTurn: false
     }
   },
+  computed: {
+    statusNextMove() {
+      if (this.currentMove === this.totalMove) {
+        return true
+      }
+      return false
+    },
+    statusPreviousMove() {
+      if (this.currentMove <= 1) {
+        return true
+      }
+      return false
+    }
+  },
   watch: {
     level: function(level) {
       this.level = level
@@ -204,16 +267,20 @@ export default {
       }
     },
     playerTime: function(playerTime) {
-      playerTime == '00:00:00' ? this.isPlayerWin = false : this.isPlayerWin = true
+      playerTime == '00:00:00'
+        ? (this.isPlayerWin = false)
+        : (this.isPlayerWin = true)
     },
     botTime: function(botTime) {
-      botTime == '00:00:00' ? this.isPlayerWin = true : this.isPlayerWin = false
+      botTime == '00:00:00'
+        ? (this.isPlayerWin = true)
+        : (this.isPlayerWin = false)
     },
     isPlayerWin: function(isPlayerWin) {
       if (isPlayerWin) {
-        console.log("Player")
+        console.log('Player')
       } else {
-        console.log("Bot")
+        console.log('Bot')
       }
     },
     isBotTurn: function(isBotTurn) {
@@ -221,20 +288,6 @@ export default {
       if (this.isBotTurn) {
         this.calculateMove()
       }
-    }
-  },
-  computed: {
-    statusNextMove() {
-      if (this.currentMove === this.totalMove) {
-        return true
-      }
-      return false
-    },
-    statusPreviousMove() {
-      if (this.currentMove <= 1) {
-        return true
-      }
-      return false
     }
   },
   updated() {
@@ -252,7 +305,7 @@ export default {
     this.botImgLink = require('@/assets/images/' + this.level + '.png')
     this.botTime = this.playerTime = this.time
     this.engine = new Worker('stockfish.js')
-    this.sendUCI("uci")
+    this.sendUCI('uci')
   },
   methods: {
     resetBoard() {
@@ -414,8 +467,10 @@ export default {
       this.isStart = true
       this.interval = setInterval(this.runClock, 1000)
       console.log(this.turn)
-      this.userColor === this.turn ? this.isBotTurn = false : this.isBotTurn = true
-      console.log("Turn: ")
+      this.userColor === this.turn
+        ? (this.isBotTurn = false)
+        : (this.isBotTurn = true)
+      console.log('Turn: ')
       console.log(this.isBotTurn)
     },
     countDownTime(time) {
@@ -435,7 +490,7 @@ export default {
             min = 59
             hour--
             second = 59
-          } 
+          }
         }
       } else {
         clearInterval(this.interval)
@@ -449,25 +504,28 @@ export default {
     },
     runClock() {
       if (this.isStart) {
-        this.userColor === this.turn ? 
-      this.playerTime = this.countDownTime(this.playerTime) : this.botTime = this.countDownTime(this.botTime)
+        this.userColor === this.turn
+          ? (this.playerTime = this.countDownTime(this.playerTime))
+          : (this.botTime = this.countDownTime(this.botTime))
       }
     },
     sendUCI(str) {
-      console.log("Send: " + str)
+      console.log('Send: ' + str)
       this.engine.postMessage(str)
     },
     calculateMove() {
       let self = this
-      this.sendUCI("setoption name Skill Level value " + this.level)
-      this.sendUCI("position startpos moves" + this.moves)
-      this.sendUCI("go depth 1")
+      this.sendUCI('setoption name Skill Level value ' + this.level)
+      this.sendUCI('position startpos moves' + this.moves)
+      this.sendUCI('go depth 1')
       this.engine.onmessage = function(event) {
         console.log(event.data)
         let line = event.data
         if (event.data.indexOf('bestmove') > -1) {
           let match = line.match(/^bestmove ([a-h][1-8])([a-h][1-8])(qrbn)?/)
-          match[3] != undefined ? self.move = match[1] + match[2] + match[3] : self.move = match[1] + match[2]
+          match[3] != undefined
+            ? (self.move = match[1] + match[2] + match[3])
+            : (self.move = match[1] + match[2])
         }
       }
     }
@@ -475,5 +533,4 @@ export default {
 }
 </script>
 
-<style scoped src="@/assets/style/chessboard.css">
-</style>
+<style scoped src="@/assets/style/chessboard.css"></style>

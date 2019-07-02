@@ -27,13 +27,19 @@
                   <v-flex xs8>
                     <v-layout row wrap>
                       <v-flex xs12>
-                        <span class="subheading">Giảng viên: {{ courseEnrol.authorName }}</span>
+                        <span class="subheading"
+                          >Giảng viên: {{ courseEnrol.authorName }}</span
+                        >
                       </v-flex>
                       <v-flex xs12>
-                        <span class="subheading">Số bài: {{courseEnrol.totalLesson}}</span>
+                        <span class="subheading"
+                          >Số bài: {{ courseEnrol.totalLesson }}</span
+                        >
                       </v-flex>
                       <v-flex xs12>
-                        <span class="subheading">Điểm yêu cầu: {{ courseEnrol.point }}</span>
+                        <span class="subheading"
+                          >Điểm yêu cầu: {{ courseEnrol.point }}</span
+                        >
                       </v-flex>
                       <v-flex xs12>
                         <span class="subheading">Số người học: 0</span>
@@ -43,7 +49,9 @@
                 </v-layout>
               </v-flex>
               <v-flex xs12 mt-3>
-                <span class="subheading">Nội dung khóa học: {{ courseEnrol.description }}</span>
+                <span class="subheading"
+                  >Nội dung khóa học: {{ courseEnrol.description }}</span
+                >
               </v-flex>
             </v-layout>
           </v-container>
@@ -56,13 +64,15 @@
               color="error"
               flat
               @click="$store.state.dialog.enrolDialog = false"
-            >Đóng</v-btn>
+              >Đóng</v-btn
+            >
             <v-btn
               class="font-weight-bold"
               color="success"
               flat
               @click="$store.state.dialog.confirmEnrolDialog = true"
-            >Đăng ký</v-btn>
+              >Đăng ký</v-btn
+            >
           </div>
           <div v-else>
             <v-btn
@@ -70,16 +80,22 @@
               color="success"
               flat
               @click="goToCourseDetail()"
-            >Xem chi tiết khóa học</v-btn>
+              >Xem chi tiết khóa học</v-btn
+            >
           </div>
         </v-card-actions>
         <v-card-actions v-else>
           <v-spacer></v-spacer>
-          <span class="error--text">*Vui lòng đăng nhập để đăng ký khóa học</span>
+          <span class="error--text"
+            >*Vui lòng đăng nhập để đăng ký khóa học</span
+          >
         </v-card-actions>
       </v-card>
     </v-dialog>
-    <ConfirmEnrolCourse :course-enrol="courseEnrol" @enrolSuccessful="enrolSuccessful"/>
+    <ConfirmEnrolCourse
+      :course-enrol="courseEnrol"
+      @enrolSuccessful="enrolSuccessful"
+    />
   </v-layout>
 </template>
 <script>
