@@ -7,8 +7,8 @@
           :show-threats="true"
           :orientation="userColor"
           :fen="currentFen"
-          @onMove="showInfo"
           :status="gameStatus"
+          @onMove="showInfo"
         />
       </v-flex>
       <v-flex xs4 offset-xs1>
@@ -25,19 +25,27 @@
                   :id="item.whiteMove.moveCount"
                   class="move"
                   @click="loadFen(item.whiteMove.fen, $event)"
-                >{{ item.whiteMove.move }}</div>
+                >
+                  {{ item.whiteMove.move }}
+                </div>
                 <div
                   v-if="item.blackMove"
                   :id="item.blackMove.moveCount"
                   class="move"
                   @click="loadFen(item.blackMove.fen, $event)"
-                >{{ item.blackMove.move }}</div>
+                >
+                  {{ item.blackMove.move }}
+                </div>
               </div>
             </div>
           </v-flex>
           <v-flex mb-2>
             <v-layout row>
-              <v-btn flat :disabled="statusPreviousMove" @click="turnToFirstMove()">
+              <v-btn
+                flat
+                :disabled="statusPreviousMove"
+                @click="turnToFirstMove()"
+              >
                 <v-icon>fa-fast-backward</v-icon>
               </v-btn>
               <v-btn
@@ -49,7 +57,12 @@
                 <v-icon>fa-backward</v-icon>
               </v-btn>
 
-              <v-btn flat class="main-button" :disabled="statusNextMove" @click="turnToNextMove()">
+              <v-btn
+                flat
+                class="main-button"
+                :disabled="statusNextMove"
+                @click="turnToNextMove()"
+              >
                 <v-icon>fa-forward</v-icon>
               </v-btn>
               <v-btn flat :disabled="statusNextMove" @click="turnToLastMove()">
@@ -64,15 +77,23 @@
               </div>
             </v-card>
           </v-flex>
-          <player :time="playerTime" :image-link="player.avatar" :point="player.point"></player>
+          <player
+            :time="playerTime"
+            :image-link="player.avatar"
+            :point="player.point"
+          ></player>
           <v-btn
             block
             color="primary"
             dark
             class="pa-2"
             :disabled="isStart"
-            @click="startDialog = true; gameStatus = 'pausing'"
-          >Ván đấu mới</v-btn>
+            @click="
+              startDialog = true
+              gameStatus = 'pausing'
+            "
+            >Ván đấu mới</v-btn
+          >
           <v-dialog v-model="startDialog" persistent max-width="600px">
             <v-card>
               <v-card-title>
@@ -94,11 +115,21 @@
                     ></v-slider>
                   </v-flex>
                   <v-flex xs7>
-                    <v-subheader class="pl-0">Chọn màu quân (mặc định ngẫu nhiên)</v-subheader>
+                    <v-subheader class="pl-0"
+                      >Chọn màu quân (mặc định ngẫu nhiên)</v-subheader
+                    >
                     <div>
                       <v-btn-toggle v-model="colorPicker">
-                        <v-btn :value="1" style="width: 100px" class="white king pick-color pa-1"></v-btn>
-                        <v-btn :value="2" style="width: 100px" class="king black pick-color pa-1"></v-btn>
+                        <v-btn
+                          :value="1"
+                          style="width: 100px"
+                          class="white king pick-color pa-1"
+                        ></v-btn>
+                        <v-btn
+                          :value="2"
+                          style="width: 100px"
+                          class="king black pick-color pa-1"
+                        ></v-btn>
                       </v-btn-toggle>
                     </div>
                   </v-flex>
@@ -136,8 +167,15 @@
                         :allowed-seconds="allowedSeconds"
                       >
                         <v-spacer></v-spacer>
-                        <v-btn flat color="primary" @click="timePicker = false">Cancel</v-btn>
-                        <v-btn flat color="primary" @click="$refs.dialog.save(time)">OK</v-btn>
+                        <v-btn flat color="primary" @click="timePicker = false"
+                          >Cancel</v-btn
+                        >
+                        <v-btn
+                          flat
+                          color="primary"
+                          @click="$refs.dialog.save(time)"
+                          >OK</v-btn
+                        >
                       </v-time-picker>
                     </v-dialog>
                   </v-flex>
@@ -154,8 +192,12 @@
               </v-container>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" flat @click="startDialog = false">Đóng</v-btn>
-                <v-btn color="blue darken-1" flat @click="startGame">Bắt đầu</v-btn>
+                <v-btn color="blue darken-1" flat @click="startDialog = false"
+                  >Đóng</v-btn
+                >
+                <v-btn color="blue darken-1" flat @click="startGame"
+                  >Bắt đầu</v-btn
+                >
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -480,7 +522,9 @@ export default {
         let line = event.data
         if (event.data.indexOf('bestmove') > -1) {
           let match = line.match(/^bestmove ([a-h][1-8])([a-h][1-8])([qrbn])?/)
-          match[3] == undefined ? (self.move = match[1] + match[2]) : (self.move = match[1] + match[2] + match[3])
+          match[3] == undefined
+            ? (self.move = match[1] + match[2])
+            : (self.move = match[1] + match[2] + match[3])
         }
       }
     }
