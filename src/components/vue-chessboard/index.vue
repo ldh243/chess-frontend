@@ -40,6 +40,10 @@ export default {
     isBotTurn: {
       type: Boolean,
       default: false
+    },
+    status: {
+      type: String,
+      default: "playing" //playing, new and pausing
     }
   },
   data() {
@@ -51,15 +55,20 @@ export default {
   watch: {
     fen: function(newFen) {
       this.fen = newFen
-      if (this.fen === this.defaultFen) {
-        this.loadPosition()
-      }
+      this.loadPosition()
     },
     orientation: function(orientation) {
       console.log('watch orientation________', orientation)
       this.orientation = orientation
       this.game.reset()
       this.loadPosition()
+    },
+    status: function (start) {
+      this.start = start
+      if (this.start === 'new') {
+        this.game.reset()
+        this.loadPosition()
+      }
     },
     showThreats: function(st) {
       this.showThreats = st
@@ -80,7 +89,8 @@ export default {
     this.game = new Chess()
     this.board = null
     this.promotions = []
-    ;(this.promoteTo = 'q'), (this.hisMoves = '')
+    this.promoteTo = 'q' 
+    this.hisMoves = ''
   },
   methods: {
     possibleMoves() {
@@ -166,6 +176,7 @@ export default {
       threats['history'] = this.game.history()
       threats['fen'] = this.game.fen()
       threats['hisMoves'] = this.hisMoves
+      this.game.game_over() ? threats['end_game'] = this.game.game_over() : threats['end_game'] = false
       this.$emit('onMove', threats)
     },
     countThreats(color) {
@@ -216,6 +227,23 @@ export default {
       })
       this.afterMove()
     },
+    loadOnlyFen() {
+      console.log("load Only fen")
+      console.log("fen")
+      console.log(this.fen)
+      console.log("game")
+      console.log(this.game.fen())
+      this.board = Chessground(this.$refs.board, {
+        fen: this.fen,
+        movable: {
+          color: this.fen.split(' ')[1] === 'w' ? 'white' : 'black',
+          free: this.free,
+          dests: this.possibleMoves()
+        },
+      })
+      
+      this.afterMove()
+    },
     loadMove() {
       console.log(this.move)
       this.hisMoves += ' ' + this.move
@@ -233,9 +261,10 @@ export default {
         movable: {
           color: this.toColor(),
           dests: this.possibleMoves(),
-          events: { after: this.changeTurn() }
+          // events: { after: this.changeTurn() }
         }
       })
+      this.calculatePromotions()
       this.afterMove()
     }
   }

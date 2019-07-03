@@ -8,6 +8,7 @@
           :orientation="userColor"
           :fen="currentFen"
           @onMove="showInfo"
+          :status="gameStatus"
         />
       </v-flex>
       <v-flex xs4 offset-xs1>
@@ -24,27 +25,19 @@
                   :id="item.whiteMove.moveCount"
                   class="move"
                   @click="loadFen(item.whiteMove.fen, $event)"
-                >
-                  {{ item.whiteMove.move }}
-                </div>
+                >{{ item.whiteMove.move }}</div>
                 <div
                   v-if="item.blackMove"
                   :id="item.blackMove.moveCount"
                   class="move"
                   @click="loadFen(item.blackMove.fen, $event)"
-                >
-                  {{ item.blackMove.move }}
-                </div>
+                >{{ item.blackMove.move }}</div>
               </div>
             </div>
           </v-flex>
           <v-flex mb-2>
             <v-layout row>
-              <v-btn
-                flat
-                :disabled="statusPreviousMove"
-                @click="turnToFirstMove()"
-              >
+              <v-btn flat :disabled="statusPreviousMove" @click="turnToFirstMove()">
                 <v-icon>fa-fast-backward</v-icon>
               </v-btn>
               <v-btn
@@ -56,12 +49,7 @@
                 <v-icon>fa-backward</v-icon>
               </v-btn>
 
-              <v-btn
-                flat
-                class="main-button"
-                :disabled="statusNextMove"
-                @click="turnToNextMove()"
-              >
+              <v-btn flat class="main-button" :disabled="statusNextMove" @click="turnToNextMove()">
                 <v-icon>fa-forward</v-icon>
               </v-btn>
               <v-btn flat :disabled="statusNextMove" @click="turnToLastMove()">
@@ -76,19 +64,15 @@
               </div>
             </v-card>
           </v-flex>
-          <player
-            :time="playerTime"
-            :image-link="player.avatar"
-            :point="player.point"
-          ></player>
+          <player :time="playerTime" :image-link="player.avatar" :point="player.point"></player>
           <v-btn
             block
             color="primary"
             dark
             class="pa-2"
-            @click="startDialog = true"
-            >Ván đấu mới</v-btn
-          >
+            :disabled="isStart"
+            @click="startDialog = true; gameStatus = 'pausing'"
+          >Ván đấu mới</v-btn>
           <v-dialog v-model="startDialog" persistent max-width="600px">
             <v-card>
               <v-card-title>
@@ -110,21 +94,11 @@
                     ></v-slider>
                   </v-flex>
                   <v-flex xs7>
-                    <v-subheader class="pl-0"
-                      >Chọn màu quân (mặc định ngẫu nhiên)</v-subheader
-                    >
+                    <v-subheader class="pl-0">Chọn màu quân (mặc định ngẫu nhiên)</v-subheader>
                     <div>
                       <v-btn-toggle v-model="colorPicker">
-                        <v-btn
-                          :value="1"
-                          style="width: 100px"
-                          class="white king pick-color pa-1"
-                        ></v-btn>
-                        <v-btn
-                          :value="2"
-                          style="width: 100px"
-                          class="king black pick-color pa-1"
-                        ></v-btn>
+                        <v-btn :value="1" style="width: 100px" class="white king pick-color pa-1"></v-btn>
+                        <v-btn :value="2" style="width: 100px" class="king black pick-color pa-1"></v-btn>
                       </v-btn-toggle>
                     </div>
                   </v-flex>
@@ -162,15 +136,8 @@
                         :allowed-seconds="allowedSeconds"
                       >
                         <v-spacer></v-spacer>
-                        <v-btn flat color="primary" @click="timePicker = false"
-                          >Cancel</v-btn
-                        >
-                        <v-btn
-                          flat
-                          color="primary"
-                          @click="$refs.dialog.save(time)"
-                          >OK</v-btn
-                        >
+                        <v-btn flat color="primary" @click="timePicker = false">Cancel</v-btn>
+                        <v-btn flat color="primary" @click="$refs.dialog.save(time)">OK</v-btn>
                       </v-time-picker>
                     </v-dialog>
                   </v-flex>
@@ -187,12 +154,8 @@
               </v-container>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="blue darken-1" flat @click="startDialog = false"
-                  >Đóng</v-btn
-                >
-                <v-btn color="blue darken-1" flat @click="startGame"
-                  >Bắt đầu</v-btn
-                >
+                <v-btn color="blue darken-1" flat @click="startDialog = false">Đóng</v-btn>
+                <v-btn color="blue darken-1" flat @click="startGame">Bắt đầu</v-btn>
               </v-card-actions>
             </v-card>
           </v-dialog>
@@ -230,14 +193,14 @@ export default {
       userColor: 'white',
       botTime: '',
       playerTime: '',
-      turn: 'white',
+      turn: '',
       interval: null,
       isPlayerWin: false,
-      turnNum: 0,
       move: '',
       moves: '',
       isStart: false,
-      isBotTurn: false
+      gameStatus: '',
+      newestFen: ''
     }
   },
   computed: {
@@ -265,6 +228,9 @@ export default {
       if (this.turn != null) {
         this.interval = setInterval(this.runClock, 1000)
       }
+      if (this.turn !== this.userColor && this.isStart) {
+        this.calculateMove()
+      }
     },
     playerTime: function(playerTime) {
       playerTime == '00:00:00'
@@ -281,12 +247,6 @@ export default {
         console.log('Player')
       } else {
         console.log('Bot')
-      }
-    },
-    isBotTurn: function(isBotTurn) {
-      this.isBotTurn = isBotTurn
-      if (this.isBotTurn) {
-        this.calculateMove()
       }
     }
   },
@@ -315,10 +275,10 @@ export default {
       this.currentFen = this.defaultFen
       this.currentMove = 0
       this.totalMove = 0
-      this.turn = 'white'
       clearInterval(this.interval)
     },
     loadFen(fen, event) {
+      console.log('load fen')
       this.updateMove = false
       this.currentFen = fen
       if (event != undefined) {
@@ -329,6 +289,8 @@ export default {
       }
     },
     showInfo(data) {
+      console.log('show info')
+      this.gameStatus = 'playing'
       //example data
       // moveHistory: [
       //     {
@@ -348,7 +310,6 @@ export default {
 
       // get all moves
       this.moves = data.hisMoves
-      this.currentFen = data.fen
       const black = 'black'
       let moveHistory = this.moveHistory
       //Lấy nước đi mới
@@ -358,6 +319,9 @@ export default {
       if (newMove === undefined || !this.currentFen) return
       //   newMove = this.changeChessKey(newMove)
       //Lấy turn hiện tại
+      if (data.end_game) {
+        this.isStart = false
+      }
       this.turn = data.turn
       this.totalMove++
       if (this.turn === black) {
@@ -382,9 +346,6 @@ export default {
       }
       this.currentMove = this.totalMove
       console.log(data)
-      if (this.isStart) {
-        this.isBotTurn = !this.isBotTurn
-      }
     },
     setCurrentMove() {
       //set highlight div dựa trên this.current move hiện tại
@@ -451,6 +412,7 @@ export default {
     //new a game
     startGame() {
       this.resetBoard()
+      this.turn = 'white'
       switch (this.colorPicker) {
         case 0:
           this.userColor = 'white'
@@ -462,16 +424,11 @@ export default {
           this.userColor = 'black'
           break
       }
+      this.gameStatus = 'new'
       this.botTime = this.playerTime = this.time
       this.startDialog = false
       this.isStart = true
       this.interval = setInterval(this.runClock, 1000)
-      console.log(this.turn)
-      this.userColor === this.turn
-        ? (this.isBotTurn = false)
-        : (this.isBotTurn = true)
-      console.log('Turn: ')
-      console.log(this.isBotTurn)
     },
     countDownTime(time) {
       const timeArr = time.split(':')
@@ -522,10 +479,8 @@ export default {
         console.log(event.data)
         let line = event.data
         if (event.data.indexOf('bestmove') > -1) {
-          let match = line.match(/^bestmove ([a-h][1-8])([a-h][1-8])(qrbn)?/)
-          match[3] != undefined
-            ? (self.move = match[1] + match[2] + match[3])
-            : (self.move = match[1] + match[2])
+          let match = line.match(/^bestmove ([a-h][1-8])([a-h][1-8])([qrbn])?/)
+          match[3] == undefined ? (self.move = match[1] + match[2]) : (self.move = match[1] + match[2] + match[3])
         }
       }
     }
