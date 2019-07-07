@@ -10,6 +10,7 @@ import LearningBoard from '@/pages/LearningBoard'
 import LearningProgress from '@/pages/LearningProgress'
 import LearningTheory from '@/pages/LearningTheory'
 import CourseDetail from '@/pages/CourseDetail'
+import Register from '@/pages/Register'
 Vue.use(Router)
 
 export default new Router({
@@ -23,7 +24,8 @@ export default new Router({
     { path: '/learning', component: LearningProgress },
     { path: '/learning-board', component: LearningBoard },
     { path: '/learning-theory', component: LearningTheory },
-    { path: '/course/:courseId', component: CourseDetail }
+    { path: '/course/:courseId', component: CourseDetail },
+    { path: '/register', component: Register }
     // {
     //   path: '/login',
     //   component: Home,
