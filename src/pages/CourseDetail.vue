@@ -21,17 +21,16 @@
                   <v-avatar :size="50">
                     <img :src="courseDetail.authorAvatar" />
                   </v-avatar>
-                  <span class="white--text ml-2 subheading">{{
-                    courseDetail.authorName
-                  }}</span>
+                  <span class="white--text ml-2 subheading">
+                    {{ courseDetail.authorName }}
+                  </span>
                 </v-flex>
                 <v-flex xs2 py-2>
                   <v-layout align-center fill-height justify-end>
                     <v-icon class="white--text mr-2">fa-users</v-icon>
-                    <span
-                      >{{ courseDetail.userDetailViewModels.length }} Học
-                      viên</span
-                    >
+                    <span>
+                      {{ courseDetail.userDetailViewModels.length }} Học viên
+                    </span>
                   </v-layout>
                 </v-flex>
                 <v-flex xs5 py-2>
@@ -56,10 +55,10 @@
                   <v-card-title primary-title>
                     <div>
                       <div class="headline">Thông tin chung</div>
-                      <span
-                        >Listen to your favorite artists and albums whenever and
-                        wherever, online and offline.</span
-                      >
+                      <span>
+                        Listen to your favorite artists and albums whenever and
+                        wherever, online and offline.
+                      </span>
                     </div>
                   </v-card-title>
                 </v-card>
@@ -69,10 +68,10 @@
                   <v-card-title primary-title>
                     <div>
                       <div class="headline">Nội dung khóa học</div>
-                      <span
-                        >Listen to your favorite artists and albums whenever and
-                        wherever, online and offline.</span
-                      >
+                      <span>
+                        Listen to your favorite artists and albums whenever and
+                        wherever, online and offline.
+                      </span>
                     </div>
                   </v-card-title>
                 </v-card>
@@ -82,10 +81,10 @@
                   <v-card-title primary-title>
                     <div>
                       <div class="headline">Giảng viên</div>
-                      <span
-                        >Listen to your favorite artists and albums whenever and
-                        wherever, online and offline.</span
-                      >
+                      <span>
+                        Listen to your favorite artists and albums whenever and
+                        wherever, online and offline.
+                      </span>
                     </div>
                   </v-card-title>
                 </v-card>
@@ -96,11 +95,8 @@
             <v-layout row wrap>
               <v-flex xs12 mb-3>
                 <v-card>
-                  <v-btn block flat class="ma-0" to="/learning-theory"
-                    >Học lý thuyết</v-btn
-                  >
-                  <v-btn block flat class="ma-0" to="/learning-board"
-                    >Học học thực hành</v-btn
+                  <v-btn block flat class="ma-0" @click="goToLearningPage()"
+                    >Bắt đầu học</v-btn
                   >
                 </v-card>
               </v-flex>
@@ -175,7 +171,9 @@ export default {
       this.breadcrumbs[
         this.breadcrumbs.length - 1
       ].text = this.courseDetail.name
-      console.log(this.courseDetail)
+    },
+    goToLearningPage() {
+      this.$router.push(`/learning/${this.courseDetail.courseId}`)
     }
   }
 }

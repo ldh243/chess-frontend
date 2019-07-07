@@ -6,8 +6,7 @@ import Introduce from '@/pages/Introduce'
 import CourseOverview from '@/pages/CourseOverview'
 import PlayChess from '@/pages/PlayChess'
 import Profile from '@/pages/Profile'
-import LearningBoard from '@/pages/LearningBoard'
-import LearningProgress from '@/pages/LearningProgress'
+import Learning from '@/pages/Learning'
 import LearningTheory from '@/pages/LearningTheory'
 import CourseDetail from '@/pages/CourseDetail'
 import Register from '@/pages/Register'
@@ -21,8 +20,7 @@ export default new Router({
     { path: '/profile', component: Profile },
     { path: '/course', component: CourseOverview },
     { path: '/play-chess', component: PlayChess },
-    { path: '/learning', component: LearningProgress },
-    { path: '/learning-board', component: LearningBoard },
+    { path: '/learning/:courseId', component: Learning },
     { path: '/learning-theory', component: LearningTheory },
     { path: '/course/:courseId', component: CourseDetail },
     { path: '/register', component: Register }

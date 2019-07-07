@@ -1,5 +1,4 @@
 import Vue from 'vue'
-const axios = require('axios')
 export default Vue.mixin({
   methods: {
     getCurrentPage() {

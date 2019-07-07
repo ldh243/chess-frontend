@@ -43,7 +43,7 @@ export default {
     },
     status: {
       type: String,
-      default: "playing" //playing, new and pausing
+      default: 'playing' //playing, new and pausing
     }
   },
   data() {
@@ -63,7 +63,7 @@ export default {
       this.game.reset()
       this.loadPosition()
     },
-    status: function (start) {
+    status: function(start) {
       this.start = start
       if (this.start === 'new') {
         this.game.reset()
@@ -89,7 +89,7 @@ export default {
     this.game = new Chess()
     this.board = null
     this.promotions = []
-    this.promoteTo = 'q' 
+    this.promoteTo = 'q'
     this.hisMoves = ''
   },
   methods: {
@@ -149,7 +149,7 @@ export default {
       return filteredPromotions.length > 0 // The current movement is a promotion
     },
     changeTurn() {
-      return (orig, dest, metadata) => {
+      return (orig, dest) => {
         this.hisMoves += ' ' + orig + dest
         if (this.isPromotion(orig, dest)) {
           this.promoteTo = this.onPromotion()
@@ -176,7 +176,9 @@ export default {
       threats['history'] = this.game.history()
       threats['fen'] = this.game.fen()
       threats['hisMoves'] = this.hisMoves
-      this.game.game_over() ? threats['end_game'] = this.game.game_over() : threats['end_game'] = false
+      this.game.game_over()
+        ? (threats['end_game'] = this.game.game_over())
+        : (threats['end_game'] = false)
       this.$emit('onMove', threats)
     },
     countThreats(color) {
@@ -228,10 +230,10 @@ export default {
       this.afterMove()
     },
     loadOnlyFen() {
-      console.log("load Only fen")
-      console.log("fen")
+      console.log('load Only fen')
+      console.log('fen')
       console.log(this.fen)
-      console.log("game")
+      console.log('game')
       console.log(this.game.fen())
       this.board = Chessground(this.$refs.board, {
         fen: this.fen,
@@ -239,9 +241,9 @@ export default {
           color: this.fen.split(' ')[1] === 'w' ? 'white' : 'black',
           free: this.free,
           dests: this.possibleMoves()
-        },
+        }
       })
-      
+
       this.afterMove()
     },
     loadMove() {
@@ -260,7 +262,7 @@ export default {
         turnColor: this.toColor(),
         movable: {
           color: this.toColor(),
-          dests: this.possibleMoves(),
+          dests: this.possibleMoves()
           // events: { after: this.changeTurn() }
         }
       })

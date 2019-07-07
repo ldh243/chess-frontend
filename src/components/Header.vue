@@ -8,22 +8,6 @@
         </v-layout>
       </router-link>
     </v-flex>
-    <v-flex xs3 ml-3>
-      <v-menu offset-y>
-        <template v-slot:activator="{ on }">
-          <v-btn class="ml-0" color="primary" dark v-on="on">Học</v-btn>
-        </template>
-        <v-list>
-          <v-list-tile
-            v-for="(item, index) in learnMenu"
-            :key="index"
-            :to="item.href"
-          >
-            <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-          </v-list-tile>
-        </v-list>
-      </v-menu>
-    </v-flex>
     <v-spacer></v-spacer>
     <v-flex v-if="user === null" xs3 offset-xs6>
       <v-layout justify-end>
