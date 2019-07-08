@@ -108,6 +108,7 @@ import VueAvatar from '@/components/vue-avatar/VueAvatarEditor'
 import { validationMixin } from 'vuelidate'
 import {required, maxLength} from 'vuelidate/lib/validators'
 import {RepositoryFactory} from '@/repository/RepositoryFactory'
+import firebase from 'firebase'
 const userRepository = RepositoryFactory.get('user')
 export default {
   mixins: [validationMixin],
@@ -131,7 +132,8 @@ export default {
       avaDialog: false,
       avatar: '',
       fullName: '',
-      checkbox: false
+      checkbox: false,
+      isChangedAva: false
     }
   },
   computed: {
@@ -158,8 +160,8 @@ export default {
   },
   methods: {
     getAva(data) {
-      console.log(data)
       this.avatar = data.toDataURL()
+      this.isChangedAva = true
       this.avaDialog = false
     },
     beforeRemove (index, done, fileList) {
@@ -173,7 +175,19 @@ export default {
     submit() {
       this.$v.$touch()
       const role = this.isInstructor ? 1 : 2
-      //save data
+      let image = ''
+      if (this.isChangedAva) {
+        //get email name of user
+      let match = this.user.email.match(/^([^@]*)/)
+      //upload image to firebase
+      const uploadTask = firebase.storage().ref(`images/ava/${match[0]}`).putString(this.avatar, 'data_url');
+      
+        uploadTask.on('state_changed', () => {
+          firebase.storage().ref('images/ava').child(`${match[0]}`).getDownloadURL().then(url => {
+            image = url
+          })
+        })
+      }
     }
   },
   created() {
