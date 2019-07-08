@@ -208,7 +208,7 @@
 </template>
 
 <script>
-import Chessboard from '@/components/vue-chessboard/index.vue'
+import Chessboard from '@/components/plugins/vue-chessboard/index.vue'
 import Player from '../components/PlayChess/Player'
 import { setInterval, clearInterval, setTimeout } from 'timers'
 export default {
