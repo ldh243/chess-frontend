@@ -18,8 +18,7 @@
           :style="btnLoginGoogle"
           class="mr-0"
           @click="loginWithGoogle()"
-          >Đăng nhập</v-btn
-        >
+        >Đăng nhập</v-btn>
       </v-layout>
     </v-flex>
     <v-flex v-else xs3 offset-xs6>
@@ -36,11 +35,7 @@
             </a>
           </template>
           <v-list>
-            <v-list-tile
-              v-for="(item, index) in userMenu"
-              :key="index"
-              :to="item.href"
-            >
+            <v-list-tile v-for="(item, index) in userMenu" :key="index" :to="item.href">
               <v-list-tile-title>{{ item.title }}</v-list-tile-title>
             </v-list-tile>
             <v-list-tile @click="logout()">

@@ -21,9 +21,7 @@
               </v-avatar>
             </v-flex>
             <v-flex xs9 ml-3>
-              <span class="ml-1 course-author">
-                {{ courseDetail.authorName }}
-              </span>
+              <span class="ml-1 course-author">{{ courseDetail.authorName }}</span>
               <v-layout row>
                 <v-flex xs6>
                   <v-rating
@@ -42,7 +40,6 @@
                 </v-flex>
               </v-layout>
             </v-flex>
-            <v-flex xs12></v-flex>
           </v-card-title>
         </v-flex>
       </v-layout>
@@ -71,6 +68,7 @@ export default {
   methods: {
     showEnrolDialog() {
       this.$emit('showEnrolDialog', this.courseDetail.courseId)
+      // this.$router.push(`/course/${this.courseDetail.courseId}`)
     }
   }
 }
