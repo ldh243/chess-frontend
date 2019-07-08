@@ -52,6 +52,10 @@ export default Vue.mixin({
       } else {
         return 'Vô hiệu hóa'
       }
+    },
+    getDateTimeFormat(datetime) {
+      const date = new Date(Date.parse(datetime))
+      return date.toLocaleString()
     }
     // changeChessKey(oldKey) {
     //   switch (oldKey.charAt(0)) {

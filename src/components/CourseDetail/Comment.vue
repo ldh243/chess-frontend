@@ -1,0 +1,316 @@
+<template>
+  <v-layout row wrap px-3>
+    <Loader v-if="loader" />
+    <v-flex xs12>
+      <span class="title">Đánh giá của bạn</span>
+    </v-flex>
+    <v-flex xs12 mt-2>
+      <v-rating
+        v-model="newReview.rating"
+        :empty-icon="emptyIcon"
+        :full-icon="fullIcon"
+        background-color="grey lighten-1"
+        color="yellow darken-3"
+        hover
+        :size="18"
+      ></v-rating>
+    </v-flex>
+    <v-flex xs9>
+      <v-textarea
+        class="mt-2"
+        v-model="newReview.content"
+        box
+        label="Bình luận"
+        no-resize
+        :counter="100"
+        rows="3"
+        :rules="[rules.length(100)]"
+        :error-messages="postReview && newReview.rating == 0 ? 'Vui lòng đánh giá điểm' : null"
+      ></v-textarea>
+    </v-flex>
+    <v-flex xs3 mb>
+      <v-btn color="info" @click="createReview()">Đăng</v-btn>
+    </v-flex>
+    <v-flex xs12 v-for="(item, index) in courseReview.content" :key="index" mb-3>
+      <v-layout row wrap class="comment-item">
+        <v-flex xs1>
+          <v-avatar :size="50">
+            <img :src="item.reviewer.avatar" alt="avatar" />
+          </v-avatar>
+        </v-flex>
+        <v-flex xs8 pl-3>
+          <v-layout wrap align-center fill-height>
+            <v-flex xs12>
+              <span class="ml-1 reviewer-name">{{item.reviewer.fullName}}</span>
+            </v-flex>
+            <v-flex xs12>
+              <v-layout row>
+                <v-flex xs6 class="rating-score" :id="'rating-score' + item.reviewId">
+                  <v-rating
+                    v-model="item.rating"
+                    :empty-icon="emptyIcon"
+                    :full-icon="fullIcon"
+                    background-color="grey lighten-1"
+                    color="yellow darken-3"
+                    :size="14"
+                    readonly
+                  ></v-rating>
+                </v-flex>
+                <v-flex xs6 :id="'rating-' + item.reviewId" class="edit-rating">
+                  <v-rating
+                    v-model="item.rating"
+                    :empty-icon="emptyIcon"
+                    :full-icon="fullIcon"
+                    background-color="grey lighten-1"
+                    color="yellow darken-3"
+                    :size="14"
+                    hover
+                  ></v-rating>
+                </v-flex>
+              </v-layout>
+            </v-flex>
+          </v-layout>
+        </v-flex>
+        <v-flex xs3>
+          <span class="caption">{{item.createdDate}}</span>
+        </v-flex>
+        <v-flex xs11 mt-2 offset-xs1 pl-3>
+          <span class="review-content" :id="'content-' + item.reviewId">{{item.content}}</span>
+        </v-flex>
+        <v-flex
+          xs11
+          offset-xs1
+          pl-3
+          class="review-content-edit"
+          :id="'edit-container-' + item.reviewId"
+        >
+          <v-textarea
+            v-if="userId == item.reviewer.userId"
+            v-model="item.content"
+            box
+            :id="'edit-' + item.reviewId"
+            label="Chỉnh sửa bình luận"
+            no-resize
+            :counter="100"
+            rows="3"
+            :rules="[rules.length(100)]"
+          ></v-textarea>
+        </v-flex>
+        <v-flex xs12 v-if="userId == item.reviewer.userId">
+          <v-layout justify-end class="action-review" :id="'action-' + item.reviewId">
+            <span class="mr-3" @click="editComment(item.reviewId, $event)">Sửa</span>
+            <span @click="removeComment(item.reviewId, $event)">Xóa</span>
+          </v-layout>
+        </v-flex>
+        <v-flex xs12 v-if="userId == item.reviewer.userId">
+          <v-layout justify-end class="edit-action" :id="'edit-action-' + item.reviewId">
+            <v-btn color="info" flat small class="ma-0 mr-1" @click="saveComment(item.reviewId)">Lưu</v-btn>
+            <v-btn
+              color="error"
+              flat
+              class="ma-0"
+              small
+              @click="cancelEditComment(item.reviewId)"
+            >Hủy</v-btn>
+          </v-layout>
+        </v-flex>
+      </v-layout>
+    </v-flex>
+  </v-layout>
+</template>
+
+<script>
+import Loader from '@/components/Loader'
+import { RepositoryFactory } from '@/repository/RepositoryFactory'
+const courseRepository = RepositoryFactory.get('course')
+const moment = require('moment')
+export default {
+  components: {
+    Loader
+  },
+  props: {
+    enrolled: {
+      type: Boolean,
+      default: false
+    }
+  },
+  data() {
+    return {
+      loader: false,
+      courseId: this.$route.params.courseId,
+      userId: this.$store.state.user.userId,
+      courseReview: {},
+      emptyIcon: 'fa-star',
+      fullIcon: 'fa-star',
+      halfIcon: 'fa-star-half-alt',
+      newReview: {
+        rating: 0,
+        content: '',
+        courseId: this.$route.params.courseId
+      },
+      postReview: false,
+      rules: {
+        length: len => v =>
+          (v || '').length < len || `Nội dung không được quá ${len} kí tự`
+      },
+      origin: {
+        content: '',
+        rating: ''
+      }
+    }
+  },
+  mounted() {
+    this.loader = true
+    this.getReviewPagination()
+    this.loader = false
+  },
+  created() {
+    moment.updateLocale('en', {
+      relativeTime: {
+        past: '%s trước',
+        s: '1 giây',
+        ss: '%d seconds',
+        m: '1 phút',
+        mm: '%d phút',
+        h: '1 giờ',
+        hh: '%d giờ',
+        d: '1 ngày',
+        dd: '%d ngày',
+        M: '1 tháng',
+        MM: '%d tháng',
+        y: '1 năm',
+        yy: '%d năm'
+      }
+    })
+  },
+  methods: {
+    async getReviewPagination() {
+      const { data } = await courseRepository.getReviewPagination(
+        this.courseId,
+        1,
+        500
+      )
+      this.courseReview = data.data
+      console.log(this.courseReview.content)
+      this.formatCreatedDate()
+    },
+    formatCreatedDate() {
+      this.courseReview.content.forEach(element => {
+        element.createdDate = this.getDateTimeFormat(element.createdDate)
+        element.createdDate = this.getDurationBetween(element.createdDate)
+      })
+    },
+    getDurationBetween(dateCreated) {
+      return moment(dateCreated, 'MM/DD/YYYY, hh:mm:ss A').fromNow()
+    },
+    async createReview() {
+      this.postReview = true
+      if (this.newReview.rating > 0 && this.newReview.content.length <= 100) {
+        const { data } = await courseRepository.createReview(this.newReview)
+      }
+    },
+    removeComment(reviewId, event) {},
+    editComment(reviewId, event) {
+      this.origin.content = document.getElementById('edit-' + reviewId).value
+      this.courseReview.content.forEach(element => {
+        if (element.reviewId == reviewId) {
+          this.origin.rating = element.rating
+        }
+      })
+      this.resetCommentView(reviewId)
+      document.getElementById('action-' + reviewId).style.display = 'none'
+      document.getElementById('content-' + reviewId).style.display = 'none'
+      document.getElementById('edit-action-' + reviewId).style.display = 'flex'
+      document.getElementById('edit-container-' + reviewId).style.display =
+        'block'
+      document.getElementById('rating-score' + reviewId).style.display = 'none'
+      document.getElementById('rating-' + reviewId).style.display = 'flex'
+    },
+    resetCommentView(reviewId) {
+      Array.from(
+        document.getElementsByClassName('review-content-edit')
+      ).forEach(element => {
+        element.style.display = 'none'
+      })
+      Array.from(document.getElementsByClassName('review-content')).forEach(
+        element => {
+          element.style.display = 'block'
+        }
+      )
+      Array.from(document.getElementsByClassName('edit-action')).forEach(
+        element => {
+          element.style.display = 'none'
+        }
+      )
+      Array.from(document.getElementsByClassName('action-review')).forEach(
+        element => {
+          element.style.display = 'flex'
+        }
+      )
+      Array.from(document.getElementsByClassName('edit-rating')).forEach(
+        element => {
+          element.style.display = 'none'
+        }
+      )
+      Array.from(document.getElementsByClassName('rating-score')).forEach(
+        element => {
+          element.style.display = 'flex'
+        }
+      )
+    },
+    saveEditComment(reviewId) {
+      console.log(document.getElementById('edit-' + reviewId).value)
+      this.resetCommentView(reviewId)
+    },
+    cancelEditComment(reviewId) {
+      this.resetCommentView(reviewId)
+      this.courseReview.content.forEach(element => {
+        if (element.reviewId == reviewId) {
+          element.content = this.origin.content
+          element.rating = this.origin.rating
+        }
+      })
+    }
+  }
+}
+</script>
+
+<style scoped>
+.reviewer-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+.review-content {
+  font-size: 14px;
+  color: #9b9b9b;
+  word-break: break-word;
+}
+>>> .v-rating .v-icon {
+  padding: 3px;
+}
+.action-review span {
+  color: #385898;
+  cursor: pointer;
+  font-size: 12px;
+  opacity: 0;
+}
+.action-review > span:hover {
+  text-decoration: underline !important;
+}
+.comment-item:hover .action-review > span {
+  opacity: 1;
+}
+textarea {
+  font-size: 16px;
+}
+.review-content-edit,
+.edit-action {
+  display: none;
+}
+>>> textarea {
+  font-size: 14px;
+}
+.edit-rating {
+  display: none;
+}
+</style>

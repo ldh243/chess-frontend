@@ -19,18 +19,14 @@
               <v-layout align-end fill-height wrap row>
                 <v-flex xs5>
                   <v-avatar :size="50">
-                    <img :src="courseDetail.authorAvatar" />
+                    <img :src="courseDetail.author.avatar" />
                   </v-avatar>
-                  <span class="white--text ml-2 subheading">
-                    {{ courseDetail.authorName }}
-                  </span>
+                  <span class="white--text ml-2 subheading">{{ courseDetail.author.fullName }}</span>
                 </v-flex>
                 <v-flex xs2 py-2>
                   <v-layout align-center fill-height justify-end>
                     <v-icon class="white--text mr-2">fa-users</v-icon>
-                    <span>
-                      {{ courseDetail.userDetailViewModels.length }} Học viên
-                    </span>
+                    <span>{{ courseDetail.userEnrolleds.length }} Học viên</span>
                   </v-layout>
                 </v-flex>
                 <v-flex xs5 py-2>
@@ -89,26 +85,22 @@
                   </v-card-title>
                 </v-card>
               </v-flex>
+              <v-flex xs12 mt-3>
+                <Review />
+              </v-flex>
             </v-layout>
           </v-flex>
           <v-flex xs4>
             <v-layout row wrap>
               <v-flex xs12 mb-3>
                 <v-card>
-                  <v-btn block flat class="ma-0" @click="goToLearningPage()"
-                    >Bắt đầu học</v-btn
-                  >
+                  <v-btn block flat class="ma-0" @click="goToLearningPage()">Bắt đầu học</v-btn>
                 </v-card>
               </v-flex>
               <v-flex xs12>
                 <v-card>
                   <v-timeline>
-                    <v-timeline-item
-                      v-for="n in 4"
-                      :key="n"
-                      color="red lighten-2"
-                      large
-                    >
+                    <v-timeline-item v-for="n in 4" :key="n" color="red lighten-2" large>
                       <template v-slot:opposite>
                         <span>Tus eu perfecto</span>
                       </template>
@@ -130,11 +122,13 @@
 
 <script>
 import Loader from '@/components/Loader'
+import Review from '@/components/CourseDetail/Review'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const courseRepository = RepositoryFactory.get('course')
 export default {
   components: {
-    Loader
+    Loader,
+    Review
   },
   data() {
     return {
@@ -155,7 +149,8 @@ export default {
           text: '',
           disabled: true
         }
-      ]
+      ],
+      courseId: this.$route.params.courseId
     }
   },
   mounted() {
@@ -165,8 +160,7 @@ export default {
   },
   methods: {
     async getCourseById() {
-      const courseId = this.$route.params.courseId
-      const { data } = await courseRepository.getById(courseId)
+      const { data } = await courseRepository.getById(this.courseId)
       this.courseDetail = data.data
       this.breadcrumbs[
         this.breadcrumbs.length - 1
