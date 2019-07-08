@@ -102,9 +102,9 @@
 </template>
 
 <script>
-import VueUploadMultipleImage from '@/components/VueUploadMultipleImage'
+import VueUploadMultipleImage from '@/components/plugins/vue-upload-multiple-image/VueUploadMultipleImage'
 import { mapState } from 'vuex';
-import VueAvatar from '@/components/vue-avatar/VueAvatarEditor'
+import VueAvatar from '@/components/plugins/vue-avatar/VueAvatarEditor'
 import { validationMixin } from 'vuelidate'
 import {required, maxLength} from 'vuelidate/lib/validators'
 import {RepositoryFactory} from '@/repository/RepositoryFactory'
