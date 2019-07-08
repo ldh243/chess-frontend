@@ -31,7 +31,7 @@
     <v-flex xs3 mb>
       <v-btn color="info" @click="createReview()">Đăng</v-btn>
     </v-flex>
-    <v-flex xs12 v-for="(item, index) in courseReview.content" :key="index" mb-3>
+    <v-flex xs12 v-for="(item, index) in courseReview.content" :key="index" mb-1>
       <v-layout row wrap class="comment-item">
         <v-flex xs1>
           <v-avatar :size="50">
@@ -72,7 +72,7 @@
           </v-layout>
         </v-flex>
         <v-flex xs3>
-          <span class="caption">{{item.createdDate}}</span>
+          <span class="caption">{{item.relativeTime}}</span>
         </v-flex>
         <v-flex xs11 mt-2 offset-xs1 pl-3>
           <span class="review-content" :id="'content-' + item.reviewId">{{item.content}}</span>
@@ -98,13 +98,24 @@
         </v-flex>
         <v-flex xs12 v-if="userId == item.reviewer.userId">
           <v-layout justify-end class="action-review" :id="'action-' + item.reviewId">
-            <span class="mr-3" @click="editComment(item.reviewId, $event)">Sửa</span>
-            <span @click="removeComment(item.reviewId, $event)">Xóa</span>
+            <span class="mr-3" @click="editComment(item.reviewId)">Sửa</span>
+            <span @click="showConfirmDeleteComment(item.reviewId)">Xóa</span>
+          </v-layout>
+        </v-flex>
+        <v-flex xs12 v-else>
+          <v-layout justify-end class="action-review">
+            <span style="z-index: -1;">a</span>
           </v-layout>
         </v-flex>
         <v-flex xs12 v-if="userId == item.reviewer.userId">
           <v-layout justify-end class="edit-action" :id="'edit-action-' + item.reviewId">
-            <v-btn color="info" flat small class="ma-0 mr-1" @click="saveComment(item.reviewId)">Lưu</v-btn>
+            <v-btn
+              color="info"
+              flat
+              small
+              class="ma-0 mr-1"
+              @click="saveEditComment(item.reviewId)"
+            >Lưu</v-btn>
             <v-btn
               color="error"
               flat
@@ -114,6 +125,11 @@
             >Hủy</v-btn>
           </v-layout>
         </v-flex>
+      </v-layout>
+    </v-flex>
+    <v-flex xs12 v-if="courseReview.content.length < courseReview.totalElements">
+      <v-layout justify-center>
+        <span class="load-more" @click="loadMore()">Xem thêm</span>
       </v-layout>
     </v-flex>
   </v-layout>
@@ -139,7 +155,9 @@ export default {
       loader: false,
       courseId: this.$route.params.courseId,
       userId: this.$store.state.user.userId,
-      courseReview: {},
+      courseReview: {
+        content: []
+      },
       emptyIcon: 'fa-star',
       fullIcon: 'fa-star',
       halfIcon: 'fa-star-half-alt',
@@ -156,6 +174,11 @@ export default {
       origin: {
         content: '',
         rating: ''
+      },
+      updatedReview: {},
+      reviewPagination: {
+        page: 1,
+        pageSize: 4
       }
     }
   },
@@ -187,17 +210,24 @@ export default {
     async getReviewPagination() {
       const { data } = await courseRepository.getReviewPagination(
         this.courseId,
-        1,
-        500
+        this.reviewPagination.page,
+        this.reviewPagination.pageSize
       )
-      this.courseReview = data.data
-      console.log(this.courseReview.content)
+      if (this.courseReview.content.length != 0) {
+        this.courseReview.content = [
+          ...this.courseReview.content,
+          ...data.data.content
+        ]
+      } else {
+        this.courseReview = data.data
+      }
+      console.log(data.data)
       this.formatCreatedDate()
     },
     formatCreatedDate() {
       this.courseReview.content.forEach(element => {
-        element.createdDate = this.getDateTimeFormat(element.createdDate)
-        element.createdDate = this.getDurationBetween(element.createdDate)
+        element.relativeTime = this.getDateTimeFormat(element.createdDate)
+        element.relativeTime = this.getDurationBetween(element.relativeTime)
       })
     },
     getDurationBetween(dateCreated) {
@@ -207,16 +237,45 @@ export default {
       this.postReview = true
       if (this.newReview.rating > 0 && this.newReview.content.length <= 100) {
         const { data } = await courseRepository.createReview(this.newReview)
+        console.log(data)
+        this.showNewReview(data.data.savedId)
       }
     },
-    removeComment(reviewId, event) {},
-    editComment(reviewId, event) {
+    showNewReview(newReviewId) {
+      this.newReview.relativeTime = 'vài giây trước'
+      this.newReview.reviewId = newReviewId
+      this.newReview.reviewer = this.$store.state.user
+      console.log(this.$store.state.user)
+      this.courseReview.content = [this.newReview, ...this.courseReview.content]
+      this.newReview = {
+        rating: 0,
+        content: '',
+        courseId: this.$route.params.courseId
+      }
+      this.postReview = false
+    },
+    async updateReview(updatedReview) {
+      if (updatedReview.rating > 0 && updatedReview.content.length <= 100) {
+        console.log(updatedReview)
+        updatedReview.courseId = this.courseId
+        const { data } = await courseRepository.updateReview(updatedReview)
+      }
+    },
+    async removeReview(reviewId) {
+      const { data } = await courseRepository.removeReview(
+        this.courseId,
+        reviewId
+      )
+      const reviewElement = this.getReviewInList(reviewId)
+      this.courseReview.content = this.courseReview.content.filter(
+        element => element.reviewId != reviewId
+      )
+      console.log(data)
+    },
+    editComment(reviewId) {
       this.origin.content = document.getElementById('edit-' + reviewId).value
-      this.courseReview.content.forEach(element => {
-        if (element.reviewId == reviewId) {
-          this.origin.rating = element.rating
-        }
-      })
+      const reviewElement = this.getReviewInList(reviewId)
+      this.origin.rating = reviewElement.rating
       this.resetCommentView(reviewId)
       document.getElementById('action-' + reviewId).style.display = 'none'
       document.getElementById('content-' + reviewId).style.display = 'none'
@@ -259,17 +318,45 @@ export default {
       )
     },
     saveEditComment(reviewId) {
-      console.log(document.getElementById('edit-' + reviewId).value)
+      const reviewElement = this.getReviewInList(reviewId)
+      this.updateReview(reviewElement)
       this.resetCommentView(reviewId)
     },
     cancelEditComment(reviewId) {
       this.resetCommentView(reviewId)
+      let reviewElement = this.getReviewInList(reviewId)
+      reviewElement.content = this.origin.content
+      reviewElement.rating = this.origin.rating
+    },
+    getReviewInList(reviewId) {
+      let result = null
       this.courseReview.content.forEach(element => {
         if (element.reviewId == reviewId) {
-          element.content = this.origin.content
-          element.rating = this.origin.rating
+          result = element
         }
       })
+      return result
+    },
+    showConfirmDeleteComment(reviewId) {
+      this.$swal({
+        title: 'Bạn có muốn xóa bình luận này?',
+        type: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#3085d6',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Xác nhận',
+        cancelButtonText: 'Hủy'
+      }).then(result => {
+        if (result.value) {
+          this.removeReview(reviewId)
+        }
+      })
+    },
+    loadMore() {
+      this.reviewPagination.page++
+      this.loader = true
+      this.getReviewPagination()
+      this.loader = false
     }
   }
 }
@@ -312,5 +399,11 @@ textarea {
 }
 .edit-rating {
   display: none;
+}
+.load-more {
+  color: #df322f;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 600;
 }
 </style>

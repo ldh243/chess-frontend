@@ -20,6 +20,7 @@
     "vue-chessboard": "git+https://github.com/nganphtgit/vue-chessboard.git",
     "vue-quill-editor": "^3.0.6",
     "vue-router": "^3.0.3",
+    "vue-sweetalert2": "^2.1.1",
     "vue-upload-multiple-image": "^1.1.4",
     "vue-worker": "^1.2.1",
     "vuelidate": "^0.7.4",

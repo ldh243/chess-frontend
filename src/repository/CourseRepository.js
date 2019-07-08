@@ -48,8 +48,17 @@ export default {
   },
   createReview(newReview) {
     const data = newReview
-    newReview.courseId = 1
-    console.log(newReview)
     return Repository.post(`${resource}/create-review`, data)
+  },
+  updateReview(updatedReview) {
+    const data = updatedReview
+    return Repository.put(`${resource}/update-review`, data)
+  },
+  removeReview(courseId, reviewId) {
+    const data = {
+      courseId: courseId,
+      reviewId: reviewId
+    }
+    return Repository.put(`${resource}/remove-review`, data)
   }
 }
