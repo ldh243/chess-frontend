@@ -17,7 +17,12 @@ function getParamsFromHeader(to) {
 }
 
 router.beforeEach((to, from, next) => {
+  console.log(from)
   getParamsFromHeader(to)
+  const role = localStorage.getItem("role")
+  if (role == 4 && to.path !== '/register') {
+    return next('/register')
+  }
   if (Object.entries(to.query).length && to.query.constructor === Object) {
     return next(to.path)
   }

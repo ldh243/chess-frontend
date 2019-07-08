@@ -9,6 +9,7 @@ import Profile from '@/pages/Profile'
 import Learning from '@/pages/Learning'
 import LearningTheory from '@/pages/LearningTheory'
 import CourseDetail from '@/pages/CourseDetail'
+import Register from '@/pages/Register'
 Vue.use(Router)
 
 export default new Router({
@@ -21,7 +22,8 @@ export default new Router({
     { path: '/play-chess', component: PlayChess },
     { path: '/learning/:courseId', component: Learning },
     { path: '/learning-theory', component: LearningTheory },
-    { path: '/course/:courseId', component: CourseDetail }
+    { path: '/course/:courseId', component: CourseDetail },
+    { path: '/register', component: Register }
     // {
     //   path: '/login',
     //   component: Home,

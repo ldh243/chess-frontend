@@ -113,6 +113,7 @@ export default {
       user.status = this.getStatusUser(user.active)
       localStorage.setItem('user', JSON.stringify(user))
       this.setUserState()
+      // location.reload(true)
     },
     setUserState() {
       const user = localStorage.getItem('user')
@@ -123,6 +124,7 @@ export default {
     logout() {
       localStorage.removeItem('access-token')
       localStorage.removeItem('user')
+      localStorage.removeItem('role')
       this.$store.commit('setUser', null)
       this.$store.commit('setUserToken', null)
     }

@@ -210,7 +210,7 @@
 <script>
 import Chessboard from '@/components/vue-chessboard/index.vue'
 import Player from '../components/PlayChess/Player'
-import { setInterval, clearInterval } from 'timers'
+import { setInterval, clearInterval, setTimeout } from 'timers'
 export default {
   components: {
     Player,
@@ -516,7 +516,7 @@ export default {
       let self = this
       this.sendUCI('setoption name Skill Level value ' + this.level)
       this.sendUCI('position startpos moves' + this.moves)
-      this.sendUCI('go depth 1')
+      this.sendUCI('go depth 15')
       this.engine.onmessage = function(event) {
         console.log(event.data)
         let line = event.data
