@@ -11,7 +11,7 @@
           color="grey lighten-4"
           slot-scope="{hover}"
         >
-          <img :src="avatar" alt="avatar">
+          <img :src="user.avatar" alt="avatar">
           <v-fade-transition>
           <div class="upload-file" v-if="hover">
             <span class="white--text lighten-3 body-1">Tải ảnh</span><br/>
@@ -45,6 +45,7 @@
     </v-radio-group>
     <v-slide-y-transition>
       <v-textarea 
+          v-model="achievement"
           v-show="isInstructor"
           solo
           name="input-7-4"
@@ -125,17 +126,6 @@ export default {
     VueUploadMultipleImage,
     VueAvatar
   },
-  data() {
-    return {
-      role: 'learner',
-      isInstructor: false,
-      avaDialog: false,
-      avatar: '',
-      fullName: '',
-      checkbox: false,
-      isChangedAva: false
-    }
-  },
   computed: {
     ...mapState({user: state => state.user}),
     fullNameErrors() {
@@ -152,6 +142,24 @@ export default {
       return errors
     }
   },
+  data() {
+    return {
+      role: 'learner',
+      isInstructor: false,
+      avaDialog: false,
+      avatar: '',
+      fullName: '',
+      checkbox: false,
+      isChangedAva: false,
+      certificates: [],
+      achievement: ''
+    }
+  },
+  mounted() {
+    console.log("ahihi")
+    // console.log(this.user)
+    // this.fullName = this.user.fullName
+  },
   watch: {
     role: function(role) {
       this.role = role
@@ -159,8 +167,12 @@ export default {
     }
   },
   methods: {
+    uploadImageSuccess(formData, index, fileList) {
+      this.certificates = fileList
+      console.log(this.certificates)
+    },
     getAva(data) {
-      this.avatar = data.toDataURL()
+      this.user.avatar = data.toDataURL()
       this.isChangedAva = true
       this.avaDialog = false
     },
@@ -172,27 +184,30 @@ export default {
       } else {
       }
     },
-    submit() {
-      this.$v.$touch()
-      const role = this.isInstructor ? 1 : 2
-      let image = ''
-      if (this.isChangedAva) {
-        //get email name of user
+    async submit() {
+      this.$v.$touch() 
+      let avatar = this.user.avatar, achievement = this.user.achievement, certificates = this.user.certificates
+      //get email name of user
       let match = this.user.email.match(/^([^@]*)/)
+      if (this.isChangedAva) {
       //upload image to firebase
-      const uploadTask = firebase.storage().ref(`images/ava/${match[0]}`).putString(this.avatar, 'data_url');
-      
-        uploadTask.on('state_changed', () => {
-          firebase.storage().ref('images/ava').child(`${match[0]}`).getDownloadURL().then(url => {
-            image = url
-          })
+        this.user.avatar = await this.uploadImageByDataURL(this.avatar, match[0], "ava")
+      }
+      if (this.isInstructor) {
+        await this.certificates.forEach(async element => {
+          let image = await this.uploadImageByDataURL(element.path, match[0] + element.name, "certificates")
+          certificates.push(image)
         })
       }
+      const data = {
+        fullName: this.fullName,
+        roleId: this.isInstructor ? 1 : 2,
+        avatar: avatar,
+        achievement: achievement,
+        certificates: certificates
+      }
+      const result = await userRepository.signUpNewAccount(data)
     }
-  },
-  created() {
-    this.avatar = this.user.avatar
-    this.fullName = this.user.fullName
   }
 }
 </script>

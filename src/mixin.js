@@ -1,4 +1,5 @@
 import Vue from 'vue'
+import firebase from 'firebase'
 export default Vue.mixin({
   methods: {
     getCurrentPage() {
@@ -56,7 +57,7 @@ export default Vue.mixin({
     getDateTimeFormat(datetime) {
       const date = new Date(Date.parse(datetime))
       return date.toLocaleString()
-    }
+    },
     // changeChessKey(oldKey) {
     //   switch (oldKey.charAt(0)) {
     //     case 'R':
@@ -73,5 +74,14 @@ export default Vue.mixin({
     //       return oldKey
     //   }
     // }
+    async uploadImageByDataURL(image, imageName, directory) {
+      const uploadTask = firebase.storage().ref(`images/${directory}/${imageName}`).putString(image, 'data_url');
+      // uploadTask.on('state_changed', () => {
+        const imageLink = await firebase.storage().ref(`images/${directory}`).child(`${imageName}`).getDownloadURL().then(url => {
+          return url
+        })
+        return imageLink
+      // })
+    }
   }
 })
