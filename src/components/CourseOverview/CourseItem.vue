@@ -21,7 +21,9 @@
               </v-avatar>
             </v-flex>
             <v-flex xs9 ml-3>
-              <span class="ml-1 course-author">{{ courseDetail.authorName }}</span>
+              <span class="ml-1 course-author">{{
+                courseDetail.authorName
+              }}</span>
               <v-layout row>
                 <v-flex xs6>
                   <v-rating

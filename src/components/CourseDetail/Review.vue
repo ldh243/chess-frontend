@@ -5,10 +5,12 @@
       <div class="headline">Đánh giá</div>
     </v-card-title>
     <v-layout row py-3>
-      <v-flex xs4 v-if="courseOverview.medRating != null">
+      <v-flex v-if="courseOverview.medRating != null" xs4>
         <v-layout row wrap>
           <v-flex xs12 class="text-xs-center">
-            <span class="display-3 font-weight-bold">{{courseOverview.medRating}}</span>
+            <span class="display-3 font-weight-bold">{{
+              courseOverview.medRating
+            }}</span>
             <v-rating
               v-model="courseOverview.medRating"
               :empty-icon="emptyIcon"
@@ -19,25 +21,37 @@
               color="yellow darken-3"
               readonly
             ></v-rating>
-            <span>({{courseOverview.totalQuantityRatings}} người đã đánh giá)</span>
+            <span
+              >({{ courseOverview.totalQuantityRatings }} người đã đánh
+              giá)</span
+            >
           </v-flex>
           <v-flex x12 class="text-xs-center">
             <v-layout row mt-3 wrap>
-              <v-flex xs12 v-for="(item, index) in courseOverview.listRatings" :key="index">
+              <v-flex
+                v-for="(item, index) in courseOverview.listRatings"
+                :key="index"
+                xs12
+              >
                 <v-layout>
                   <v-flex xs3 mr-2>
                     <v-layout fill-height align-center justify-end>
-                      <span class="mr-1">{{index + 1}}</span>
+                      <span class="mr-1">{{ index + 1 }}</span>
                       <v-icon color="yellow darken-3" size="12">fa-star</v-icon>
                     </v-layout>
                   </v-flex>
                   <v-flex xs6 mr-2>
                     <v-layout fill-height align-center>
-                      <v-progress-linear v-model="item.ratio" color="yellow darken-3"></v-progress-linear>
+                      <v-progress-linear
+                        v-model="item.ratio"
+                        color="yellow darken-3"
+                      ></v-progress-linear>
                     </v-layout>
                   </v-flex>
                   <v-flex xs3>
-                    <v-layout fill-height align-center>{{item.ratio}}%</v-layout>
+                    <v-layout fill-height align-center
+                      >{{ item.ratio }}%</v-layout
+                    >
                   </v-flex>
                 </v-layout>
               </v-flex>
@@ -46,7 +60,7 @@
         </v-layout>
       </v-flex>
       <v-flex xs8 class="comment-container">
-        <Comment />
+        <Comment @getCourseOverview="getCourseOverview" />
       </v-flex>
     </v-layout>
   </v-card>

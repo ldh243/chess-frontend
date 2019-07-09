@@ -24,7 +24,5 @@ export default new Vuex.Store({
     }
   },
   actions: {},
-  getters: {
-    user: state => state.user
-  }
+  getters: {}
 })

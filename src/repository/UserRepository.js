@@ -1,4 +1,4 @@
-import Repository from '@/repository/Repository'
+import Repository, { setAuthorizationHeader } from '@/repository/Repository'
 
 const resource = '/user'
 
@@ -11,17 +11,23 @@ export default {
     const newUser = {
       userId: user.userId,
       email: user.email,
-      fullName: user.fullName,
+      fullName: data.fullName == '' ? user.fullName : data.fullName,
       avatar: data.avatar == '' ? user.avatar : data.avatar,
       createdDate: user.createdDate,
       roleId: data.roleId,
       achievement: data.achievement,
-      cetificates: data.cetificates,
+      certificates: data.certificates,
       provider: user.provider,
       providerId: user.providerId,
-      active: true
+      active: true,
+      status: data.status,
+      roleName: data.roleName
     } 
-    console.log(newUser)
-    return Repository.put(`${resource}/register`, newUser)
+    return Repository.put(`${resource}/register`, newUser).then(() => {
+      localStorage.removeItem('user')
+      localStorage.setItem('user', JSON.stringify(newUser))
+      localStorage.removeItem('role')
+      localStorage.setItem('role', newUser.roleId)
+    })
   }
 }
