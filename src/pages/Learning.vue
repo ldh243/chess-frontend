@@ -35,19 +35,27 @@
                     :id="item.whiteMove.moveCount"
                     class="move"
                     @click="loadFen(item.whiteMove.fen, $event)"
-                  >{{ item.whiteMove.move }}</div>
+                  >
+                    {{ item.whiteMove.move }}
+                  </div>
                   <div
                     v-if="item.blackMove"
                     :id="item.blackMove.moveCount"
                     class="move"
                     @click="loadFen(item.blackMove.fen, $event)"
-                  >{{ item.blackMove.move }}</div>
+                  >
+                    {{ item.blackMove.move }}
+                  </div>
                 </div>
               </div>
             </v-flex>
             <v-flex mb-4>
               <v-layout row>
-                <v-btn flat :disabled="statusPreviousMove" @click="turnToFirstMove()">
+                <v-btn
+                  flat
+                  :disabled="statusPreviousMove"
+                  @click="turnToFirstMove()"
+                >
                   <v-icon>fa-fast-backward</v-icon>
                 </v-btn>
                 <v-btn
@@ -67,7 +75,11 @@
                 >
                   <v-icon>fa-forward</v-icon>
                 </v-btn>
-                <v-btn flat :disabled="statusNextMove" @click="turnToLastMove()">
+                <v-btn
+                  flat
+                  :disabled="statusNextMove"
+                  @click="turnToLastMove()"
+                >
                   <v-icon>fa-fast-forward</v-icon>
                 </v-btn>
               </v-layout>
@@ -79,7 +91,8 @@
               <div class="lesson-content">
                 <v-card-title
                   v-if="lessonDetails.uninteractiveLesson != null"
-                >{{ lessonDetails.uninteractiveLesson.content }}</v-card-title>
+                  >{{ lessonDetails.uninteractiveLesson.content }}</v-card-title
+                >
               </div>
             </v-flex>
             <v-flex>

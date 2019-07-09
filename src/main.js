@@ -10,16 +10,16 @@ Vue.config.productionTip = false
 
 //connect firebase
 var firebaseConfig = {
-  apiKey: "AIzaSyDBz72G-L_nG1s2CgXHx0pPKc8tQLNyyS0",
-  authDomain: "cols-fpt.firebaseapp.com",
-  databaseURL: "https://cols-fpt.firebaseio.com",
-  projectId: "cols-fpt",
-  storageBucket: "cols-fpt.appspot.com",
-  messagingSenderId: "1082474123206",
-  appId: "1:1082474123206:web:79a9804e9ccc5382"
-};
+  apiKey: 'AIzaSyDBz72G-L_nG1s2CgXHx0pPKc8tQLNyyS0',
+  authDomain: 'cols-fpt.firebaseapp.com',
+  databaseURL: 'https://cols-fpt.firebaseio.com',
+  projectId: 'cols-fpt',
+  storageBucket: 'cols-fpt.appspot.com',
+  messagingSenderId: '1082474123206',
+  appId: '1:1082474123206:web:79a9804e9ccc5382'
+}
 // Initialize Firebase
-firebase.initializeApp(firebaseConfig);
+firebase.initializeApp(firebaseConfig)
 
 function getParamsFromHeader(to) {
   const token = to.query.token
@@ -31,9 +31,8 @@ function getParamsFromHeader(to) {
 }
 
 router.beforeEach((to, from, next) => {
-  console.log(from)
   getParamsFromHeader(to)
-  const role = localStorage.getItem("role")
+  const role = localStorage.getItem('role')
   if (role == 4 && to.path !== '/register') {
     return next('/register')
   }

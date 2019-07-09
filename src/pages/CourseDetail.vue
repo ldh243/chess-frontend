@@ -21,12 +21,16 @@
                   <v-avatar :size="50">
                     <img :src="courseDetail.author.avatar" />
                   </v-avatar>
-                  <span class="white--text ml-2 subheading">{{ courseDetail.author.fullName }}</span>
+                  <span class="white--text ml-2 subheading">
+                    {{ courseDetail.author.fullName }}
+                  </span>
                 </v-flex>
                 <v-flex xs2 py-2>
                   <v-layout align-center fill-height justify-end>
                     <v-icon class="white--text mr-2">fa-users</v-icon>
-                    <span>{{ courseDetail.userEnrolleds.length }} Học viên</span>
+                    <span
+                      >{{ courseDetail.userEnrolleds.length }} Học viên</span
+                    >
                   </v-layout>
                 </v-flex>
                 <v-flex xs5 py-2>
@@ -73,17 +77,7 @@
                 </v-card>
               </v-flex>
               <v-flex xs12 mt-3>
-                <v-card>
-                  <v-card-title primary-title>
-                    <div>
-                      <div class="headline">Giảng viên</div>
-                      <span>
-                        Listen to your favorite artists and albums whenever and
-                        wherever, online and offline.
-                      </span>
-                    </div>
-                  </v-card-title>
-                </v-card>
+                <InstructorInfo />
               </v-flex>
               <v-flex xs12 mt-3>
                 <Review />
@@ -94,13 +88,20 @@
             <v-layout row wrap>
               <v-flex xs12 mb-3>
                 <v-card>
-                  <v-btn block flat class="ma-0" @click="goToLearningPage()">Bắt đầu học</v-btn>
+                  <v-btn block flat class="ma-0" @click="goToLearningPage()"
+                    >Bắt đầu học</v-btn
+                  >
                 </v-card>
               </v-flex>
               <v-flex xs12>
                 <v-card>
                   <v-timeline>
-                    <v-timeline-item v-for="n in 4" :key="n" color="red lighten-2" large>
+                    <v-timeline-item
+                      v-for="n in 4"
+                      :key="n"
+                      color="red lighten-2"
+                      large
+                    >
                       <template v-slot:opposite>
                         <span>Tus eu perfecto</span>
                       </template>
@@ -123,12 +124,14 @@
 <script>
 import Loader from '@/components/Loader'
 import Review from '@/components/CourseDetail/Review'
+import InstructorInfo from '@/components/CourseDetail/InstructorInfo'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const courseRepository = RepositoryFactory.get('course')
 export default {
   components: {
     Loader,
-    Review
+    Review,
+    InstructorInfo
   },
   data() {
     return {
