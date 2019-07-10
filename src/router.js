@@ -16,7 +16,7 @@ export default new Router({
   mode: 'history',
   base: process.env.BASE_URL,
   routes: [
-    { path: '/', component: Introduce },
+    { path: '/', name: 'home', component: Introduce },
     { path: '/profile', component: Profile },
     { path: '/course', component: CourseOverview },
     { path: '/play-chess', component: PlayChess },

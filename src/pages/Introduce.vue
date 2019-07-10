@@ -89,7 +89,7 @@ export default {
     }
   },
   created() {
-    if (localStorage.getItem('role') == 2) {
+    if (this.$route.params.isNew) {
       setTimeout(() => {
         this.snackbar = true
       }, 1000)

@@ -224,7 +224,7 @@ export default {
           this.$router.push('/')
         }
       } else {
-        this.$router.push('/')
+        this.$router.push({name: 'home', params: {isNew: true}})
       }
     }
   }
