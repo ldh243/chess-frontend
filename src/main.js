@@ -27,7 +27,8 @@ firebase.initializeApp(firebaseConfig)
 function getParamsFromHeader(to) {
   const token = to.query.token
   const role = to.query.role
-  if (token && role) {
+  const acceptedRole = [2, 4]
+  if (token && role && acceptedRole.includes(parseInt(role))) {
     localStorage.setItem('access-token', `Chess ${token}`)
     localStorage.setItem('role', role)
   }

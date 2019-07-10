@@ -8,6 +8,7 @@ export default {
   },
   signUpNewAccount(data) {
     const user = JSON.parse(localStorage.getItem("user"))
+    console.log(data.certificates)
     const newUser = {
       userId: user.userId,
       email: user.email,
@@ -23,11 +24,13 @@ export default {
       status: data.status,
       roleName: data.roleName
     } 
+    console.log(newUser)
     return Repository.put(`${resource}/register`, newUser).then(() => {
       localStorage.removeItem('user')
       localStorage.setItem('user', JSON.stringify(newUser))
       localStorage.removeItem('role')
       localStorage.setItem('role', newUser.roleId)
+      console.log("updated")
     })
   }
 }

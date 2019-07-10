@@ -52,6 +52,7 @@
           name="input-7-4"
           label="Thành tích"
           value
+          v-model="achievement"
         ></v-textarea>
       </v-slide-y-transition>
       <v-slide-y-transition>
@@ -130,7 +131,8 @@ export default {
       fullNameRules: [
         v => !!v || 'Tên không được bỏ trống',
         v => (v && v.length <= 50) || 'Tên không được quá 50 kí tự'
-      ]
+      ],
+      achievement: ''
     }
   },
   created() {
@@ -193,11 +195,11 @@ export default {
         avatar = await this.uploadImageByDataURL(this.avatar, match[0], "ava")
       }
       if (this.isInstructor) {
-        this.certificates.forEach(async element => {
-          const image = await this.uploadImageByDataURL(element.path, match[0] + element.name, "certificates")
-          const certificate = {certificateId: 0, certificateLink: image}
-          certificates.push(certificate)
-        })
+        for (var i = 0; i < this.certificates.length; i++) {
+          const image = await this.uploadImageByDataURL(this.certificates[i].path, match[0] + this.certificates[i].name, "certificates")
+          certificates.push({certificateId: 0, certificateLink: image})
+        }
+        achievement = this.achievement
       }
       const data = {
         fullName: this.fullName,
@@ -209,7 +211,21 @@ export default {
         status: this.getStatusUser(this.isInstructor ? false : true)
       }
       const result = await userRepository.signUpNewAccount(data)
-      this.$router.push('/')
+      // if isIntructor redirect to admin app
+      if (this.isInstructor) {
+        localStorage.removeItem('role')
+        localStorage.removeItem('access-token')
+        localStorage.removeItem('user')
+        let r = confirm('Đăng kí tài khoản thành công, chuyển đến trang quản trị?')
+        if (r == true) {
+          window.location.href = 'http://admin-cols.ml/'
+          done()
+        } else {
+          this.$router.push('/')
+        }
+      } else {
+        this.$router.push('/')
+      }
     }
   }
 }

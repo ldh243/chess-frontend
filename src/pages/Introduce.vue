@@ -21,6 +21,22 @@
             <v-flex v-for="(item, index) in categoryItem" :key="index" xs4 mx-3>
               <Category :content="item" />
             </v-flex>
+            <v-snackbar
+      v-model="snackbar"
+      :color="color"
+      :multi-line="mode === 'multi-line'"
+      :timeout="timeout"
+      :vertical="mode === 'vertical'"
+    >
+      {{ snackbarText }}
+      <v-btn
+        dark
+        flat
+        @click="snackbar = false"
+      >
+        Đóng
+      </v-btn>
+    </v-snackbar>
           </v-layout>
         </v-container>
       </v-flex>
@@ -30,6 +46,7 @@
 
 <script>
 import Category from '@/components/Introduce/Category'
+import { setTimeout } from 'timers';
 export default {
   components: {
     Category
@@ -53,7 +70,12 @@ export default {
           imageURL: require('@/assets/images/chess-coach.jpg'),
           url: '/home'
         }
-      ]
+      ],
+      snackbar: false,
+      color: '',
+      mode: '',
+      timeout: 6000,
+      snackbarText: 'Chúc mừng bạn đã đăng kí tài khoản thành công!'
     }
   },
   computed: {
@@ -64,6 +86,13 @@ export default {
         backgroundSize: `cover`,
         filter: `brightness(0.5)`
       }
+    }
+  },
+  created() {
+    if (localStorage.getItem('role') == 2) {
+      setTimeout(() => {
+        this.snackbar = true
+      }, 1000)
     }
   }
 }
