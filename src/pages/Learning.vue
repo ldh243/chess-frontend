@@ -219,7 +219,6 @@ export default {
       const { data } = await courseRepository.getById(courseId)
       this.courseDetails = data.data
       this.lessons = this.courseDetails.lessonViewModels
-      console.log(this.courseDetails)
       this.breadcrumbs[2].text = this.courseDetails.name
       this.breadcrumbs[2].href = `/course/${this.$route.params.courseId}`
       this.getLessonById()
@@ -228,7 +227,6 @@ export default {
       const lessonModel = this.courseDetails.lessonViewModels[this.activeLesson]
       const { data } = await lessonRepository.getById(lessonModel.lessonId)
       this.lessonDetails = data.data
-      console.log(this.lessonDetails)
       this.checkStatusDirectLesson()
     },
     showInfo(data) {

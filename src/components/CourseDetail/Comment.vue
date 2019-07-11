@@ -48,9 +48,9 @@
         <v-flex xs8 pl-3>
           <v-layout wrap align-center fill-height>
             <v-flex xs12>
-              <span class="ml-1 reviewer-name">{{
-                item.reviewer.fullName
-              }}</span>
+              <span class="ml-1 reviewer-name">
+                {{ item.reviewer.fullName }}
+              </span>
             </v-flex>
             <v-flex xs12>
               <v-layout row>
@@ -88,9 +88,9 @@
           <span class="caption">{{ item.relativeTime }}</span>
         </v-flex>
         <v-flex xs11 mt-2 offset-xs1 pl-3>
-          <span :id="'content-' + item.reviewId" class="review-content">{{
-            item.content
-          }}</span>
+          <span :id="'content-' + item.reviewId" class="review-content">
+            {{ item.content }}
+          </span>
         </v-flex>
         <v-flex
           :id="'edit-container-' + item.reviewId"
@@ -284,8 +284,9 @@ export default {
       if (updatedReview.rating > 0 && updatedReview.content.length <= 100) {
         updatedReview.courseId = this.courseId
         const { data } = await courseRepository.updateReview(updatedReview)
-        console.log(data)
-        this.$emit('getCourseOverview')
+        if (data.data) {
+          this.$emit('getCourseOverview')
+        }
       }
     },
     async removeReview(reviewId) {
@@ -293,11 +294,16 @@ export default {
         this.courseId,
         reviewId
       )
-      console.log(data)
       this.courseReview.content = this.courseReview.content.filter(
         element => element.reviewId != reviewId
       )
-      this.$emit('getCourseOverview')
+      if (data.data) {
+        this.loader = true
+        this.$emit('getCourseOverview')
+        this.emptyListReview()
+        this.getReviewPagination()
+        this.loader = false
+      }
     },
     editComment(reviewId) {
       this.origin.content = document.getElementById('edit-' + reviewId).value
@@ -384,6 +390,11 @@ export default {
       this.loader = true
       this.getReviewPagination()
       this.loader = false
+    },
+    emptyListReview() {
+      this.courseReview = {
+        content: []
+      }
     }
   }
 }

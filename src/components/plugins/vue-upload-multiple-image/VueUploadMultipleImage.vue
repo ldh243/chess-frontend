@@ -1,20 +1,9 @@
 <template>
   <div style="outline: none;">
-    <div
-      v-if="!images.length"
-      class="image-container position-relative text-center"
-    >
-      <div
-        v-if="isDragover"
-        class="drag-upload-cover position-absolute"
-        @drop="onDrop"
-      >
+    <div v-if="!images.length" class="image-container position-relative text-center">
+      <div v-if="isDragover" class="drag-upload-cover position-absolute" @drop="onDrop">
         <div class="centered full-width text-center text-primary">
-          <svg
-            class="icon-drag-drop"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 512 512"
-          >
+          <svg class="icon-drag-drop" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
             <path
               d="M444.5 15C407.7 15 378 44.8 378 81.5s29.8 66.5 66.5 66.5S511 118.2 511 81.5 481.2 15 444.5 15zm29.4 72.4h-23.5l.1 25.9c0 3.2-2.6 5.8-5.8 5.9-3.2 0-5.8-2.6-5.8-5.8l-.1-26h-23.6c-3.2 0-5.8-2.6-5.8-5.8s2.6-5.8 5.8-5.8h23.5l-.1-25.9c0-3.2 2.6-5.8 5.8-5.9 3.2 0 5.8 2.6 5.8 5.8l.1 26h23.6c3.3 0 5.8 2.6 5.8 5.8s-2.6 5.8-5.8 5.8zM199.3 191.3c21.5 0 38.9 17.6 38.9 39.3s-17.4 39.3-38.9 39.3-38.9-17.6-38.9-39.3c0-21.7 17.5-39.3 38.9-39.3zm185.4 201.3H86.3c-6.5 0-11.9-5.3-11.9-11.9v-32.4c0-2.5.7-4.8 2.1-6.9l41.3-58.4c3.7-5.2 10.8-6.5 16.1-3.1l56.4 36.8c4.5 3 10.3 2.5 14.4-1L313 220.1c5.1-4.5 13.1-3.8 17.2 1.7l61.5 79.7c1.6 2 2.5 4.6 2.5 7.2v74.4c0 5.2-4.3 9.5-9.5 9.5zm7.9 117.6h-58.8v-12h58.8v12zm-78.4 0h-58.8v-12h58.8v12zm-78.5 0h-58.8v-12h58.8v12zm-78.4 0H98.4v-12h58.8v12h.1zm-78.5 0H57.7c-14.3 0-27.9-5.4-38.3-15.3l8.3-8.7c8.2 7.8 18.8 12 30.1 12h21.1l-.1 12zm333.6-.1l-.3-12c17.8-.4 33.4-11.5 39.8-28.2l11.2 4.3c-8.1 21.3-28 35.4-50.7 35.9zM6.8 477c-3.2-7.1-4.7-14.7-4.7-22.5v-38.2h12v38.2c0 6.1 1.3 12.1 3.7 17.6l-11 4.9zm459.9-24.1h-12v-58.8h12v58.8zM14.1 396.7h-12v-58.8h12v58.8zm452.6-22.3h-12v-58.8h12v58.8zM14.1 318.3h-12v-58.8h12v58.8zM466.7 296h-12v-58.8h12V296zM14.1 239.8h-12V181h12v58.8zm452.6-22.2h-12v-58.8h12v58.8zM14.1 161.4h-12v-58.8h12v58.8zm2.4-76.1L5.3 81.2C13 59.9 33.4 45.5 56.1 45.5h.2v12h-.2c-17.7 0-33.6 11.2-39.6 27.8zm353.6-27.8h-58.8v-12h58.8v12zm-78.5 0h-58.8v-12h58.8v12zm-78.4 0h-58.8v-12h58.8v12zm-78.5 0H75.9v-12h58.8v12z"
             />
@@ -30,11 +19,7 @@
         @dragover.prevent="onDragover"
       >
         <div>
-          <svg
-            class="image-icon-drag"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 512 512"
-          >
+          <svg class="image-icon-drag" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
             <path
               d="M383.6 229l-.5 1.5.7 1.7c-.2-1.1-.2-2.2-.2-3.2zm-119.7-5.4l-.3 1.4.6 1.3c-.2-.8-.3-1.8-.3-2.7zm62.4 3.8l-.2 1 .5 1.1-.3-2.1z"
             />
@@ -52,31 +37,19 @@
           <a class="browse-text">{{ browseText }}</a>
         </div>
         <div class="image-input position-absolute full-width full-height">
-          <label
-            :for="idUpload"
-            class="full-width full-height cursor-pointer"
-          ></label>
+          <label :for="idUpload" class="full-width full-height cursor-pointer"></label>
         </div>
       </div>
     </div>
 
-    <div
-      v-else
-      class="image-container position-relative text-center image-list"
-    >
+    <div v-else class="image-container position-relative text-center image-list">
       <div
         class="preview-image full-width position-relative cursor-pointer"
         @click="openGallery(currentIndexImage)"
       >
-        <div
-          class="image-overlay position-relative full-width full-height"
-        ></div>
+        <div class="image-overlay position-relative full-width full-height"></div>
         <div class="image-overlay-details full-width">
-          <svg
-            class="icon-overlay"
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 512 512"
-          >
+          <svg class="icon-overlay" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
             <path
               d="M283.9 186.4h-64.6l-.4-71.1c-.1-8.8-7.2-15.9-16-15.9h-.1c-8.8.1-16 7.3-15.9 16.1l.4 70.9h-64.4c-8.8 0-16 7.2-16 16s7.2 16 16 16h64.6l.4 71.1c.1 8.8 7.2 15.9 16 15.9h.1c8.8-.1 16-7.3 15.9-16.1l-.4-70.9h64.4c8.8 0 16-7.2 16-16s-7.1-16-16-16z"
             />
@@ -93,10 +66,7 @@
         class="image-bottom display-flex position-absolute full-width align-items-center justify-content-between"
         :class="!showPrimary && 'justify-content-end'"
       >
-        <div
-          v-if="showPrimary"
-          class="image-bottom-left display-flex align-items-center"
-        >
+        <div v-if="showPrimary" class="image-bottom-left display-flex align-items-center">
           <div v-show="imageDefault" class="display-flex align-items-center">
             <span class="image-primary display-flex align-items-center">
               <svg
@@ -114,10 +84,7 @@
             </span>
             <popper trigger="click" :options="{ placement: 'top' }">
               <div class="popper popper-custom">{{ popupText }}</div>
-              <i
-                slot="reference"
-                class="cursor-pointer display-flex align-items-center"
-              >
+              <i slot="reference" class="cursor-pointer display-flex align-items-center">
                 <svg
                   class="image-icon-info"
                   xmlns="http://www.w3.org/2000/svg"
@@ -137,8 +104,7 @@
             v-show="!imageDefault"
             class="text-small mark-text-primary cursor-pointer"
             @click.prevent="markIsPrimary(currentIndexImage)"
-            >{{ markIsPrimaryText }}</a
-          >
+          >{{ markIsPrimaryText }}</a>
         </div>
         <div class="display-flex">
           <label class="image-edit display-flex cursor-pointer" :for="idEdit">
@@ -175,10 +141,7 @@
       </div>
     </div>
 
-    <div
-      v-if="images.length && multiple"
-      class="image-list-container display-flex flex-wrap"
-    >
+    <div v-if="images.length && multiple" class="image-list-container display-flex flex-wrap">
       <div
         v-for="(image, index) in images"
         :key="index"
@@ -186,7 +149,7 @@
         :class="image.highlight && 'image-highlight'"
         @click="changeHighlight(index)"
       >
-        <div class="centered">
+        <div class="centered image-list-icon">
           <img class="show-img img-responsive" :src="image.path" />
         </div>
       </div>
@@ -204,10 +167,7 @@
           <path d="M511.5 227.5h-227V.5h-57v227H-.5v57h228v228h57v-228h227z" />
         </svg>
         <div class="input-add-image position-absolute full-width full-height">
-          <label
-            :for="idUpload"
-            class="display-block full-width full-height cursor-pointer"
-          ></label>
+          <label :for="idUpload" class="display-block full-width full-height cursor-pointer"></label>
         </div>
       </div>
     </div>
@@ -592,7 +552,10 @@ export default {
   transform: translate(-50%, -50%);
   top: 50%;
   position: absolute;
-  display: block;
+  display: flex;
+  width: 100%;
+  height: 100%;
+  padding: 5px;
 }
 .image-container {
   width: 100%;
@@ -699,7 +662,7 @@ export default {
 }
 .show-img {
   max-height: 100%;
-  max-width: 80%;
+  max-width: 100%;
   height: 250px;
   display: block;
   vertical-align: middle;
@@ -754,8 +717,9 @@ export default {
   margin-bottom: 5px;
 }
 .image-list-container .image-list-item .show-img {
-  max-width: 25px;
-  max-height: 17px;
+  max-height: 100%;
+  height: auto;
+  width: 100%;
 }
 .image-list-container .image-highlight {
   border: 1px solid #2fa3e7;
@@ -792,6 +756,9 @@ export default {
   color: white;
   text-align: left;
   font-size: 12px;
+}
+.image-list-icon {
+  padding: 0px !important;
 }
 </style>
 <style lang="css">
