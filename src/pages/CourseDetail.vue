@@ -183,13 +183,16 @@ export default {
     setEventScroll() {
       window.addEventListener('scroll', function() {
         const scroll = this.scrollY
-        if (scroll >= 380) {
-          document.getElementsByClassName('enrol-course')[0].style.top = '0px'
-        } else if (scroll >= 217) {
-          document.getElementsByClassName('enrol-course')[0].style.top =
-            380 - scroll + 'px'
-        } else {
-          document.getElementsByClassName('enrol-course')[0].style.top = '163px'
+        if (document.getElementsByClassName('enrol-course').length > 0) {
+          if (scroll >= 380) {
+            document.getElementsByClassName('enrol-course')[0].style.top = '0px'
+          } else if (scroll >= 217) {
+            document.getElementsByClassName('enrol-course')[0].style.top =
+              380 - scroll + 'px'
+          } else {
+            document.getElementsByClassName('enrol-course')[0].style.top =
+              '163px'
+          }
         }
       })
     },
