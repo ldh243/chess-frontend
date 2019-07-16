@@ -9,113 +9,160 @@
             </template>
           </v-breadcrumbs>
         </v-flex>
-        <v-flex v-if="lessonDetails.lessonType == 2" xs7>
-          <chessboard :fen="currentFen" @onMove="showInfo" />
-        </v-flex>
-        <v-flex v-else>
-          <iframe
-            width="100%"
-            class="iframe-video"
-            src="https://www.youtube.com/embed/xh4sO1ICS_Q"
-            frameborder="0"
-            allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-            allowfullscreen
-          ></iframe>
-        </v-flex>
-        <v-flex xs4 offset-xs1>
-          <v-layout column>
-            <v-flex class="move-history">
-              <v-card-title>
-                <span class="title font-weight-bold">Nước đi</span>
-              </v-card-title>
-              <div class="move-history-content">
-                <div v-for="(item, index) in moveHistory" :key="index">
-                  <div class="index">{{ item.index }}</div>
-                  <div
-                    :id="item.whiteMove.moveCount"
-                    class="move"
-                    @click="loadFen(item.whiteMove.fen, $event)"
-                  >
-                    {{ item.whiteMove.move }}
-                  </div>
-                  <div
-                    v-if="item.blackMove"
-                    :id="item.blackMove.moveCount"
-                    class="move"
-                    @click="loadFen(item.blackMove.fen, $event)"
-                  >
-                    {{ item.blackMove.move }}
+        <v-layout row>
+          <v-flex v-if="lessonDetails.lessonType == 2" xs8 mr-5>
+            <chessboard :fen="currentFen" :move="move" />
+          </v-flex>
+          <v-flex v-else xs8 mr-5>
+            <v-card class="pa-3">
+              <iframe
+                width="100%"
+                class="iframe-video"
+                src="https://www.youtube.com/embed/xh4sO1ICS_Q"
+                frameborder="0"
+                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen
+              ></iframe>
+              <div v-for="(item, index) in lessonContent" :key="index">
+                <p class="mb-1">{{ item.title }}</p>
+                <p class="mb-3">{{ item.text }}</p>
+              </div>
+            </v-card>
+          </v-flex>
+          <v-flex xs4 class="direction-side">
+            <v-layout column>
+              <v-flex class="move-history mb-2">
+                <v-card-title class="pl-0 py-2">
+                  <span class="title font-weight-bold">Nước đi</span>
+                </v-card-title>
+                <div class="move-history-content">
+                  <div v-for="(item, index) in moveHistory" :key="index">
+                    <template v-if="item.depth === 1">
+                      <div class="index">{{ item.index }}</div>
+                      <div
+                        v-if="item.whiteMove"
+                        :id="item.whiteMove.moveCount"
+                        class="move"
+                        :preFen="item.whiteMove.preFen"
+                        :move="item.whiteMove.moveDirection"
+                        @click="
+                          loadFen(
+                            item.whiteMove.preFen,
+                            $event,
+                            item.whiteMove.content
+                          )
+                        "
+                      >{{ item.whiteMove.move }}</div>
+
+                      <div
+                        v-if="item.blackMove"
+                        :id="item.blackMove.moveCount"
+                        class="move"
+                        :preFen="item.blackMove.preFen"
+                        :move="item.blackMove.moveDirection"
+                        @click="
+                          loadFen(
+                            item.blackMove.preFen,
+                            $event,
+                            item.blackMove.content
+                          )
+                        "
+                      >{{ item.blackMove.move }}</div>
+                    </template>
+                    <div v-if="item.depth === 2" class="depth_2">
+                      <template v-for="(item2, index2) in item.moveHistory">
+                        <div :key="index2">
+                          <div class="index">{{ item2.index }}</div>
+                          <div
+                            v-if="item2.whiteMove"
+                            :id="item2.whiteMove.moveCount"
+                            class="move"
+                            :preFen="item2.whiteMove.preFen"
+                            :move="item2.whiteMove.moveDirection"
+                            @click="
+                              loadFen(
+                                item2.whiteMove.preFen,
+                                $event,
+                                item2.whiteMove.content
+                              )
+                            "
+                          >{{ item2.whiteMove.move }}</div>
+                          <div
+                            v-if="item2.blackMove"
+                            :id="item2.blackMove.moveCount"
+                            class="move"
+                            :preFen="item2.blackMove.preFen"
+                            :move="item2.blackMove.moveDirection"
+                            @click="
+                              loadFen(
+                                item2.blackMove.preFen,
+                                $event,
+                                item2.blackMove.content
+                              )
+                            "
+                          >{{ item2.blackMove.move }}</div>
+                        </div>
+                      </template>
+                    </div>
                   </div>
                 </div>
-              </div>
-            </v-flex>
-            <v-flex mb-4>
-              <v-layout row>
-                <v-btn
-                  flat
-                  :disabled="statusPreviousMove"
-                  @click="turnToFirstMove()"
-                >
-                  <v-icon>fa-fast-backward</v-icon>
-                </v-btn>
-                <v-btn
-                  flat
-                  class="main-button"
-                  :disabled="statusPreviousMove"
-                  @click="turnToPreviousMove()"
-                >
-                  <v-icon>fa-backward</v-icon>
-                </v-btn>
-
-                <v-btn
-                  flat
-                  class="main-button"
-                  :disabled="statusNextMove"
-                  @click="turnToNextMove()"
-                >
-                  <v-icon>fa-forward</v-icon>
-                </v-btn>
-                <v-btn
-                  flat
-                  :disabled="statusNextMove"
-                  @click="turnToLastMove()"
-                >
-                  <v-icon>fa-fast-forward</v-icon>
-                </v-btn>
-              </v-layout>
-            </v-flex>
-            <v-flex v-if="lessonDetails != null" class="lesson-area" mb-2>
-              <v-card-title class="pl-0 py-2">
-                <span class="title font-weight-bold">Nội dung</span>
-              </v-card-title>
-              <div class="lesson-content">
-                <v-card-title
-                  v-if="lessonDetails.uninteractiveLesson != null"
-                  >{{ lessonDetails.uninteractiveLesson.content }}</v-card-title
-                >
-              </div>
-            </v-flex>
-            <v-flex>
-              <v-layout row justify-space-between>
-                <v-btn
-                  class="font-weight-bold"
-                  :disabled="statusPreviousLesson"
-                  @click="turnToPreviousLesson()"
-                >
-                  <v-icon class="mr-2">fa-angle-left</v-icon>Bài trước
-                </v-btn>
-                <v-btn
-                  class="font-weight-bold"
-                  :disabled="statusNextLesson"
-                  @click="turnToNextLesson()"
-                >
-                  Bài tiếp
-                  <v-icon class="ml-2">fa-angle-right</v-icon>
-                </v-btn>
-              </v-layout>
-            </v-flex>
-          </v-layout>
-        </v-flex>
+              </v-flex>
+              <v-flex mb-2 class="move-history-direction">
+                <v-layout row>
+                  <v-btn flat :disabled="statusPreviousMove" @click="turnToFirstMove()">
+                    <v-icon>fa-fast-backward</v-icon>
+                  </v-btn>
+                  <v-btn
+                    flat
+                    class="main-button"
+                    :disabled="statusPreviousMove"
+                    @click="turnToPreviousMove()"
+                  >
+                    <v-icon>fa-backward</v-icon>
+                  </v-btn>
+                  <v-btn
+                    flat
+                    class="main-button"
+                    :disabled="statusNextMove"
+                    @click="turnToNextMove()"
+                  >
+                    <v-icon>fa-forward</v-icon>
+                  </v-btn>
+                  <v-btn flat :disabled="statusNextMove" @click="turnToLastMove()">
+                    <v-icon>fa-fast-forward</v-icon>
+                  </v-btn>
+                </v-layout>
+              </v-flex>
+              <v-flex class="lesson-area" mb-2>
+                <v-card-title class="pl-0 py-2">
+                  <span class="title font-weight-bold">Nội dung</span>
+                </v-card-title>
+                <div class="lesson-content">
+                  <v-card-title v-if="lessonDetails.interactiveLesson != null">{{ stepContent }}</v-card-title>
+                </div>
+              </v-flex>
+              <v-flex class="lesson-direction">
+                <v-layout row justify-space-between>
+                  <v-btn
+                    class="font-weight-bold"
+                    :disabled="statusPreviousLesson"
+                    @click="turnToPreviousLesson()"
+                  >
+                    <v-icon class="mr-2">fa-angle-left</v-icon>Bài trước
+                  </v-btn>
+                  <v-btn
+                    class="font-weight-bold"
+                    :disabled="statusNextLesson"
+                    @click="turnToNextLesson()"
+                  >
+                    Bài tiếp
+                    <v-icon class="ml-2">fa-angle-right</v-icon>
+                  </v-btn>
+                </v-layout>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+        </v-layout>
         <Loader v-if="loader" />
       </v-layout>
     </v-container>
@@ -124,6 +171,8 @@
 
 <script>
 import Loader from '@/components/Loader'
+import sampleText from '@/data/sampletext.json'
+import sampleLesson from '@/data/lesson.json'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const courseRepository = RepositoryFactory.get('course')
 const lessonRepository = RepositoryFactory.get('lesson')
@@ -133,6 +182,10 @@ export default {
   },
   data() {
     return {
+      sampleText,
+      sampleLesson,
+      lessonContent: null,
+      stepContent: null,
       loader: false,
       moveHistory: [],
       defaultFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
@@ -165,7 +218,13 @@ export default {
           text: '123123',
           disabled: true
         }
-      ]
+      ],
+      height: {
+        moveHistory: 0,
+        lessonContent: 0
+      },
+      move: '',
+      steps: []
     }
   },
   computed: {
@@ -193,10 +252,15 @@ export default {
     this.updateMove = true
     if (this.lessonDetails.lessonType == 3) {
       this.setHeightForIframe()
+      this.lessonContent = this.sampleText
+    } else {
+      this.lessonContent = null
     }
+    this.initHeightForDirecitonSide()
   },
   created() {
     this.currentFen = this.defaultFen
+    // console.log(JSON.stringify(this.sampleLesson))
   },
   mounted() {
     this.loader = true
@@ -204,14 +268,58 @@ export default {
     this.loader = false
   },
   methods: {
-    loadFen(fen, event) {
+    initHeightForDirecitonSide() {
+      //reset height
+      document.getElementsByClassName('move-history-content')[0].style.height =
+        '0px'
+      document.getElementsByClassName('lesson-content')[0].style.height = '0px'
+
+      const totalHeight = document.getElementsByClassName('direction-side')[0]
+        .offsetHeight
+
+      if (this.lessonDetails.lessonType == 2) {
+        this.showHideMoveHistory(true)
+        const moveHeight = totalHeight * 0.6 - 88
+        document.getElementsByClassName(
+          'move-history-content'
+        )[0].style.height = moveHeight + 'px'
+        const lessonHeight = totalHeight * 0.4 - 88
+        document.getElementsByClassName('lesson-content')[0].style.height =
+          lessonHeight + 'px'
+      } else {
+        this.showHideMoveHistory(false)
+        const lessonHeight = totalHeight - 76
+        document.getElementsByClassName('lesson-content')[0].style.height =
+          lessonHeight + 'px'
+      }
+    },
+    showHideMoveHistory(status) {
+      if (status) {
+        document.getElementsByClassName('move-history')[0].style.display =
+          'block'
+        document.getElementsByClassName(
+          'move-history-direction'
+        )[0].style.display = 'block'
+      } else {
+        document.getElementsByClassName('move-history')[0].style.display =
+          'none'
+        document.getElementsByClassName(
+          'move-history-direction'
+        )[0].style.display = 'none'
+      }
+    },
+    loadFen(fen, event, content) {
       this.updateMove = false
-      this.currentFen = fen
       if (event != undefined) {
+        this.stepContent = content
         const divTarget = event.srcElement
         //Lấy id của nó parse sang int
         this.currentMove = this.getIdNumberOfMove(divTarget)
+        this.currentFen = divTarget.getAttribute('preFen')
+        this.move = divTarget.getAttribute('move')
         this.setCurrentMove()
+      } else {
+        this.currentFen = fen
       }
     },
     async getCourseById() {
@@ -224,60 +332,138 @@ export default {
       this.getLessonById()
     },
     async getLessonById() {
+      this.loader = true
       const lessonModel = this.courseDetails.lessonViewModels[this.activeLesson]
       const { data } = await lessonRepository.getById(lessonModel.lessonId)
       this.lessonDetails = data.data
+      this.steps = this.lessonDetails.interactiveLesson.steps
       this.checkStatusDirectLesson()
+      if (this.lessonDetails.lessonType == 2) {
+        this.loadMoveHistoryByLesson()
+      }
+      this.loader = false
     },
-    showInfo(data) {
-      //example data
-      // moveHistory: [
-      //     {
-      //         index:
-      //         whiteMove: {
-      //             move:
-      //             fen:
-      //             moveCount:
-      //         }
-      //         blackMove: {
-      //             move:
-      //             fen:
-      //             moveCount:
-      //         }
-      //     }
-      // ]
-      const black = 'black'
-      let moveHistory = this.moveHistory
-      //Lấy nước đi mới
-      let newMove = data.history[data.history.length - 1]
-      //Lấy nước đi cuối cùng
-      let lastMove = moveHistory[moveHistory.length - 1]
-      if (newMove === undefined || !this.currentFen) return
-      //   newMove = this.changeChessKey(newMove)
-      //Lấy turn hiện tại
-      const turn = data.turn
-      this.totalMove++
-      if (turn === black) {
+    getTurnOfFen(fen) {
+      if (this.isEmpty(fen)) {
+        return 'w'
+      }
+      const arr = fen.split(' ')
+      return arr[1]
+    },
+    addMoveHistory(newMove, depth) {
+      if (depth === 1) {
+        let turn = this.getTurnOfFen(newMove.preFen)
+        this.totalMove++
+        newMove.moveCount = 'move-' + this.totalMove
         //tạo thêm turn mới
         const newTurn = {
-          index: moveHistory.length + 1,
-          whiteMove: {
-            move: newMove,
-            fen: data.fen,
-            moveCount: 'move-' + this.totalMove
-          },
+          index: this.moveHistory.length + 1,
+          depth: 1,
+          whiteMove: newMove,
           blackMove: null
         }
-        moveHistory.push(newTurn)
-      } else {
-        //nước đi tiếp theo của turn cũ
-        lastMove.blackMove = {
-          move: newMove,
-          fen: data.fen,
-          moveCount: 'move-' + this.totalMove
+        if (turn === 'w') {
+          this.moveHistory.push(newTurn)
+        } else {
+          let lastMove = this.moveHistory[this.moveHistory.length - 1]
+          //nước đi tiếp theo của turn cũ
+          // if (this.isEmpty(lastMove.blackMove)) {
+          lastMove.blackMove = newMove
+          // } else {
+          //   this.moveHistory.push(newTurn)
+          // }
         }
       }
-      this.currentMove = this.totalMove
+    },
+    refactorPreviousFen() {
+      this.steps.forEach(el => {
+        const parent = this.steps.find(pr => pr.id === el.preMove)
+        if (this.isEmpty(parent)) {
+          el.preFen = this.lessonDetails.interactiveLesson.initCode
+        } else {
+          el.preFen = parent.fen
+        }
+      })
+      this.steps[0].fen = this.lessonDetails.interactiveLesson.initCode
+    },
+    loadMoveHistoryByLesson() {
+      this.loadFen(this.lessonDetails.interactiveLesson.initCode)
+      this.refactorPreviousFen()
+      const firstStep = this.steps[0]
+      this.dfs(null, firstStep, 1)
+      this.refactorDepth2()
+      console.log(this.moveHistory)
+    },
+    dfs(parent, move, depth) {
+      if (depth === 2) {
+        if (this.isEmpty(parent.depth2)) {
+          parent.depth2 = []
+        }
+        parent.depth2.push(move)
+      } else if (depth === 3) {
+        if (this.isEmpty(parent.depth3)) {
+          parent.depth3 = []
+        }
+        parent.depth3.push(move)
+      }
+      // move.move = `${move.move} ${depth}`
+      this.addMoveHistory(move, depth)
+      let index = depth - 1
+
+      let firstBranch = null
+      this.steps.forEach(el => {
+        if (el.preMove === move.id) {
+          index++
+          if (index === depth) {
+            this.dfs(parent, el, index)
+            firstBranch = el
+          } else {
+            this.dfs(firstBranch, el, index)
+          }
+        }
+      })
+    },
+    refactorDepth2() {
+      this.moveHistory.forEach((el, index) => {
+        if (el.depth === 1) {
+          if (
+            !this.isEmpty(el.whiteMove) &&
+            !this.isEmpty(el.whiteMove.depth2)
+          ) {
+            // console.log('--- White ---')
+            // console.log(el)
+          } else if (
+            !this.isEmpty(el.blackMove) &&
+            !this.isEmpty(el.blackMove.depth2)
+          ) {
+            const oddMove = {
+              move: '...'
+            }
+            el.blackMove.depth2.unshift(oddMove)
+            const depth2 = {
+              depth: 2,
+              moveHistory: []
+            }
+
+            el.blackMove.depth2.forEach(childStep => {
+              const newTurn = {
+                index: el.index + depth2.moveHistory.length,
+                whiteMove: childStep,
+                blackMove: null,
+                depth: 2
+              }
+              const turn = this.getTurnOfFen(childStep.preFen)
+              if (turn === 'w') {
+                depth2.moveHistory.push(newTurn)
+              } else {
+                let lastMove = depth2.moveHistory[depth2.moveHistory.length - 1]
+                lastMove.blackMove = childStep
+              }
+            })
+            this.moveHistory.splice(index + 1, 0, depth2)
+          }
+        }
+      })
     },
     setCurrentMove() {
       //set highlight div dựa trên this.current move hiện tại
@@ -288,7 +474,8 @@ export default {
         })
         let currentMove = document.getElementById('move-' + this.currentMove)
         currentMove.classList.add('current-move')
-        currentMove.parentNode.parentNode.scrollTop = currentMove.offsetTop
+        currentMove.parentNode.parentNode.scrollTop =
+          currentMove.offsetTop - 221
       }
     },
     getIdNumberOfMove(divTarget) {
@@ -380,7 +567,6 @@ export default {
       let iframe = document.getElementsByClassName('iframe-video')[0]
       const width = iframe.offsetWidth
       const height = width / ratio
-
       iframe.style.height = height + 'px'
     }
   }
@@ -393,5 +579,16 @@ export default {
 >>> .application--wrap {
   margin-top: -56px;
   padding-top: 56px;
+}
+.depth_2 {
+  color: #c00;
+  margin: 5pt 0 5pt 5pt;
+  flex: 0 0 100%;
+}
+.depth_2 > div {
+  flex: 0 0 100%;
+}
+.depth_2 > div > div {
+  background-color: hsla(0, 59%, 85%, 0.85);
 }
 </style>

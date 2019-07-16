@@ -6,9 +6,6 @@ import mixin from './mixin'
 import './plugins/index'
 import firebase from 'firebase'
 // import './assets/style/vue-chessboard.css'
-import Repository, { setAuthorizationHeader } from '@/repository/Repository.js'
-import { RepositoryFactory } from '@/repository/RepositoryFactory'
-const userRepository = RepositoryFactory.get('user')
 Vue.config.productionTip = false
 
 //connect firebase

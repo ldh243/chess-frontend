@@ -249,7 +249,7 @@ export default {
     loadMove() {
       console.log(this.move)
       this.hisMoves += ' ' + this.move
-      // console.log("ahihi load ne")
+      console.log('ahihi load ne')
       // console.log(this.move)
       this.game.move({
         from: this.move.substring(0, 2),

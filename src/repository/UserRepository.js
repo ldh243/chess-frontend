@@ -1,4 +1,4 @@
-import Repository, { setAuthorizationHeader } from '@/repository/Repository'
+import Repository from '@/repository/Repository'
 
 const resource = '/user'
 
@@ -7,7 +7,7 @@ export default {
     return Repository.get(`${resource}/get-current-user-detail`)
   },
   signUpNewAccount(data) {
-    const user = JSON.parse(localStorage.getItem("user"))
+    const user = JSON.parse(localStorage.getItem('user'))
     console.log(data.certificates)
     const newUser = {
       userId: user.userId,
@@ -23,14 +23,14 @@ export default {
       active: true,
       status: data.status,
       roleName: data.roleName
-    } 
+    }
     console.log(newUser)
     return Repository.put(`${resource}/register`, newUser).then(() => {
       localStorage.removeItem('user')
       localStorage.setItem('user', JSON.stringify(newUser))
       localStorage.removeItem('role')
       localStorage.setItem('role', newUser.roleId)
-      console.log("updated")
+      console.log('updated')
     })
   }
 }

@@ -5,12 +5,7 @@
     </v-toolbar>
     <v-form ref="form" v-model="valid" lazy-validation class="pa-4">
       <v-hover>
-        <v-avatar
-          slot-scope="{ hover }"
-          :tile="false"
-          :size="100"
-          color="grey lighten-4"
-        >
+        <v-avatar slot-scope="{ hover }" :tile="false" :size="100" color="grey lighten-4">
           <img :src="avatar" alt="avatar" />
           <v-fade-transition>
             <div v-if="hover" class="upload-file">
@@ -23,11 +18,7 @@
           </v-fade-transition>
         </v-avatar>
       </v-hover>
-      <v-text-field
-        v-model="email"
-        label="E-mail"
-        disabled
-      ></v-text-field>
+      <v-text-field v-model="email" label="E-mail" disabled></v-text-field>
       <v-text-field
         v-model="fullName"
         v-validate="'required|max:50'"
@@ -39,27 +30,21 @@
       <p class="subheading grey--text">Chọn loại tài khoản</p>
       <v-radio-group v-model="role" row>
         <v-radio color="primary" label="Học viên" value="learner"></v-radio>
-        <v-radio
-          color="primary"
-          label="Người hướng dẫn"
-          value="instructor"
-        ></v-radio>
+        <v-radio color="primary" label="Người hướng dẫn" value="instructor"></v-radio>
       </v-radio-group>
       <v-slide-y-transition>
         <v-textarea
           v-show="isInstructor"
+          v-model="achievement"
           solo
           name="input-7-4"
           label="Thành tích"
           value
-          v-model="achievement"
         ></v-textarea>
       </v-slide-y-transition>
       <v-slide-y-transition>
         <div>
-          <p v-show="isInstructor" class="subheading grey--text">
-            Các chứng nhận
-          </p>
+          <p v-show="isInstructor" class="subheading grey--text">Các chứng nhận</p>
           <vue-upload-multiple-image
             v-show="isInstructor"
             @upload-success="uploadImageSuccess"
@@ -98,19 +83,12 @@
 
 <script>
 import VueUploadMultipleImage from '@/components/plugins/vue-upload-multiple-image/VueUploadMultipleImage'
-import { mapState } from 'vuex'
 import VueAvatar from '@/components/plugins/vue-avatar/VueAvatarEditor'
-import firebase from 'firebase'
 import Repository, { setAuthorizationHeader } from '@/repository/Repository.js'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const userRepository = RepositoryFactory.get('user')
 
 export default {
-  name: 'RegisterForm',
-  components: {
-    VueUploadMultipleImage,
-    VueAvatar
-  },
   name: 'RegisterForm',
   components: {
     VueUploadMultipleImage,
@@ -135,6 +113,12 @@ export default {
       achievement: ''
     }
   },
+  watch: {
+    role: function(role) {
+      this.role = role
+      this.isInstructor = role == 'instructor'
+    }
+  },
   created() {
     this.loader = true
     if (
@@ -151,12 +135,6 @@ export default {
     }
     this.loader = false
   },
-  watch: {
-    role: function(role) {
-      this.role = role
-      this.isInstructor = role == 'instructor'
-    }
-  },
   methods: {
     validate() {
       if (this.$refs.form.validate()) {
@@ -172,14 +150,13 @@ export default {
     },
     uploadImageSuccess(formData, index, fileList) {
       this.certificates = fileList
-      console.log(this.certificates)
     },
     getAva(data) {
       this.avatar = data.toDataURL()
       this.isChangedAva = true
       this.avaDialog = false
     },
-    beforeRemove(index, done, fileList) {
+    beforeRemove(index, done) {
       var r = confirm('Bạn muốn xóa hình ảnh này?')
       if (r == true) {
         done()
@@ -187,17 +164,23 @@ export default {
     },
     async submit() {
       this.validate()
-      let avatar = this.user.avatar, achievement = this.user.achievement, certificates = []
+      let avatar = this.user.avatar,
+        achievement = this.user.achievement,
+        certificates = []
       //get email name of user
       let match = this.user.email.match(/^([^@]*)/)
       if (this.isChangedAva) {
-      //upload image to firebase
-        avatar = await this.uploadImageByDataURL(this.avatar, match[0], "ava")
+        //upload image to firebase
+        avatar = await this.uploadImageByDataURL(this.avatar, match[0], 'ava')
       }
       if (this.isInstructor) {
         for (var i = 0; i < this.certificates.length; i++) {
-          const image = await this.uploadImageByDataURL(this.certificates[i].path, match[0] + this.certificates[i].name, "certificates")
-          certificates.push({certificateId: 0, certificateLink: image})
+          const image = await this.uploadImageByDataURL(
+            this.certificates[i].path,
+            match[0] + this.certificates[i].name,
+            'certificates'
+          )
+          certificates.push({ certificateId: 0, certificateLink: image })
         }
         achievement = this.achievement
       }
@@ -210,13 +193,15 @@ export default {
         roleName: this.getRoleName(this.isInstructor ? 1 : 2),
         status: this.getStatusUser(this.isInstructor ? false : true)
       }
-      const result = await userRepository.signUpNewAccount(data)
+      await userRepository.signUpNewAccount(data)
       // if isIntructor redirect to admin app
       if (this.isInstructor) {
         localStorage.removeItem('role')
         localStorage.removeItem('access-token')
         localStorage.removeItem('user')
-        let r = confirm('Đăng kí tài khoản thành công, chuyển đến trang quản trị?')
+        let r = confirm(
+          'Đăng kí tài khoản thành công, chuyển đến trang quản trị?'
+        )
         if (r == true) {
           window.location.href = 'http://admin-cols.ml/'
           done()
@@ -224,7 +209,7 @@ export default {
           this.$router.push('/')
         }
       } else {
-        this.$router.push({name: 'home', params: {isNew: true}})
+        this.$router.push({ name: 'home', params: { isNew: true } })
       }
     }
   }

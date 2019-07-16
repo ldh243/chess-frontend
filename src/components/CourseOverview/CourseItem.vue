@@ -11,17 +11,23 @@
           <v-img :src="courseDetail.courseImage" height="175px"></v-img>
         </v-flex>
         <v-flex xs12>
-          <v-card-title primary-title class="pt-2">
-            <v-flex xs12>
-              <span class="course-title">{{ courseDetail.courseName }}</span>
-            </v-flex>
+          <v-card-title primary-title class="pt-2 pb-1 text-truncate">
+            <span class="course-title text-truncate">{{
+              courseDetail.courseName
+            }}</span>
+          </v-card-title>
+        </v-flex>
+        <v-flex xs12 mb-2>
+          <v-layout row px-3>
             <v-flex xs2>
               <v-avatar :size="50">
-                <img :src="courseDetail.authorAvatar" alt="avatar" />
+                <img :src="courseDetail.author.avatar" alt="avatar" />
               </v-avatar>
             </v-flex>
             <v-flex xs9 ml-3>
-              <span class="ml-1 course-author">{{courseDetail.authorName}}</span>
+              <span class="ml-1 course-author">{{
+                courseDetail.author.fullName
+              }}</span>
               <v-layout row>
                 <v-flex xs6>
                   <v-rating
@@ -40,7 +46,7 @@
                 </v-flex>
               </v-layout>
             </v-flex>
-          </v-card-title>
+          </v-layout>
         </v-flex>
       </v-layout>
       <v-divider light></v-divider>

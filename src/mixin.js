@@ -98,6 +98,12 @@ export default Vue.mixin({
         })
       return imageLink
       // })
+    },
+    isEmpty(obj) {
+      if (obj !== null && obj !== undefined) {
+        return false
+      }
+      return true
     }
   }
 })

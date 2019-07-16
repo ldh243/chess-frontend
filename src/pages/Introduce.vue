@@ -22,21 +22,17 @@
               <Category :content="item" />
             </v-flex>
             <v-snackbar
-      v-model="snackbar"
-      :color="color"
-      :multi-line="mode === 'multi-line'"
-      :timeout="timeout"
-      :vertical="mode === 'vertical'"
-    >
-      {{ snackbarText }}
-      <v-btn
-        dark
-        flat
-        @click="snackbar = false"
-      >
-        Đóng
-      </v-btn>
-    </v-snackbar>
+              v-model="snackbar"
+              :color="color"
+              :multi-line="mode === 'multi-line'"
+              :timeout="timeout"
+              :vertical="mode === 'vertical'"
+            >
+              {{ snackbarText }}
+              <v-btn dark flat @click="snackbar = false">
+                Đóng
+              </v-btn>
+            </v-snackbar>
           </v-layout>
         </v-container>
       </v-flex>
@@ -46,7 +42,7 @@
 
 <script>
 import Category from '@/components/Introduce/Category'
-import { setTimeout } from 'timers';
+import { setTimeout } from 'timers'
 export default {
   components: {
     Category

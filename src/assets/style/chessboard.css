@@ -1,15 +1,16 @@
 >>> piece,
-.blue, >>> coords {
+.blue,
+>>> coords {
   background-color: transparent !important;
 }
- 
+
 /* for learning-board ============================*/
-.move-history-content, .lesson-content {
+.move-history-content,
+.lesson-content {
   background-color: #fff;
   border-color: #fff;
   color: rgba(0, 0, 0, 0.87);
   border-radius: 2px;
-  height: 180px;
   box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
     0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
   overflow: auto;
@@ -18,8 +19,8 @@
   flex-wrap: wrap;
   display: flex;
 }
-.lesson-area {
-  height: 220px;
+.lesson-content {
+  height: 270px;
 }
 /* for learning-board ============================*/
 .v-btn {
@@ -62,7 +63,8 @@
 }
 /*for playing page ===========================*/
 /* reset background color for dialog */
-.black, .white {
+.black,
+.white {
   background-color: transparent !important;
 }
 .pick-color {
@@ -71,22 +73,22 @@
   background-size: 100% 100%;
 }
 /*for playing page ===========================*/
-@media (min-width: 1904px) {
-    .flex.offset-lg1 {
-        margin-left: 0%;
-    }
-    .flex.lg6 {
-        -ms-flex-preferred-size: 66.66666666666666%;
+/* @media (min-width: 1904px) {
+  .flex.offset-lg1 {
+    margin-left: 0%;
+  }
+  .flex.lg6 {
+    -ms-flex-preferred-size: 66.66666666666666%;
     flex-basis: 66.66666666666666%;
     -webkit-box-flex: 0;
     -ms-flex-positive: 0;
     flex-grow: 0;
     max-width: 66.66666666666666%;
-    }
-    .lesson-area {
-      height: 350px;
-    }
-    .lesson-content {
-      height: 310px;
-    }
-}
+  }
+  .lesson-area {
+    height: 350px;
+  }
+  .lesson-content {
+    height: 310px;
+  }
+} */

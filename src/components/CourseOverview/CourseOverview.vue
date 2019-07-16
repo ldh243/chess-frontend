@@ -5,9 +5,9 @@
     <v-flex
       v-for="(item, index) in listCourses"
       :key="index"
+      mb-3
       class="course-item"
       :style="{ marginRight: index % 3 != 2 ? 'calc(1%)' : '0px' }"
-      mb-3
     >
       <CourseItem :course-detail="item" @showEnrolDialog="showEnrolDialog" />
     </v-flex>
@@ -63,9 +63,12 @@ export default {
 
 <style scoped>
 .course-item {
-  flex-basis: 32.6666666%;
+  -ms-flex-preferred-size: 32.666666666666666%;
+  flex-basis: 32.666666666666666%;
   -webkit-box-flex: 0;
   -ms-flex-positive: 0;
   flex-grow: 0;
+  max-width: 32.666666666666666%;
+  flex: 1 1 auto;
 }
 </style>

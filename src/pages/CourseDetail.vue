@@ -21,14 +21,19 @@
                   <v-avatar :size="50">
                     <img :src="courseDetail.author.avatar" />
                   </v-avatar>
-                  <span class="white--text ml-2 subheading">{{ courseDetail.author.fullName }}</span>
+                  <span class="white--text ml-2 subheading">{{
+                    courseDetail.author.fullName
+                  }}</span>
                 </v-flex>
                 <v-flex xs4 py-2>
                   <v-layout row>
                     <v-flex xs6>
                       <v-layout align-center fill-height justify-end>
                         <v-icon class="white--text mr-2">fa-users</v-icon>
-                        <span>{{ courseDetail.userEnrolleds.length }} Học viên</span>
+                        <span
+                          >{{ courseDetail.userEnrolleds.length }} Học
+                          viên</span
+                        >
                       </v-layout>
                     </v-flex>
                     <v-flex xs6 py-2>
@@ -86,37 +91,45 @@
                       <v-layout>
                         <span class="course-point">Điểm tiêu hao</span>
                         <v-spacer></v-spacer>
-                        <span class="course-point">{{ courseDetail.point }} điểm</span>
+                        <span class="course-point"
+                          >{{ courseDetail.point }} điểm</span
+                        >
                       </v-layout>
                     </v-flex>
                     <v-flex xs12 mb-1>
                       <v-layout>
                         <span class="regular-text">Điểm nhận được</span>
                         <v-spacer></v-spacer>
-                        <span class="regular-text">{{ courseDetail.point }} điểm</span>
+                        <span class="regular-text"
+                          >{{ courseDetail.point }} điểm</span
+                        >
                       </v-layout>
                     </v-flex>
                     <v-flex xs12 mb-2>
                       <v-layout>
                         <span class="regular-text">Giảng viên</span>
                         <v-spacer></v-spacer>
-                        <span class="regular-text">{{ courseDetail.author.fullName }}</span>
+                        <span class="regular-text">{{
+                          courseDetail.author.fullName
+                        }}</span>
                       </v-layout>
                     </v-flex>
-                    <v-flex x12 v-if="user != null">
+                    <v-flex v-if="user != null" x12>
                       <v-layout justify-end>
                         <v-btn
+                          v-if="courseDetail.enrolled"
                           color="info"
                           class="ma-0"
-                          v-if="courseDetail.enrolled"
                           @click="goToLearningPage()"
-                        >Bắt đầu học</v-btn>
+                          >Bắt đầu học</v-btn
+                        >
                         <v-btn
+                          v-else
                           color="error"
                           class="ma-0"
-                          v-else
                           @click="showConfirmEnrolCourse()"
-                        >Đăng ký khóa học</v-btn>
+                          >Đăng ký khóa học</v-btn
+                        >
                       </v-layout>
                     </v-flex>
                   </v-layout>
@@ -209,7 +222,9 @@ export default {
     showConfirmEnrolCourse() {
       this.$swal({
         title: 'Xác nhận?',
-        text: `Bạn có chắc chắn sử dụng ${this.courseDetail.point} điểm để đăng ký khóa học này`,
+        text: `Bạn có chắc chắn sử dụng ${
+          this.courseDetail.point
+        } điểm để đăng ký khóa học này`,
         type: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
