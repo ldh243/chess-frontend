@@ -15,11 +15,7 @@
     </v-card-title>
     <v-layout row pa-3>
       <v-expansion-panel popout>
-        <v-expansion-panel-content
-          v-for="(item, index) in curriculum"
-          :key="index"
-          class="mb-1"
-        >
+        <v-expansion-panel-content v-for="(item, index) in curriculum" :key="index" class="mb-1">
           <template v-slot:header>
             <div class="course-title">Bài {{ index + 1 }}: {{ item.name }}</div>
             <v-spacer></v-spacer>
@@ -57,9 +53,9 @@ export default {
   mounted() {
     this.loader = true
     if (this.curriculum != null) {
-      this.getLessonById(this.curriculum[0].lessonId)
-      this.getLessonById(this.curriculum[1].lessonId)
-      this.getLessonById(this.curriculum[2].lessonId)
+      this.curriculum.forEach(el => {
+        this.getLessonById(el.lessonId)
+      })
     }
     this.loader = false
   },
