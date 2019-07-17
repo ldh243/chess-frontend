@@ -56,7 +56,6 @@ export default {
     fen: function(newFen) {
       this.fen = newFen
       this.loadPosition()
-      this.fen = ''
     },
     orientation: function(orientation) {
       console.log('watch orientation________', orientation)
@@ -248,6 +247,7 @@ export default {
       this.afterMove()
     },
     loadMove() {
+      this.loadPosition()
       this.hisMoves += ' ' + this.move
       console.log('ahihi load ne')
       // console.log(this.move)
