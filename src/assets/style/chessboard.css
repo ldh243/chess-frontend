@@ -13,7 +13,8 @@
   border-radius: 2px;
   box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
     0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
-  overflow: auto;
+  overflow-y: auto;
+  overflow-x: hidden;
 }
 .move-history-content div {
   flex-wrap: wrap;
@@ -36,14 +37,16 @@
 }
 .index {
   flex: 0 0 14%;
-  border-right: 1px solid #d9d9d9;
-  background: #f7f6f5;
+  /* background-color: #f7f6f5; */
+  border: 1px solid #d9d9d9;
   color: #b3b3b3;
   justify-content: center;
   align-content: center;
   font-size: 15px;
 }
-.move {
+.move,
+.empty-move {
+  border: 1px solid #d9d9d9;
   flex: 0 0 43%;
   font-size: 1.185em;
   padding-left: 10px;
@@ -58,7 +61,7 @@
 }
 .current-move {
   font-weight: bold;
-  background: #d1e6fa;
+  background-color: #d1e6fa !important;
   color: #1f1f1f;
 }
 /*for playing page ===========================*/
