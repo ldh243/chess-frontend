@@ -26,15 +26,6 @@ export default Vue.mixin({
     //   const date = new Date(Date.parse(datetime))
     //   return date.toLocaleString()
     // },
-    // formatListCourse(courses) {
-    //   courses.forEach(course => {
-    //     course.statusName = this.getStatusCourse(course.statusId)
-    //     course.courseCreatedDate = this.getDateTimeFormat(
-    //       course.courseCreatedDate
-    //     )
-    //   })
-    //   return courses
-    // },
     getRoleName(roleId) {
       switch (roleId) {
         case 1:

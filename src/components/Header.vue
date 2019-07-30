@@ -13,7 +13,6 @@
       <v-layout justify-end>
         <v-btn
           black--text
-          round
           color="white"
           :style="btnLoginGoogle"
           class="mr-0"
@@ -50,20 +49,15 @@
         </v-menu>
       </v-layout>
     </v-flex>
-    <Loader v-if="loader" />
   </v-toolbar>
 </template>
 
 <script>
 import { mapState } from 'vuex'
 import Repository, { setAuthorizationHeader } from '@/repository/Repository.js'
-import Loader from '@/components/Loader'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
 let userRepository = RepositoryFactory.get('user')
 export default {
-  components: {
-    Loader
-  },
   data() {
     return {
       chessLogo: require('@/assets/images/chess.png'),
@@ -79,7 +73,6 @@ export default {
         { title: 'Học lý thuyết', href: '/learning-theory' },
         { title: 'Học thế cờ', href: '/learning-board' }
       ],
-      loader: false,
       userMenu: [{ title: 'Thông tin cá nhân', href: '/profile', method: '' }]
     }
   },
@@ -95,7 +88,7 @@ export default {
     }
   },
   mounted() {
-    this.loader = true
+    this.$store.commit('incrementLoader', 1)
     if (
       localStorage.getItem('access-token') != null &&
       this.$store.state.user === null
@@ -103,7 +96,9 @@ export default {
       setAuthorizationHeader(Repository, localStorage.getItem('access-token'))
       this.getCurrentUserDetail()
     }
-    this.loader = false
+    setTimeout(() => {
+      this.$store.commit('incrementLoader', -1)
+    }, 500)
   },
   methods: {
     loginWithGoogle() {

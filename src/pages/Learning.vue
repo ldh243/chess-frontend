@@ -47,14 +47,8 @@
                         :preFen="moved1.whiteMove.preFen"
                         :move="moved1.whiteMove.moveDirection"
                         :class="moved1.whiteMove.class"
-                        @click="
-                          loadFen(
-                            null,
-                            $event,
-                            moved1.whiteMove.content
-                          )
-                        "
                         :depth="moved1.depth"
+                        @click="loadFen(null, $event, moved1.whiteMove.content)"
                       >{{ moved1.whiteMove.move }}</div>
 
                       <div
@@ -65,19 +59,13 @@
                         :class="moved1.blackMove.class"
                         :preFen="moved1.blackMove.preFen"
                         :move="moved1.blackMove.moveDirection"
-                        @click="
-                          loadFen(
-                            null,
-                            $event,
-                            moved1.blackMove.content
-                          )
-                        "
                         :depth="moved1.depth"
+                        @click="loadFen(null, $event, moved1.blackMove.content)"
                       >{{ moved1.blackMove.move }}</div>
                     </template>
                     <div v-if="moved1.depth === 2" class="depth_2">
                       <template v-for="(moved2, index2) in moved1.moveHistory">
-                        <div :key="index2" v-if="moved2.depth === 2">
+                        <div v-if="moved2.depth === 2" :key="index2">
                           <div class="index">{{ moved2.index }}</div>
                           <div
                             v-if="moved2.whiteMove"
@@ -87,14 +75,10 @@
                             :class="moved2.whiteMove.class"
                             :preFen="moved2.whiteMove.preFen"
                             :move="moved2.whiteMove.moveDirection"
-                            @click="
-                              loadFen(
-                                null,
-                                $event,
-                                moved2.whiteMove.content
-                              )
-                            "
                             :depth="moved2.depth"
+                            @click="
+                              loadFen(null, $event, moved2.whiteMove.content)
+                            "
                           >{{ moved2.whiteMove.move }}</div>
                           <div
                             v-if="moved2.blackMove"
@@ -104,52 +88,42 @@
                             :class="moved2.blackMove.class"
                             :preFen="moved2.blackMove.preFen"
                             :move="moved2.blackMove.moveDirection"
-                            @click="
-                              loadFen(
-                                null,
-                                $event,
-                                moved2.blackMove.content
-                              )
-                            "
                             :depth="moved2.depth"
+                            @click="
+                              loadFen(null, $event, moved2.blackMove.content)
+                            "
                           >{{ moved2.blackMove.move }}</div>
                         </div>
-                        <div class="depth_3" v-if="moved2.depth === 3">
+                        <div v-if="moved2.depth === 3" :key="index2" class="depth_3">
                           <template v-for="(moved3, index3) in moved2.moveHistory">
-                            <div class="index">{{ moved3.index }}</div>
+                            <div :key="index3" class="index">{{ moved3.index }}</div>
                             <div
                               v-if="moved3.whiteMove"
                               :id="moved3.whiteMove.id"
+                              :key="index3"
                               :preId="moved3.whiteMove.preId"
                               :nextId="moved3.whiteMove.nextId"
                               :class="moved3.whiteMove.class"
                               :preFen="moved3.whiteMove.preFen"
                               :move="moved3.whiteMove.moveDirection"
-                              @click="
-                              loadFen(
-                                null,
-                                $event,
-                                moved3.whiteMove.content
-                              )
-                            "
                               :depth="moved3.depth"
+                              @click="
+                                loadFen(null, $event, moved3.whiteMove.content)
+                              "
                             >{{ moved3.whiteMove.move }}</div>
                             <div
                               v-if="moved3.blackMove"
                               :id="moved3.blackMove.id"
+                              :key="index3"
                               :preId="moved3.blackMove.preId"
                               :nextId="moved3.blackMove.nextId"
                               :class="moved3.blackMove.class"
                               :preFen="moved3.blackMove.preFen"
                               :move="moved3.blackMove.moveDirection"
-                              @click="
-                              loadFen(
-                                null,
-                                $event,
-                                moved3.blackMove.content
-                              )
-                            "
                               :depth="moved3.depth"
+                              @click="
+                                loadFen(null, $event, moved3.blackMove.content)
+                              "
                             >{{ moved3.blackMove.move }}</div>
                           </template>
                         </div>
@@ -204,7 +178,6 @@
             </v-layout>
           </v-flex>
         </v-layout>
-        <Loader v-if="loader" />
       </v-layout>
     </v-container>
   </v-app>
@@ -212,7 +185,6 @@
 
 <script>
 import Chessboard from '@/components/plugins/vue-chessboard/index.vue'
-import Loader from '@/components/Loader'
 import sampleText from '@/data/sampletext.json'
 import sampleLesson from '@/data/lesson.json'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
@@ -220,7 +192,6 @@ const courseRepository = RepositoryFactory.get('course')
 const lessonRepository = RepositoryFactory.get('lesson')
 export default {
   components: {
-    Loader,
     Chessboard
   },
   data() {
@@ -229,7 +200,6 @@ export default {
       sampleLesson,
       lessonContent: null,
       stepContent: null,
-      loader: false,
       moveHistory: [],
       defaultFen: '',
       currentFen: '',
@@ -299,9 +269,11 @@ export default {
     // console.log(JSON.stringify(this.sampleLesson))
   },
   mounted() {
-    this.loader = true
+    this.$store.commit('incrementLoader', 1)
     this.getCourseById()
-    this.loader = false
+    setTimeout(() => {
+      this.$store.commit('incrementLoader', -1)
+    }, 500)
   },
   methods: {
     initHeightForDirecitonSide() {
@@ -372,7 +344,7 @@ export default {
       this.getLessonById()
     },
     async getLessonById() {
-      this.loader = true
+      this.$store.commit('incrementLoader', 1)
       const lessonModel = this.courseDetails.lessonViewModels[this.activeLesson]
       const { data } = await lessonRepository.getById(lessonModel.lessonId)
       this.lessonDetails = data.data
@@ -384,7 +356,9 @@ export default {
         this.firstId = this.steps[0].id
         this.loadMoveHistoryByLesson()
       }
-      this.loader = false
+      setTimeout(() => {
+        this.$store.commit('incrementLoader', -1)
+      }, 500)
     },
     getTurnOfFen(fen) {
       if (this.isEmpty(fen)) {
@@ -576,7 +550,6 @@ export default {
               !this.isEmpty(moved2.blackMove) &&
               !this.isEmpty(moved2.blackMove.depth3)
             ) {
-              console.log(moved2.blackMove.depth3)
               const oddMove = {
                 move: '...',
                 nextId: null,
@@ -698,11 +671,13 @@ export default {
     changeLesson(val) {
       if (0 <= this.activeLesson + val <= this.lessons.length) {
         this.activeLesson += val
-        this.loader = true
+        this.$store.commit('incrementLoader', 1)
         this.resetBoardAndResetHistory()
         this.getLessonById()
         this.checkStatusDirectLesson()
-        this.loader = false
+        setTimeout(() => {
+          this.$store.commit('incrementLoader', -1)
+        }, 500)
       }
     },
     checkStatusDirectLesson() {

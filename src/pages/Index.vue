@@ -2,6 +2,7 @@
   <v-app>
     <Header />
     <v-content>
+      <Loader v-if="$store.state.loader" />
       <router-view></router-view>
     </v-content>
     <Footer />
@@ -10,11 +11,13 @@
 
 <script>
 import Header from '@/components/Header'
+import Loader from '@/components/Loader'
 import Footer from '@/components/Footer'
 export default {
   components: {
     Header,
-    Footer
+    Footer,
+    Loader
   }
 }
 </script>

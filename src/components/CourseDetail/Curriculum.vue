@@ -2,20 +2,22 @@
   <v-card v-if="curriculum != null">
     <v-card-title primary-title>
       <v-layout row wrap>
-        <v-flex xs12>
-          <div class="headline">Giáo trình</div>
-        </v-flex>
-        <v-flex xs12>
-          <v-layout justify-end pr-3>
-            <span>Số bài: &nbsp;</span>
-            <span class="total-lesson">{{ curriculum.length }}</span>
-          </v-layout>
-        </v-flex>
+        <v-layout pr-3 align-center>
+          <span class="title-curriculum text-black">Giáo trình</span>
+          <v-spacer></v-spacer>
+          <span class="text-black">Số bài: &nbsp;</span>
+          <span class="total-lesson">{{ curriculum.length }}</span>
+        </v-layout>
+        <v-flex xs12></v-flex>
       </v-layout>
     </v-card-title>
     <v-layout row pa-3>
       <v-expansion-panel popout>
-        <v-expansion-panel-content v-for="(item, index) in curriculum" :key="index" class="mb-1">
+        <v-expansion-panel-content
+          v-for="(item, index) in curriculum"
+          :key="index"
+          class="mb-1"
+        >
           <template v-slot:header>
             <div class="course-title">Bài {{ index + 1 }}: {{ item.name }}</div>
             <v-spacer></v-spacer>
@@ -27,17 +29,12 @@
         </v-expansion-panel-content>
       </v-expansion-panel>
     </v-layout>
-    <Loader v-if="loader" />
   </v-card>
 </template>
 <script>
-import Loader from '@/components/Loader'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const lessonRepository = RepositoryFactory.get('lesson')
 export default {
-  components: {
-    Loader
-  },
   props: {
     curriculum: {
       type: Array,
@@ -46,18 +43,19 @@ export default {
   },
   data() {
     return {
-      lessonDetails: null,
-      loader: false
+      lessonDetails: null
     }
   },
   mounted() {
-    this.loader = true
+    this.$store.commit('incrementLoader', 1)
     if (this.curriculum != null) {
       this.curriculum.forEach(el => {
         this.getLessonById(el.lessonId)
       })
     }
-    this.loader = false
+    setTimeout(() => {
+      this.$store.commit('incrementLoader', -1)
+    }, 500)
   },
   methods: {
     async getLessonById(lessonId) {
@@ -72,7 +70,7 @@ export default {
 .course-title {
   font-size: 16px;
   color: #464646;
-  font-weight: 700;
+  font-weight: 600;
 }
 .course-type {
   flex: none !important;
@@ -92,5 +90,11 @@ export default {
 }
 >>> .theme--light.v-expansion-panel .v-expansion-panel__container {
   border-top: none;
+}
+.title-curriculum {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 32px;
+  letter-spacing: 0.3px;
 }
 </style>

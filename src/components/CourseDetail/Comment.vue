@@ -1,8 +1,7 @@
 <template>
   <v-layout row wrap px-3>
-    <Loader v-if="loader" />
     <v-flex xs12>
-      <span class="title">Đánh giá của bạn</span>
+      <span class="comment-title">Đánh giá của bạn</span>
     </v-flex>
     <v-flex xs12 mt-2>
       <v-rating
@@ -164,14 +163,10 @@
 </template>
 
 <script>
-import Loader from '@/components/Loader'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const courseRepository = RepositoryFactory.get('course')
 const moment = require('moment')
 export default {
-  components: {
-    Loader
-  },
   props: {
     enrolled: {
       type: Boolean,
@@ -180,7 +175,6 @@ export default {
   },
   data() {
     return {
-      loader: false,
       courseId: this.$route.params.courseId,
       userId: this.$store.state.user.userId,
       courseReview: {
@@ -211,9 +205,11 @@ export default {
     }
   },
   mounted() {
-    this.loader = true
+    this.$store.commit('incrementLoader', 1)
     this.getReviewPagination()
-    this.loader = false
+    setTimeout(() => {
+      this.$store.commit('incrementLoader', -1)
+    }, 500)
   },
   created() {
     moment.updateLocale('en', {
@@ -264,8 +260,17 @@ export default {
       this.postReview = true
       if (this.newReview.rating > 0 && this.newReview.content.length <= 100) {
         const { data } = await courseRepository.createReview(this.newReview)
-        this.showNewReview(data.data.savedId)
-        this.$emit('getCourseOverview')
+        if (data.data.success) {
+          this.showNewReview(data.data.savedId)
+          this.$emit('getCourseOverview')
+        } else {
+          this.$swal({
+            type: 'error',
+            title: 'Lỗi',
+            text: 'Tạo đánh giá thất bại',
+            confirmButtonText: 'Xác nhận'
+          })
+        }
       }
     },
     showNewReview(newReviewId) {
@@ -298,11 +303,13 @@ export default {
         element => element.reviewId != reviewId
       )
       if (data.data) {
-        this.loader = true
+        this.$store.commit('incrementLoader', 1)
         this.$emit('getCourseOverview')
         this.emptyListReview()
         this.getReviewPagination()
-        this.loader = false
+        setTimeout(() => {
+          this.$store.commit('incrementLoader', -1)
+        }, 500)
       }
     },
     editComment(reviewId) {
@@ -387,9 +394,11 @@ export default {
     },
     loadMore() {
       this.reviewPagination.page++
-      this.loader = true
-      this.getReviewPagination()
-      this.loader = false
+      this.$store.commit('incrementLoader', 1)
+      setTimeout(() => {
+        this.getReviewPagination()
+        this.$store.commit('incrementLoader', -1)
+      }, 500)
     },
     emptyListReview() {
       this.courseReview = {
@@ -443,5 +452,11 @@ textarea {
   cursor: pointer;
   font-size: 14px;
   font-weight: 600;
+}
+.comment-title {
+  font-size: 20px;
+  font-weight: 500;
+  line-height: 1;
+  letter-spacing: 0.3px;
 }
 </style>

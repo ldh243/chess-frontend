@@ -1,5 +1,5 @@
 <template>
-  <v-app style="margin-top: -64px">
+  <v-app style="margin-top: -56px">
     <v-layout
       align-end
       justify-center
@@ -29,9 +29,7 @@
               :vertical="mode === 'vertical'"
             >
               {{ snackbarText }}
-              <v-btn dark flat @click="snackbar = false">
-                Đóng
-              </v-btn>
+              <v-btn dark flat @click="snackbar = false">Đóng</v-btn>
             </v-snackbar>
           </v-layout>
         </v-container>

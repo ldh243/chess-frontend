@@ -13,7 +13,8 @@ export default new Vuex.Store({
     dialog: {
       enrolDialog: false,
       confirmEnrolDialog: false
-    }
+    },
+    loader: 0
   },
   mutations: {
     setUser(state, payload) {
@@ -21,6 +22,9 @@ export default new Vuex.Store({
     },
     setUserToken(state, payload) {
       state.userToken = payload
+    },
+    incrementLoader(state, payload) {
+      state.loader += payload
     }
   },
   actions: {},

@@ -3,17 +3,22 @@ import Repository from '@/repository/Repository'
 const resource = '/course'
 
 export default {
-  getCoursesPagination(page, pageSize, statusId) {
+  getCoursesPagination(searchParams) {
     const data = {
-      params: {
-        page: page,
-        pageSize: pageSize,
-        statusId: statusId
-      }
+      params: searchParams
     }
-
     return Repository.get(`${resource}/get-course-pagination`, data)
   },
+  getCoursesPaginationByCategoryId(searchParams) {
+    const data = {
+      params: searchParams
+    }
+    return Repository.get(
+      `${resource}/get-course-paginations-by-category-id`,
+      data
+    )
+  },
+
   getById(courseId) {
     const data = {
       params: {

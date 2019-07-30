@@ -5,7 +5,12 @@
     </v-toolbar>
     <v-form ref="form" v-model="valid" lazy-validation class="pa-4">
       <v-hover>
-        <v-avatar slot-scope="{ hover }" :tile="false" :size="100" color="grey lighten-4">
+        <v-avatar
+          slot-scope="{ hover }"
+          :tile="false"
+          :size="100"
+          color="grey lighten-4"
+        >
           <img :src="avatar" alt="avatar" />
           <v-fade-transition>
             <div v-if="hover" class="upload-file">
@@ -30,7 +35,11 @@
       <p class="subheading grey--text">Chọn loại tài khoản</p>
       <v-radio-group v-model="role" row>
         <v-radio color="primary" label="Học viên" value="learner"></v-radio>
-        <v-radio color="primary" label="Người hướng dẫn" value="instructor"></v-radio>
+        <v-radio
+          color="primary"
+          label="Người hướng dẫn"
+          value="instructor"
+        ></v-radio>
       </v-radio-group>
       <v-slide-y-transition>
         <v-textarea
@@ -44,7 +53,9 @@
       </v-slide-y-transition>
       <v-slide-y-transition>
         <div>
-          <p v-show="isInstructor" class="subheading grey--text">Các chứng nhận</p>
+          <p v-show="isInstructor" class="subheading grey--text">
+            Các chứng nhận
+          </p>
           <vue-upload-multiple-image
             v-show="isInstructor"
             @upload-success="uploadImageSuccess"
@@ -75,7 +86,9 @@
       </v-dialog>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn :disabled="!valid" color="primary" @click="submit">Xác nhận</v-btn>
+        <v-btn :disabled="!valid" color="primary" @click="submit"
+          >Xác nhận</v-btn
+        >
       </v-card-actions>
     </v-form>
   </v-card>
@@ -120,7 +133,7 @@ export default {
     }
   },
   created() {
-    this.loader = true
+    this.$store.commit('incrementLoader', 1)
     if (
       localStorage.getItem('access-token') != null &&
       this.$store.state.user === null
@@ -133,7 +146,9 @@ export default {
       this.avatar = this.user.avatar
       this.email = this.user.email
     }
-    this.loader = false
+    setTimeout(() => {
+      this.$store.commit('incrementLoader', -1)
+    }, 500)
   },
   methods: {
     validate() {

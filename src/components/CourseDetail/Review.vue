@@ -1,16 +1,13 @@
 <template>
   <v-card>
-    <Loader v-if="loader" />
     <v-card-title primary-title>
-      <div class="headline">Đánh giá</div>
+      <div class="title-review">Đánh giá</div>
     </v-card-title>
     <v-layout row py-3>
       <v-flex v-if="courseOverview.medRating != null" xs4>
         <v-layout row wrap>
           <v-flex xs12 class="text-xs-center">
-            <span class="display-3 font-weight-bold">{{
-              courseOverview.medRating
-            }}</span>
+            <span class="review-score">{{ courseOverview.medRating }}</span>
             <v-rating
               v-model="courseOverview.medRating"
               :empty-icon="emptyIcon"
@@ -67,13 +64,11 @@
 </template>
 
 <script>
-import Loader from '@/components/Loader'
 import Comment from '@/components/CourseDetail/Comment'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const courseRepository = RepositoryFactory.get('course')
 export default {
   components: {
-    Loader,
     Comment
   },
   data() {
@@ -83,16 +78,17 @@ export default {
       fullIcon: 'fa-star',
       halfIcon: 'fa-star-half-alt',
       valueDeterminate: 40,
-      loader: false,
       courseId: this.$route.params.courseId,
       listRatings: {},
       courseOverview: {}
     }
   },
   mounted() {
-    this.loader = true
+    this.$store.commit('incrementLoader', 1)
     this.getCourseOverview()
-    this.loader = false
+    setTimeout(() => {
+      this.$store.commit('incrementLoader', -1)
+    }, 500)
   },
   methods: {
     async getCourseOverview() {
@@ -121,5 +117,17 @@ export default {
 <style scoped>
 .comment-container {
   border-left: 2px solid #e7eaec;
+}
+.title-review {
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 32px;
+  letter-spacing: 0.3px;
+}
+.review-score {
+  font-size: 56px !important;
+  font-weight: 600;
+  line-height: 1.35;
+  letter-spacing: 0.3px;
 }
 </style>
