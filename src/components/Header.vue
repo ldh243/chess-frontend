@@ -1,55 +1,54 @@
 <template>
-  <v-toolbar :clipped-left="primaryDrawer.clipped" app absolute class="bg-dark">
-    <v-flex xs1>
-      <router-link to="/">
-        <v-layout justify-center align-center fill-height>
-          <img :src="chessLogo" />
-          <span class="white--text text-logo ml-2">COLS</span>
+  <v-app-bar app class="bg-dark" height="56" absolute>
+    <v-toolbar class="bg-dark none-box-shadow" height="56">
+      <v-flex xs1>
+        <router-link to="/">
+          <v-layout justify-center align-center fill-height>
+            <img :src="chessLogo" />
+            <span class="white--text text-logo ml-2">COLS</span>
+          </v-layout>
+        </router-link>
+      </v-flex>
+      <v-spacer></v-spacer>
+      <v-flex v-if="user === null" xs3 offset-xs6>
+        <v-layout justify-end>
+          <v-btn
+            black--text
+            color="white"
+            :style="btnLoginGoogle"
+            class="mr-0"
+            @click="loginWithGoogle()"
+          >Đăng nhập</v-btn>
         </v-layout>
-      </router-link>
-    </v-flex>
-    <v-spacer></v-spacer>
-    <v-flex v-if="user === null" xs3 offset-xs6>
-      <v-layout justify-end>
-        <v-btn
-          black--text
-          color="white"
-          :style="btnLoginGoogle"
-          class="mr-0"
-          @click="loginWithGoogle()"
-          >Đăng nhập</v-btn
-        >
-      </v-layout>
-    </v-flex>
-    <v-flex v-else xs3 offset-xs6>
-      <v-layout justify-end>
-        <v-menu offset-y transition="slide-y-transition" bottom left>
-          <template v-slot:activator="{ on }">
-            <a v-on="on">
-              <v-layout justify-center align-center fill-height>
-                <v-avatar :size="40">
-                  <img :src="user.avatar" />
-                </v-avatar>
-                <span class="white--text ml-2">{{ user.fullName }}</span>
-              </v-layout>
-            </a>
-          </template>
-          <v-list>
-            <v-list-tile
-              v-for="(item, index) in userMenu"
-              :key="index"
-              :to="item.href"
-            >
-              <v-list-tile-title>{{ item.title }}</v-list-tile-title>
-            </v-list-tile>
-            <v-list-tile @click="logout()">
-              <v-list-tile-title>Đăng xuất</v-list-tile-title>
-            </v-list-tile>
-          </v-list>
-        </v-menu>
-      </v-layout>
-    </v-flex>
-  </v-toolbar>
+      </v-flex>
+      <v-flex v-else xs2 offset-xs6>
+        <v-layout justify-end>
+          <v-menu offset-y transition="slide-y-transition" bottom left>
+            <template v-slot:activator="{ on }">
+              <v-btn color="#333940" class="btn-profile" block v-on="on">
+                <v-layout align-center fill-height>
+                  <v-avatar :size="28">
+                    <img :src="user.avatar" />
+                  </v-avatar>
+                  <span class="white--text ml-2">{{ user.fullName }}</span>
+                  <v-spacer></v-spacer>
+                  <v-icon>fa-caret-down</v-icon>
+                </v-layout>
+              </v-btn>
+            </template>
+            <v-list>
+              <v-list-item v-for="(item, index) in userMenu" :key="index" :to="item.href">
+                <v-list-item-title>{{ item.title }}</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="logout()">
+                <v-list-item-title>Đăng xuất</v-list-item-title>
+              </v-list-item>
+            </v-list>
+          </v-menu>
+        </v-layout>
+      </v-flex>
+    </v-toolbar>
+  </v-app-bar>
 </template>
 
 <script>
@@ -62,13 +61,6 @@ export default {
     return {
       chessLogo: require('@/assets/images/chess.png'),
       loginBackgroundImage: require('@/assets/images/google-logo.png'),
-      primaryDrawer: {
-        model: null,
-        type: 'default (no property)',
-        clipped: false,
-        floating: false,
-        mini: false
-      },
       learnMenu: [
         { title: 'Học lý thuyết', href: '/learning-theory' },
         { title: 'Học thế cờ', href: '/learning-board' }
@@ -113,7 +105,6 @@ export default {
       user.status = this.getStatusUser(user.active)
       localStorage.setItem('user', JSON.stringify(user))
       this.setUserState()
-      // location.reload(true)
     },
     setUserState() {
       const user = localStorage.getItem('user')
@@ -127,6 +118,7 @@ export default {
       localStorage.removeItem('role')
       this.$store.commit('setUser', null)
       this.$store.commit('setUserToken', null)
+      location.reload()
     }
   }
 }
@@ -152,7 +144,7 @@ img {
   width: 40px;
   height: 40px;
 }
->>> .btn-profile {
-  height: 40px !important;
+.btn-profile {
+  box-shadow: none !important;
 }
 </style>

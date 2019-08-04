@@ -1,14 +1,14 @@
 <template>
   <v-card>
     <v-card-title primary-title>
-      <div>
-        <div class="title-about text-black">Thông tin chung</div>
-        <span class="text-black">
-          Listen to your favorite artists and albums whenever and wherever,
-          online and offline.
-        </span>
-      </div>
+      <div class="title-about text-black">Thông tin chung</div>
     </v-card-title>
+    <v-card-text>
+      <span class="text-black">
+        Listen to your favorite artists and albums whenever and wherever,
+        online and offline.
+      </span>
+    </v-card-text>
   </v-card>
 </template>
 

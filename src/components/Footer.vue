@@ -1,6 +1,6 @@
 <template>
-  <v-footer height="auto">
-    <v-layout row class="bg-dark white--text text-xs-center" wrap py-4>
+  <v-footer height="auto" padless>
+    <v-layout class="bg-dark white--text text-center" wrap py-4>
       <v-flex xs12 mb-3>
         <v-layout justify-center>
           <span>

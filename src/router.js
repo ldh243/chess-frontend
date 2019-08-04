@@ -1,14 +1,12 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 
-//pages
 import Introduce from '@/pages/Introduce'
 import CourseOverview from '@/pages/CourseOverview'
+import CourseDetail from '@/pages/CourseDetail'
+import Learning from '@/pages/Learning'
 import PlayChess from '@/pages/PlayChess'
 import Profile from '@/pages/Profile'
-import Learning from '@/pages/Learning'
-import LearningTheory from '@/pages/LearningTheory'
-import CourseDetail from '@/pages/CourseDetail'
 import Register from '@/pages/Register'
 Vue.use(Router)
 
@@ -17,47 +15,11 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     { path: '/', name: 'home', component: Introduce },
-    { path: '/profile', component: Profile },
     { path: '/course', component: CourseOverview },
-    { path: '/play-chess', component: PlayChess },
-    { path: '/learning/:courseId', component: Learning },
-    { path: '/learning-theory', component: LearningTheory },
     { path: '/course/:courseId', component: CourseDetail },
+    { path: '/learning/:courseId', component: Learning },
+    { path: '/play-chess', component: PlayChess },
+    { path: '/profile', component: Profile },
     { path: '/register', component: Register }
-    // {
-    //   path: '/login',
-    //   component: Home,
-    //   children: [
-    //     {
-    //       path: '',
-    //       component: LoginBox
-    //     }
-    //   ]
-    // },
-    //
-    // {
-    //   path: '/infogmail',
-    //   component: InfoGmail
-    // },
-    // {
-    //   path: '/profileadmin',
-    //   component: ProfileAdmin
-    // },
-    // {
-    //   path: '/profilecourse',
-    //   component: ProfileCourse
-    // },
-    // {
-    //   path: '/enrolcourse',
-    //   component: EnrolCourse
-    // },
-    // {
-    //   path: '/learningvideo',
-    //   component: LearningByvideo
-    // },
-    // {
-    //   path: '/learningchessboard',
-    //   component: LearningBychessboard
-    // }
   ]
 })

@@ -1,66 +1,81 @@
 <template>
-  <v-card v-if="curriculum != null">
+  <v-card v-if="curriculum !== null && learningLog !== null">
     <v-card-title primary-title>
-      <v-layout row wrap>
+      <v-layout wrap>
         <v-layout pr-3 align-center>
           <span class="title-curriculum text-black">Giáo trình</span>
           <v-spacer></v-spacer>
-          <span class="text-black">Số bài: &nbsp;</span>
+          <span class="text-black total-lesson-title">Số bài: &nbsp;</span>
           <span class="total-lesson">{{ curriculum.length }}</span>
         </v-layout>
         <v-flex xs12></v-flex>
       </v-layout>
     </v-card-title>
-    <v-layout row pa-3>
-      <v-expansion-panel popout>
-        <v-expansion-panel-content
-          v-for="(item, index) in curriculum"
-          :key="index"
-          class="mb-1"
-        >
-          <template v-slot:header>
-            <div class="course-title">Bài {{ index + 1 }}: {{ item.name }}</div>
-            <v-spacer></v-spacer>
-            <div class="course-type">{{ item.lessonTypeName }}</div>
-          </template>
-          <v-card>
-            <v-card-text>{{ item.name }}</v-card-text>
-          </v-card>
-        </v-expansion-panel-content>
-      </v-expansion-panel>
+    <v-layout pa-3>
+      <v-expansion-panels popout inset focusable>
+        <v-expansion-panel v-for="(item,index) in curriculum" :key="index">
+          <v-expansion-panel-header disable-icon-rotate>
+            <v-layout>
+              Bài {{index + 1}}: {{item.name}}
+              <v-spacer></v-spacer>
+              <div class="course-type pr-3">{{ item.lessonTypeName }}</div>
+            </v-layout>
+            <template v-slot:actions v-if="item.learned === true">
+              <v-icon color="teal" size="18">mdi-check</v-icon>
+            </template>
+          </v-expansion-panel-header>
+          <v-expansion-panel-content>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</v-expansion-panel-content>
+        </v-expansion-panel>
+      </v-expansion-panels>
     </v-layout>
   </v-card>
 </template>
 <script>
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
-const lessonRepository = RepositoryFactory.get('lesson')
+const learningRepository = RepositoryFactory.get('learning')
 export default {
   props: {
-    curriculum: {
-      type: Array,
+    courseDetail: {
+      type: Object,
       default: null
     }
   },
   data() {
     return {
-      lessonDetails: null
+      courseId: this.$route.params.courseId,
+      learningLog: null,
+      curriculum: null
     }
+  },
+  created() {
+    this.curriculum = this.courseDetail.lessonViewModels
+    console.log(this.courseDetail.enrolled)
   },
   mounted() {
     this.$store.commit('incrementLoader', 1)
-    if (this.curriculum != null) {
-      this.curriculum.forEach(el => {
-        this.getLessonById(el.lessonId)
-      })
+    if (this.courseDetail.enrolled) {
+      this.getCurrentUserLearningLogByCourseId()
+    } else {
+      this.learningLog = []
     }
     setTimeout(() => {
       this.$store.commit('incrementLoader', -1)
     }, 500)
   },
   methods: {
-    async getLessonById(lessonId) {
-      const { data } = await lessonRepository.getById(lessonId)
-      this.lessonDetails = data.data
+    async getCurrentUserLearningLogByCourseId() {
+      const { data } = await learningRepository.getLearningLog(this.courseId)
+      this.learningLog = new Map()
+      data.data.forEach(el => {
+        this.learningLog.set(el, true)
+      })
+      this.curriculum.forEach(el => {
+        el.learned = false
+        if (this.learningLog.get(el.lessonId) === true) {
+          el.learned = true
+        }
+      })
+      console.log(this.curriculum)
     }
   }
 }
@@ -76,6 +91,7 @@ export default {
   flex: none !important;
   font-weight: 400;
   color: #9b9b9b;
+  font-size: 13px;
 }
 .total-lesson {
   color: #276fbd;
@@ -96,5 +112,9 @@ export default {
   font-weight: 600;
   line-height: 32px;
   letter-spacing: 0.3px;
+}
+.total-lesson-title,
+.total-lesson {
+  font-size: 14px;
 }
 </style>

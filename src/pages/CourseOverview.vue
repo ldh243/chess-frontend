@@ -1,6 +1,6 @@
 <template>
   <v-container px-0>
-    <v-layout row wrap>
+    <v-layout wrap>
       <v-flex xs12>
         <v-breadcrumbs :items="breadcrumbs">
           <template v-slot:divider>
@@ -9,18 +9,18 @@
         </v-breadcrumbs>
       </v-flex>
       <v-flex xs12>
-        <CourseOverview />
+        <ListCourse />
       </v-flex>
     </v-layout>
   </v-container>
 </template>
 
 <script>
-import CourseOverview from '@/components/CourseOverview/CourseOverview'
+import ListCourse from '@/components/CourseOverview/ListCourse'
 
 export default {
   components: {
-    CourseOverview
+    ListCourse
   },
   data() {
     return {

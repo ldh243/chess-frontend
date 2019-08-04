@@ -1,11 +1,11 @@
 import Vue from 'vue'
-import Index from './pages/Index'
+import App from './App.vue'
 import router from './router'
 import store from './store'
 import mixin from './mixin'
 import './plugins/index'
+import vuetify from './plugins/vuetify'
 import firebase from 'firebase'
-// import './assets/style/vue-chessboard.css'
 Vue.config.productionTip = false
 
 //connect firebase
@@ -50,5 +50,6 @@ new Vue({
   router,
   store,
   mixin,
-  render: h => h(Index)
+  vuetify,
+  render: h => h(App)
 }).$mount('#app')

@@ -1,5 +1,5 @@
 <template>
-  <div class="blue merida">
+  <div class="blue merida 123">
     <div ref="board" class="cg-board-wrap"></div>
     <br />
   </div>

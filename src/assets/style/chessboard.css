@@ -1,6 +1,9 @@
->>> piece,
-.blue,
->>> coords {
+>>> piece.black,
+>>> piece.white,
+>>> div.blue,
+>>> coords,
+button.black,
+button.white {
   background-color: transparent !important;
 }
 
@@ -31,6 +34,9 @@
 }
 .main-button {
   min-width: 30% !important;
+}
+.extra-button {
+  min-width: 20% !important;
 }
 .chess-move-history {
   min-width: 50%;

@@ -1,7 +1,7 @@
 <template>
   <v-app>
     <v-container px-0>
-      <v-layout row wrap>
+      <v-layout wrap>
         <v-flex xs12 mb-4>
           <v-breadcrumbs :items="breadcrumbs" class="py-0">
             <template v-slot:divider>
@@ -9,7 +9,7 @@
             </template>
           </v-breadcrumbs>
         </v-flex>
-        <v-layout row>
+        <v-layout>
           <v-flex v-if="lessonDetails.lessonType === 2" xs8 mr-5>
             <chessboard :fen="currentFen" :move="move" @onMove="showInfo" />
           </v-flex>
@@ -23,16 +23,18 @@
                 allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
                 allowfullscreen
               ></iframe>
-              <div v-for="(item, index) in lessonContent" :key="index">
-                <p class="mb-1">{{ item.title }}</p>
-                <p class="mb-3">{{ item.text }}</p>
-              </div>
+              <v-card-text>
+                <div v-for="(item, index) in lessonContent" :key="index">
+                  <p class="mb-1 text-black">{{ item.title }}</p>
+                  <p class="mb-3 text-black">{{ item.text }}</p>
+                </div>
+              </v-card-text>
             </v-card>
           </v-flex>
           <v-flex xs4 class="direction-side">
             <v-layout column>
               <v-flex class="move-history mb-2">
-                <v-card-title class="pl-0 py-2">
+                <v-card-title class="pa-0">
                   <span class="title font-weight-bold">Nước đi</span>
                 </v-card-title>
                 <div class="move-history-content">
@@ -65,7 +67,7 @@
                     </template>
                     <div v-if="moved1.depth === 2" class="depth_2">
                       <template v-for="(moved2, index2) in moved1.moveHistory">
-                        <div v-if="moved2.depth === 2" :key="index2">
+                        <div v-if="moved2.depth === 2" :key="index2*2">
                           <div class="index">{{ moved2.index }}</div>
                           <div
                             v-if="moved2.whiteMove"
@@ -94,13 +96,13 @@
                             "
                           >{{ moved2.blackMove.move }}</div>
                         </div>
-                        <div v-if="moved2.depth === 3" :key="index2" class="depth_3">
+                        <div v-if="moved2.depth === 3" :key="index2*2+1" class="depth_3">
                           <template v-for="(moved3, index3) in moved2.moveHistory">
-                            <div :key="index3" class="index">{{ moved3.index }}</div>
+                            <div :key="index3*3" class="index">{{ moved3.index }}</div>
                             <div
                               v-if="moved3.whiteMove"
                               :id="moved3.whiteMove.id"
-                              :key="index3"
+                              :key="index3*3+1"
                               :preId="moved3.whiteMove.preId"
                               :nextId="moved3.whiteMove.nextId"
                               :class="moved3.whiteMove.class"
@@ -114,7 +116,7 @@
                             <div
                               v-if="moved3.blackMove"
                               :id="moved3.blackMove.id"
-                              :key="index3"
+                              :key="index3 *3+2"
                               :preId="moved3.blackMove.preId"
                               :nextId="moved3.blackMove.nextId"
                               :class="moved3.blackMove.class"
@@ -133,31 +135,31 @@
                 </div>
               </v-flex>
               <v-flex mb-2 class="move-history-direction">
-                <v-layout row>
-                  <v-btn flat @click="turnToFirstMove()">
+                <v-layout>
+                  <v-btn text class="extra-button" @click="turnToFirstMove()">
                     <v-icon>fa-fast-backward</v-icon>
                   </v-btn>
-                  <v-btn flat class="main-button" @click="turnToPreviousMove()">
+                  <v-btn text class="main-button" @click="turnToPreviousMove()">
                     <v-icon>fa-backward</v-icon>
                   </v-btn>
-                  <v-btn flat class="main-button" @click="turnToNextMove()">
+                  <v-btn text class="main-button" @click="turnToNextMove()">
                     <v-icon>fa-forward</v-icon>
                   </v-btn>
-                  <v-btn flat @click="turnToLastMove()">
+                  <v-btn text class="extra-button" @click="turnToLastMove()">
                     <v-icon>fa-fast-forward</v-icon>
                   </v-btn>
                 </v-layout>
               </v-flex>
               <v-flex class="lesson-area" mb-2>
-                <v-card-title class="pl-0 py-2">
+                <v-card-title class="pa-0">
                   <span class="title font-weight-bold">Nội dung</span>
                 </v-card-title>
                 <div class="lesson-content">
-                  <v-card-title v-if="lessonDetails.interactiveLesson != null">{{ stepContent }}</v-card-title>
+                  <v-card-text v-if="lessonDetails.interactiveLesson != null">{{ stepContent }}</v-card-text>
                 </div>
               </v-flex>
               <v-flex class="lesson-direction">
-                <v-layout row justify-space-between>
+                <v-layout justify-space-between>
                   <v-btn
                     class="font-weight-bold"
                     :disabled="statusPreviousLesson"
@@ -166,6 +168,7 @@
                     <v-icon class="mr-2">fa-angle-left</v-icon>Bài trước
                   </v-btn>
                   <v-btn
+                    v-if="!statusNextLesson"
                     class="font-weight-bold"
                     :disabled="statusNextLesson"
                     @click="changeLesson(1)"
@@ -173,6 +176,7 @@
                     Bài tiếp
                     <v-icon class="ml-2">fa-angle-right</v-icon>
                   </v-btn>
+                  <v-btn v-else class="font-weight-bold">Hoàn thành</v-btn>
                 </v-layout>
               </v-flex>
             </v-layout>
@@ -190,6 +194,8 @@ import sampleLesson from '@/data/lesson.json'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const courseRepository = RepositoryFactory.get('course')
 const lessonRepository = RepositoryFactory.get('lesson')
+const learningRepository = RepositoryFactory.get('learning')
+import MoveHistory from '@/library/ChessHistory.js'
 export default {
   components: {
     Chessboard
@@ -229,7 +235,7 @@ export default {
           href: ''
         },
         {
-          text: '123123',
+          text: 'Học',
           disabled: true
         }
       ],
@@ -287,11 +293,11 @@ export default {
 
       if (this.lessonDetails.lessonType == 2) {
         this.showHideMoveHistory(true)
-        const moveHeight = totalHeight * 0.6 - 88
+        const moveHeight = totalHeight * 0.6 - 92
         document.getElementsByClassName(
           'move-history-content'
         )[0].style.height = moveHeight + 'px'
-        const lessonHeight = totalHeight * 0.4 - 88
+        const lessonHeight = totalHeight * 0.4 - 92
         document.getElementsByClassName('lesson-content')[0].style.height =
           lessonHeight + 'px'
       } else {
@@ -317,8 +323,8 @@ export default {
       }
     },
     showInfo(data) {
-      console.log(data.history[data.history.length - 1])
-      console.log(data.fen)
+      // console.log(data.history[data.history.length - 1])
+      // console.log(data.fen)
     },
     loadFen(fen, event, content) {
       if (event != undefined) {
@@ -350,257 +356,29 @@ export default {
       this.lessonDetails = data.data
       this.checkStatusDirectLesson()
       if (this.lessonDetails.lessonType == 2) {
-        this.steps = this.lessonDetails.interactiveLesson.steps
         this.defaultFen = this.lessonDetails.interactiveLesson.initCode
         this.currentFen = this.defaultFen
-        this.firstId = this.steps[0].id
-        this.loadMoveHistoryByLesson()
+        this.loadMoveHistory()
       }
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)
       }, 500)
     },
-    getTurnOfFen(fen) {
-      if (this.isEmpty(fen)) {
-        return 'w'
-      }
-      const arr = fen.split(' ')
-      return arr[1]
+    async createLearningLog(courseId, lessonId) {
+      const { data } = await learningRepository.createLearningLog(
+        courseId,
+        lessonId
+      )
+      console.log(data)
     },
-    addMoveHistory(newMove, depth) {
-      if (depth === 1) {
-        let turn = this.getTurnOfFen(newMove.preFen)
-        this.totalMove++
-        //tạo thêm turn mới
-        const newTurn = {
-          index: this.moveHistory.length + 1,
-          depth: 1,
-          whiteMove: newMove,
-          blackMove: null
-        }
-        if (turn === 'w') {
-          this.moveHistory.push(newTurn)
-        } else {
-          let lastMove = this.moveHistory[this.moveHistory.length - 1]
-          //nước đi tiếp theo của turn cũ
-          lastMove.blackMove = newMove
-        }
-      }
-    },
-    refactorPreviousFen() {
-      this.steps.forEach(el => {
-        el.class = 'move'
-        const parent = this.steps.find(pr => pr.id === el.preId)
-        if (this.isEmpty(parent)) {
-          el.preFen = this.lessonDetails.interactiveLesson.initCode
-        } else {
-          el.preFen = parent.fen
-        }
-      })
-      this.steps[0].fen = this.lessonDetails.interactiveLesson.initCode
-    },
-    loadMoveHistoryByLesson() {
+    loadMoveHistory() {
       this.loadFen(this.lessonDetails.interactiveLesson.initCode)
-      this.refactorPreviousFen()
-      const firstStep = this.steps[0]
-      this.dfs(null, firstStep, 1)
-      this.refactorDepth2()
-      this.refactorDepth3()
+      const moveHistory = new MoveHistory(this.lessonDetails)
+      moveHistory.formatMoveHistory()
+      this.moveHistory = moveHistory.getMoveHistory
+      this.steps = moveHistory.getSteps
     },
-    dfs(parent, move, depth) {
-      if (depth === 2) {
-        if (this.isEmpty(parent.depth2)) {
-          parent.depth2 = []
-        }
-        parent.depth2.push(move)
-      } else if (depth === 3) {
-        if (this.isEmpty(parent.depth3)) {
-          parent.depth3 = []
-        }
-        parent.depth3.push(move)
-      }
-      // move.move = `${move.move} ${depth}`
-      this.addMoveHistory(move, depth)
-      let index = depth - 1
-      let firstBranch = null
-      this.steps.forEach(el => {
-        if (el.preId === move.id) {
-          index++
-          if (this.isEmpty(move.nextId)) {
-            move.nextId = el.id
-          }
-          if (index === depth) {
-            this.dfs(parent, el, index)
-            firstBranch = el
-          } else {
-            this.dfs(firstBranch, el, index)
-          }
-        }
-      })
-    },
-    refactorDepth2() {
-      let queue = []
-      for (let index = 0; index < this.moveHistory.length; index++) {
-        const el = this.moveHistory[index]
-        if (el.depth === 1) {
-          if (
-            !this.isEmpty(el.whiteMove) &&
-            !this.isEmpty(el.whiteMove.depth2)
-          ) {
-            const newMove = {
-              index: el.index,
-              whiteMove: {
-                move: '...',
-                nextId: null,
-                preId: null,
-                class: 'empty-move'
-              },
-              blackMove: el.blackMove,
-              depth: 1
-            }
-            el.whiteMove.class = 'move single-move-white'
-            queue.push({ index: el.index, move: el.whiteMove, pos: index + 1 })
-            queue.push({ oldMove: el, newMove: newMove, pos: index + 1 })
-          }
-          if (
-            !this.isEmpty(el.blackMove) &&
-            !this.isEmpty(el.blackMove.depth2)
-          ) {
-            const oddMove = {
-              move: '...',
-              nextId: null,
-              preId: null,
-              class: 'empty-move'
-            }
-            el.blackMove.depth2.unshift(oddMove)
-            queue.push({ index: el.index, move: el.blackMove, pos: index + 1 })
-          }
-        }
-      }
-      while (queue.length > 0) {
-        const el = queue.pop()
-        if (this.isEmpty(el.index)) {
-          el.oldMove.blackMove = null
-          this.moveHistory.splice(el.pos, 0, el.newMove)
-        } else {
-          const depth2 = {
-            depth: 2,
-            moveHistory: []
-          }
-          el.move.depth2.forEach(childStep => {
-            const newTurn = {
-              index: el.index + depth2.moveHistory.length,
-              whiteMove: childStep,
-              blackMove: null,
-              depth: 2
-            }
-            const turn = this.getTurnOfFen(childStep.preFen)
-            if (turn === 'w') {
-              newTurn.whiteMove.class = 'move single-move-white'
-              depth2.moveHistory.push(newTurn)
-            } else {
-              let lastMove = depth2.moveHistory[depth2.moveHistory.length - 1]
-              lastMove.whiteMove.class = 'move'
-              if (lastMove.whiteMove.move === '...') {
-                lastMove.whiteMove.class = 'empty-move'
-              }
-              lastMove.blackMove = childStep
-            }
-          })
-          this.moveHistory.splice(el.pos, 0, depth2)
-        }
-      }
-    },
-    refactorDepth3() {
-      let queue = []
-      this.moveHistory.forEach(el => {
-        if (el.depth === 2) {
-          const listDepth2 = el.moveHistory
-          listDepth2.forEach((moved2, pos) => {
-            if (
-              !this.isEmpty(moved2.whiteMove) &&
-              !this.isEmpty(moved2.whiteMove.depth3)
-            ) {
-              const newMove = {
-                index: moved2.index,
-                whiteMove: {
-                  move: '...',
-                  nextId: null,
-                  preId: null,
-                  class: 'empty-move'
-                },
-                blackMove: moved2.blackMove,
-                depth: 2
-              }
-              moved2.whiteMove.class = 'move single-move-white'
-              queue.push({
-                index: moved2.index,
-                move: moved2.whiteMove,
-                pos: pos + 1,
-                list: listDepth2
-              })
-              queue.push({
-                oldMove: moved2,
-                newMove: newMove,
-                pos: pos + 1,
-                list: listDepth2
-              })
-            }
-            if (
-              !this.isEmpty(moved2.blackMove) &&
-              !this.isEmpty(moved2.blackMove.depth3)
-            ) {
-              const oddMove = {
-                move: '...',
-                nextId: null,
-                preId: null,
-                class: 'empty-move'
-              }
-              moved2.blackMove.depth3.unshift(oddMove)
-              queue.push({
-                index: moved2.index,
-                move: moved2.blackMove,
-                pos: pos + 1,
-                list: listDepth2
-              })
-            }
-          })
-        }
-      })
-      while (queue.length > 0) {
-        const el = queue.pop()
-        if (this.isEmpty(el.index)) {
-          el.oldMove.blackMove = null
-          el.list.splice(el.pos, 0, el.newMove)
-        } else {
-          const depth3 = {
-            depth: 3,
-            moveHistory: []
-          }
-          el.move.depth3.forEach(childStep => {
-            const newTurn = {
-              index: el.index + depth3.moveHistory.length,
-              whiteMove: childStep,
-              blackMove: null,
-              depth: 2
-            }
-            const turn = this.getTurnOfFen(childStep.preFen)
-            if (turn === 'w') {
-              newTurn.whiteMove.class = 'move single-move-white'
-              depth3.moveHistory.push(newTurn)
-            } else {
-              let lastMove = depth3.moveHistory[depth3.moveHistory.length - 1]
-              lastMove.whiteMove.class = 'move'
-              if (lastMove.whiteMove.move === '...') {
-                lastMove.whiteMove.class = 'empty-move'
-              }
-              lastMove.blackMove = childStep
-            }
-          })
-          el.list.splice(el.pos, 0, depth3)
-        }
-      }
-    },
+
     setCurrentMove() {
       //set highlight div dựa trên this.current id hiện tại
       let arr = document.getElementsByClassName('move')
@@ -672,6 +450,10 @@ export default {
       if (0 <= this.activeLesson + val <= this.lessons.length) {
         this.activeLesson += val
         this.$store.commit('incrementLoader', 1)
+        this.createLearningLog(
+          this.$route.params.courseId,
+          this.lessonDetails.lessonId
+        )
         this.resetBoardAndResetHistory()
         this.getLessonById()
         this.checkStatusDirectLesson()
@@ -712,14 +494,8 @@ export default {
   }
 }
 </script>
-
 <style scoped src="@/assets/style/chessboard.css"></style>
-
 <style scoped>
->>> .application--wrap {
-  margin-top: -56px;
-  padding-top: 56px;
-}
 .depth_2 {
   background-color: hsla(0, 59%, 85%, 0.85);
   margin: 5pt 0 5pt 5pt;

@@ -1,5 +1,5 @@
 <template>
-  <v-layout row wrap px-3>
+  <v-layout wrap px-3>
     <v-flex xs12>
       <span class="comment-title">Đánh giá của bạn</span>
     </v-flex>
@@ -15,30 +15,27 @@
       ></v-rating>
     </v-flex>
     <v-flex xs9>
-      <v-textarea
-        v-model="newReview.content"
-        class="mt-2"
-        box
-        label="Bình luận"
-        no-resize
-        :counter="100"
-        rows="3"
-        :rules="[rules.length(100)]"
-        :error-messages="
+      <v-form ref="form" v-model="valid" lazy-validation>
+        <v-textarea
+          v-model="newReview.content"
+          class="mt-2"
+          filled
+          label="Bình luận"
+          no-resize
+          :counter="100"
+          rows="3"
+          :rules="[rules.length(6, 100)]"
+          :error-messages="
           postReview && newReview.rating == 0 ? 'Vui lòng đánh giá điểm' : null
         "
-      ></v-textarea>
+        ></v-textarea>
+      </v-form>
     </v-flex>
-    <v-flex xs3 mb>
-      <v-btn color="info" @click="createReview()">Đăng</v-btn>
+    <v-flex xs3 mb class="pt-2 pl-2">
+      <v-btn color="info" @click="createReview()" :min-width="88">Đăng</v-btn>
     </v-flex>
-    <v-flex
-      v-for="(item, index) in courseReview.content"
-      :key="index"
-      xs12
-      mb-1
-    >
-      <v-layout row wrap class="comment-item">
+    <v-flex v-for="(item, index) in courseReview.content" :key="index" xs12 mb-1>
+      <v-layout wrap class="comment-item">
         <v-flex xs1>
           <v-avatar :size="50">
             <img :src="item.reviewer.avatar" alt="avatar" />
@@ -47,17 +44,11 @@
         <v-flex xs8 pl-3>
           <v-layout wrap align-center fill-height>
             <v-flex xs12>
-              <span class="ml-1 reviewer-name">
-                {{ item.reviewer.fullName }}
-              </span>
+              <span class="ml-1 reviewer-name">{{ item.reviewer.fullName }}</span>
             </v-flex>
             <v-flex xs12>
-              <v-layout row>
-                <v-flex
-                  :id="'rating-score' + item.reviewId"
-                  xs6
-                  class="rating-score"
-                >
+              <v-layout>
+                <v-flex :id="'rating-score' + item.reviewId" xs6 class="rating-score">
                   <v-rating
                     v-model="item.rating"
                     :empty-icon="emptyIcon"
@@ -87,9 +78,7 @@
           <span class="caption">{{ item.relativeTime }}</span>
         </v-flex>
         <v-flex xs11 mt-2 offset-xs1 pl-3>
-          <span :id="'content-' + item.reviewId" class="review-content">
-            {{ item.content }}
-          </span>
+          <span :id="'content-' + item.reviewId" class="review-content">{{ item.content }}</span>
         </v-flex>
         <v-flex
           :id="'edit-container-' + item.reviewId"
@@ -102,20 +91,16 @@
             v-if="userId == item.reviewer.userId"
             :id="'edit-' + item.reviewId"
             v-model="item.content"
-            box
+            filled
             label="Chỉnh sửa bình luận"
             no-resize
             :counter="100"
             rows="3"
-            :rules="[rules.length(100)]"
+            :rules="[rules.length(6, 100)]"
           ></v-textarea>
         </v-flex>
         <v-flex v-if="userId == item.reviewer.userId" xs12>
-          <v-layout
-            :id="'action-' + item.reviewId"
-            justify-end
-            class="action-review"
-          >
+          <v-layout :id="'action-' + item.reviewId" justify-end class="action-review">
             <span class="mr-3" @click="editComment(item.reviewId)">Sửa</span>
             <span @click="showConfirmDeleteComment(item.reviewId)">Xóa</span>
           </v-layout>
@@ -126,35 +111,26 @@
           </v-layout>
         </v-flex>
         <v-flex v-if="userId == item.reviewer.userId" xs12>
-          <v-layout
-            :id="'edit-action-' + item.reviewId"
-            justify-end
-            class="edit-action"
-          >
+          <v-layout :id="'edit-action-' + item.reviewId" justify-end class="edit-action">
             <v-btn
               color="info"
-              flat
+              text
               small
               class="ma-0 mr-1"
               @click="saveEditComment(item.reviewId)"
-              >Lưu</v-btn
-            >
+            >Lưu</v-btn>
             <v-btn
               color="error"
-              flat
+              text
               class="ma-0"
               small
               @click="cancelEditComment(item.reviewId)"
-              >Hủy</v-btn
-            >
+            >Hủy</v-btn>
           </v-layout>
         </v-flex>
       </v-layout>
     </v-flex>
-    <v-flex
-      v-if="courseReview.content.length < courseReview.totalElements"
-      xs12
-    >
+    <v-flex v-if="courseReview.content.length < courseReview.totalElements" xs12>
       <v-layout justify-center>
         <span class="load-more" @click="loadMore()">Xem thêm</span>
       </v-layout>
@@ -175,6 +151,7 @@ export default {
   },
   data() {
     return {
+      valid: true,
       courseId: this.$route.params.courseId,
       userId: this.$store.state.user.userId,
       courseReview: {
@@ -190,9 +167,15 @@ export default {
       },
       postReview: false,
       rules: {
-        length: len => v =>
-          (v || '').length < len || `Nội dung không được quá ${len} kí tự`
+        length: (min, max) => v =>
+          ((v || '').length <= max && (v || '').length >= min) ||
+          `Nội dung phải từ ${min} đến ${max} kí tự.`,
+        commentRules: [
+          v => !!v || 'Name is required',
+          v => (v < 6 && v.length > 100) || 'Nội dung phải từ 6 đến 100 kí tự.'
+        ]
       },
+
       origin: {
         content: '',
         rating: ''
@@ -258,7 +241,11 @@ export default {
     },
     async createReview() {
       this.postReview = true
-      if (this.newReview.rating > 0 && this.newReview.content.length <= 100) {
+      if (
+        this.newReview.rating > 0 &&
+        this.newReview.content.length <= 100 &&
+        this.newReview.content.length >= 6
+      ) {
         const { data } = await courseRepository.createReview(this.newReview)
         if (data.data.success) {
           this.showNewReview(data.data.savedId)
@@ -267,7 +254,7 @@ export default {
           this.$swal({
             type: 'error',
             title: 'Lỗi',
-            text: 'Tạo đánh giá thất bại',
+            text: 'Đánh giá thất bại. Nội dung phải từ 6 đến 100 kí tự!',
             confirmButtonText: 'Xác nhận'
           })
         }
@@ -284,6 +271,7 @@ export default {
         courseId: this.$route.params.courseId
       }
       this.postReview = false
+      this.$refs.form.resetValidation()
     },
     async updateReview(updatedReview) {
       if (updatedReview.rating > 0 && updatedReview.content.length <= 100) {

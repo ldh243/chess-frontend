@@ -1,15 +1,15 @@
 <template>
   <v-container px-0>
-    <ProfileField />
+    <ProfileForm />
   </v-container>
 </template>
 
 <script>
-import ProfileField from '@/components/ProfileField'
+import ProfileForm from '@/components/ProfileForm'
 
 export default {
   components: {
-    ProfileField
+    ProfileForm
   }
 }
 </script>

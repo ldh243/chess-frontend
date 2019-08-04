@@ -1,34 +1,28 @@
 <template>
-  <v-layout row>
+  <v-layout>
     <v-flex xs3 mr-2>
       <v-card class="mx-auto category-container pa-3">
-        <v-list class="category-container">
-          <v-list-tile id="category-0" @click="changeFilter(1, 0, '')">
-            <v-list-tile-content>
-              <v-list-tile-title class="category-name"
-                >Tất cả</v-list-tile-title
-              >
-            </v-list-tile-content>
-          </v-list-tile>
-          <template v-for="(item, index) in listCategories">
-            <v-list-tile
-              :id="'category-' + item.categoryId"
-              :key="index"
-              class="ml-2"
-              @click="changeFilter(1, item.categoryId, item.name)"
-            >
-              <v-list-tile-content>
-                <v-list-tile-title class="category-name">{{
-                  item.name
-                }}</v-list-tile-title>
-              </v-list-tile-content>
-            </v-list-tile>
-          </template>
+        <v-list class="category-container" dense>
+          <v-list-item-group v-model="selectedCategory" color="primary">
+            <v-subheader>Danh mục</v-subheader>
+            <v-list-item @click="changeFilter(1, 0, '')">
+              <v-list-item-content>
+                <v-list-item-title class="category-name" v-text="`Tất cả`"></v-list-item-title>
+              </v-list-item-content>
+            </v-list-item>
+            <template v-for="(item, index) in listCategories">
+              <v-list-item :key="index" @click="changeFilter(1, item.categoryId, item.name)">
+                <v-list-item-content>
+                  <v-list-item-title class="category-name" v-text="item.name"></v-list-item-title>
+                </v-list-item-content>
+              </v-list-item>
+            </template>
+          </v-list-item-group>
         </v-list>
       </v-card>
     </v-flex>
     <v-flex xs9>
-      <v-layout row wrap>
+      <v-layout wrap>
         <v-flex xs12>
           <v-layout justify-end>
             <div class="filter-container">
@@ -43,14 +37,10 @@
               >
                 {{ sort.name }}
                 <template
-                  v-if="filter.sortBy === 'point' && sort.sortBy === 'point'"
+                  v-if="(filter.sortBy === 'required_point' && sort.sortBy === 'required_point') || (filter.sortBy === 'point' && sort.sortBy === 'point')"
                 >
-                  <v-icon v-if="filter.sortDirection === 'ASC'" class="ml-1"
-                    >fa-caret-up</v-icon
-                  >
-                  <v-icon v-if="filter.sortDirection === 'DESC'" class="ml-1"
-                    >fa-caret-down</v-icon
-                  >
+                  <v-icon v-if="filter.sortDirection === 'ASC'" class="ml-1">fa-caret-up</v-icon>
+                  <v-icon v-if="filter.sortDirection === 'DESC'" class="ml-1">fa-caret-down</v-icon>
                 </template>
               </div>
             </div>
@@ -58,37 +48,32 @@
         </v-flex>
         <v-flex mb-1 class="selected-filter" xs12>
           <v-layout fill-height align-center>
-            <span class="total-course">
+            <span class="total-course mr-2">
               <b>{{ getTotalCourse }}</b>
               khóa học
             </span>
             <v-chip
-              v-model="filter.chips.categoryShow"
+              v-if="filter.chips.categoryShow"
               close
+              class="mr-2"
               color="#e6e6e6"
               label
-              outline
+              outlined
               text-color="#333333"
-              >{{ filter.chips.categoryName }}</v-chip
-            >
+              @click:close="filter.chips.categoryShow = false"
+            >{{ filter.chips.categoryName }}</v-chip>
             <v-chip
-              v-model="filter.chips.sortShow"
+              v-if="filter.chips.sortShow"
               close
               color="#e6e6e6"
               label
-              outline
+              outlined
               text-color="#333333"
-              >{{ filter.chips.sortBy }}</v-chip
-            >
+              @click:close="filter.chips.sortShow = false"
+            >{{ filter.chips.sortBy }}</v-chip>
           </v-layout>
         </v-flex>
-        <v-flex
-          v-for="(item, index) in listCourses"
-          :key="index"
-          mb-3
-          class="course-item"
-          xs12
-        >
+        <v-flex v-for="(item, index) in listCourses" :key="index" mb-3 class="course-item" xs12>
           <CourseItem :course-detail="item" />
         </v-flex>
         <v-flex>
@@ -109,7 +94,6 @@
 <script>
 import CourseItem from '@/components/CourseOverview/CourseItem'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
-import { filter } from 'minimatch'
 const courseRepository = RepositoryFactory.get('course')
 const categoryRepository = RepositoryFactory.get('category')
 export default {
@@ -118,16 +102,7 @@ export default {
   },
   data() {
     return {
-      chips: {
-        category: {
-          name: '',
-          show: false
-        },
-        sort: {
-          name: '',
-          show: false
-        }
-      },
+      selectedCategory: 0,
       listCourses: [],
       listCategories: [],
       currentCategoryId: 0,
@@ -150,6 +125,7 @@ export default {
         {
           name: 'Mới nhất',
           sortBy: 'created_date',
+
           sortDirection: ''
         },
         {
@@ -158,7 +134,12 @@ export default {
           sortDirection: 'DESC'
         },
         {
-          name: 'Điểm',
+          name: 'Điểm phí',
+          sortBy: 'required_point',
+          sortDirection: null
+        },
+        {
+          name: 'Điểm thưởng',
           sortBy: 'point',
           sortDirection: null
         }
@@ -206,7 +187,6 @@ export default {
         } else {
           this.getCoursesPaginationByCategoryId()
         }
-        this.hightlightCategory()
         this.$store.commit('incrementLoader', -1)
       }, 500)
     },
@@ -237,7 +217,6 @@ export default {
       const { data } = await categoryRepository.getCategories()
       this.listCategories = data.data
       this.activeCategory = this.listCategories[0].categoryId
-      this.hightlightCategory()
     },
     changeFilter(filterType, categoryId, name) {
       //filterType = 1 is category, 2 is sortBy
@@ -245,6 +224,7 @@ export default {
         this.filter.chips.categoryName = name
         if (categoryId === 0) {
           this.filter.chips.categoryShow = false
+          this.selectedCategory = 0
         } else {
           this.filter.chips.categoryShow = true
         }
@@ -258,11 +238,17 @@ export default {
         //categoryId có nghĩa là sortDirection trong trường hợp này
         const sortDirection = categoryId
         if (sortDirection === null) {
-          this.filter.sortDirection =
-            this.filter.sortDirection === 'ASC' &&
-            this.filter.sortBy === 'point'
-              ? 'DESC'
-              : 'ASC'
+          if (name === 'required_point') {
+            this.filter.sortDirection =
+              this.filter.sortDirection === 'ASC' && this.filter.sortBy === name
+                ? 'DESC'
+                : 'ASC'
+          } else if (name === 'point') {
+            this.filter.sortDirection =
+              this.filter.sortDirection === 'ASC' && this.filter.sortBy === name
+                ? 'DESC'
+                : 'ASC'
+          }
         } else {
           this.filter.sortDirection = sortDirection
         }
@@ -283,24 +269,14 @@ export default {
         return 'Mới nhất'
       } else if (name === 'rating') {
         return 'Đánh giá cao nhất'
+      } else if (name === 'required_point' && sortDirection === 'ASC') {
+        return 'Điểm phí: thấp đến cao'
+      } else if (name === 'required_point' && sortDirection === 'DESC') {
+        return 'Điểm phí: cao đến thấp'
       } else if (name === 'point' && sortDirection === 'ASC') {
-        return 'Điểm: thấp đến cao'
+        return 'Điểm thưởng: thấp đến cao'
       } else if (name === 'point' && sortDirection === 'DESC') {
-        return 'Điểm: cao đến thấp'
-      }
-    },
-    hightlightCategory() {
-      let arr = document.getElementsByClassName('v-list__tile--link')
-      if (!this.isEmpty(arr)) {
-        Array.prototype.forEach.call(arr, function(category) {
-          category.classList.remove('active')
-        })
-      }
-      let categoryItem = document.getElementById(
-        `category-` + this.filter.categoryId
-      )
-      if (!this.isEmpty(categoryItem)) {
-        categoryItem.classList.add('active')
+        return 'Điểm thưởng: cao đến thấp'
       }
     }
   }
@@ -308,19 +284,9 @@ export default {
 </script>
 
 <style scoped>
-.course-item {
-  -ms-flex-preferred-size: 31%;
-  flex-basis: 31%;
-  -webkit-box-flex: 0;
-  -ms-flex-positive: 0;
-  flex-grow: 0;
-  max-width: 31%;
-  flex: 1 1 auto;
-}
 .category-name {
   color: #333333 !important;
   font-size: 14px;
-  letter-spacing: -0.5px;
 }
 .category-container {
   background-color: transparent !important;
@@ -329,11 +295,8 @@ export default {
   font-size: 14px;
   line-height: 32px;
 }
-.active > div:first-child {
-  font-weight: 700;
-}
->>> .v-list__tile {
-  height: 32px;
+.v-item--active div.category-name {
+  font-weight: 700 !important;
 }
 >>> .v-pagination__navigation,
 >>> .v-pagination__item {

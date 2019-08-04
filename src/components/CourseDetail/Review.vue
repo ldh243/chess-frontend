@@ -3,11 +3,11 @@
     <v-card-title primary-title>
       <div class="title-review">Đánh giá</div>
     </v-card-title>
-    <v-layout row py-3>
+    <v-layout py-3>
       <v-flex v-if="courseOverview.medRating != null" xs4>
-        <v-layout row wrap>
-          <v-flex xs12 class="text-xs-center">
-            <span class="review-score">{{ courseOverview.medRating }}</span>
+        <v-layout wrap>
+          <v-flex xs12 class="text-center">
+            <span class="review-score text-black">{{ courseOverview.medRating }}</span>
             <v-rating
               v-model="courseOverview.medRating"
               :empty-icon="emptyIcon"
@@ -18,37 +18,30 @@
               color="yellow darken-3"
               readonly
             ></v-rating>
-            <span
-              >({{ courseOverview.totalQuantityRatings }} người đã đánh
-              giá)</span
-            >
+            <span class="total-quantity-ratings">
+              ({{ courseOverview.totalQuantityRatings }} người đã đánh
+              giá)
+            </span>
           </v-flex>
-          <v-flex x12 class="text-xs-center">
-            <v-layout row mt-3 wrap>
-              <v-flex
-                v-for="(item, index) in courseOverview.listRatings"
-                :key="index"
-                xs12
-              >
-                <v-layout>
+          <v-flex x12 class="text-center">
+            <v-layout mt-3 wrap>
+              <v-flex v-for="(item, index) in courseOverview.listRatings" :key="index" xs12>
+                <v-layout class="pt-1 py-2">
                   <v-flex xs3 mr-2>
                     <v-layout fill-height align-center justify-end>
-                      <span class="mr-1">{{ index + 1 }}</span>
+                      <span class="mr-1 rating-score-title">{{ index + 1 }}</span>
                       <v-icon color="yellow darken-3" size="12">fa-star</v-icon>
                     </v-layout>
                   </v-flex>
                   <v-flex xs6 mr-2>
                     <v-layout fill-height align-center>
-                      <v-progress-linear
-                        v-model="item.ratio"
-                        color="yellow darken-3"
-                      ></v-progress-linear>
+                      <v-progress-linear height="7" v-model="item.ratio" color="yellow darken-3"></v-progress-linear>
                     </v-layout>
                   </v-flex>
                   <v-flex xs3>
-                    <v-layout fill-height align-center
-                      >{{ item.ratio }}%</v-layout
-                    >
+                    <v-layout fill-height align-center>
+                      <span class="rating-ratio">{{ item.ratio }}%</span>
+                    </v-layout>
                   </v-flex>
                 </v-layout>
               </v-flex>
@@ -129,5 +122,11 @@ export default {
   font-weight: 600;
   line-height: 1.35;
   letter-spacing: 0.3px;
+}
+.total-lesson-title,
+.rating-score-title,
+.rating-ratio,
+.total-quantity-ratings {
+  font-size: 14px;
 }
 </style>
