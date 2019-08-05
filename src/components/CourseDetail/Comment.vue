@@ -1,39 +1,52 @@
 <template>
   <v-layout wrap px-3>
-    <v-flex xs12>
-      <span class="comment-title">Đánh giá của bạn</span>
-    </v-flex>
-    <v-flex xs12 mt-2>
-      <v-rating
-        v-model="newReview.rating"
-        :empty-icon="emptyIcon"
-        :full-icon="fullIcon"
-        background-color="grey lighten-1"
-        color="yellow darken-3"
-        hover
-        :size="18"
-      ></v-rating>
-    </v-flex>
-    <v-flex xs9>
-      <v-form ref="form" v-model="valid" lazy-validation>
-        <v-textarea
-          v-model="newReview.content"
-          class="mt-2"
-          filled
-          label="Bình luận"
-          no-resize
-          :counter="100"
-          rows="3"
-          :rules="[rules.length(6, 100)]"
-          :error-messages="
+    <template v-if="user !== null">
+      <v-flex xs12>
+        <span class="comment-title">Đánh giá của bạn</span>
+      </v-flex>
+      <v-flex xs12 mt-2>
+        <v-rating
+          v-model="newReview.rating"
+          :empty-icon="emptyIcon"
+          :full-icon="fullIcon"
+          background-color="grey lighten-1"
+          color="yellow darken-3"
+          hover
+          :size="18"
+        ></v-rating>
+      </v-flex>
+      <v-flex xs9>
+        <v-form ref="form" v-model="valid" lazy-validation>
+          <v-textarea
+            v-model="newReview.content"
+            class="mt-2"
+            filled
+            label="Bình luận"
+            no-resize
+            :counter="100"
+            rows="3"
+            :rules="[rules.length(6, 100)]"
+            :error-messages="
           postReview && newReview.rating == 0 ? 'Vui lòng đánh giá điểm' : null
         "
-        ></v-textarea>
-      </v-form>
-    </v-flex>
-    <v-flex xs3 mb class="pt-2 pl-2">
-      <v-btn color="info" @click="createReview()" :min-width="88">Đăng</v-btn>
-    </v-flex>
+          ></v-textarea>
+        </v-form>
+      </v-flex>
+      <v-flex xs3 mb class="pt-2 pl-2">
+        <v-btn color="info" @click="createReview()" :min-width="88">Đăng</v-btn>
+      </v-flex>
+    </template>
+    <template v-else>
+      <v-flex xs12 mb-3>
+        <v-layout justify-center>
+          <span class="text-grey required-login">
+            Vui lòng
+            <a @click="loginWithGoogle()">đăng nhập</a>
+            để đánh giá khóa học.
+          </span>
+        </v-layout>
+      </v-flex>
+    </template>
     <v-flex v-for="(item, index) in courseReview.content" :key="index" xs12 mb-1>
       <v-layout wrap class="comment-item">
         <v-flex xs1>
@@ -80,54 +93,57 @@
         <v-flex xs11 mt-2 offset-xs1 pl-3>
           <span :id="'content-' + item.reviewId" class="review-content">{{ item.content }}</span>
         </v-flex>
-        <v-flex
-          :id="'edit-container-' + item.reviewId"
-          xs11
-          offset-xs1
-          pl-3
-          class="review-content-edit"
-        >
-          <v-textarea
-            v-if="userId == item.reviewer.userId"
-            :id="'edit-' + item.reviewId"
-            v-model="item.content"
-            filled
-            label="Chỉnh sửa bình luận"
-            no-resize
-            :counter="100"
-            rows="3"
-            :rules="[rules.length(6, 100)]"
-          ></v-textarea>
-        </v-flex>
-        <v-flex v-if="userId == item.reviewer.userId" xs12>
-          <v-layout :id="'action-' + item.reviewId" justify-end class="action-review">
-            <span class="mr-3" @click="editComment(item.reviewId)">Sửa</span>
-            <span @click="showConfirmDeleteComment(item.reviewId)">Xóa</span>
-          </v-layout>
-        </v-flex>
-        <v-flex v-else xs12>
-          <v-layout justify-end class="action-review">
-            <span style="z-index: -1;">a</span>
-          </v-layout>
-        </v-flex>
-        <v-flex v-if="userId == item.reviewer.userId" xs12>
-          <v-layout :id="'edit-action-' + item.reviewId" justify-end class="edit-action">
-            <v-btn
-              color="info"
-              text
-              small
-              class="ma-0 mr-1"
-              @click="saveEditComment(item.reviewId)"
-            >Lưu</v-btn>
-            <v-btn
-              color="error"
-              text
-              class="ma-0"
-              small
-              @click="cancelEditComment(item.reviewId)"
-            >Hủy</v-btn>
-          </v-layout>
-        </v-flex>
+        <template v-if="user !== null">
+          <v-flex
+            :id="'edit-container-' + item.reviewId"
+            xs11
+            offset-xs1
+            pl-3
+            class="review-content-edit"
+          >
+            <v-textarea
+              v-if="user.userId == item.reviewer.userId"
+              :id="'edit-' + item.reviewId"
+              v-model="item.content"
+              filled
+              label="Chỉnh sửa bình luận"
+              no-resize
+              :counter="100"
+              rows="3"
+              :rules="[rules.length(6, 100)]"
+            ></v-textarea>
+          </v-flex>
+          <v-flex v-if="user.userId == item.reviewer.userId" xs12>
+            <v-layout :id="'action-' + item.reviewId" justify-end class="action-review">
+              <span class="mr-3" @click="editComment(item.reviewId)">Sửa</span>
+              <span @click="showConfirmDeleteComment(item.reviewId)">Xóa</span>
+            </v-layout>
+          </v-flex>
+
+          <v-flex v-else xs12>
+            <v-layout justify-end class="action-review">
+              <span style="z-index: -1;">a</span>
+            </v-layout>
+          </v-flex>
+          <v-flex v-if="user.userId == item.reviewer.userId" xs12>
+            <v-layout :id="'edit-action-' + item.reviewId" justify-end class="edit-action">
+              <v-btn
+                color="info"
+                text
+                small
+                class="ma-0 mr-1"
+                @click="saveEditComment(item.reviewId)"
+              >Lưu</v-btn>
+              <v-btn
+                color="error"
+                text
+                class="ma-0"
+                small
+                @click="cancelEditComment(item.reviewId)"
+              >Hủy</v-btn>
+            </v-layout>
+          </v-flex>
+        </template>
       </v-layout>
     </v-flex>
     <v-flex v-if="courseReview.content.length < courseReview.totalElements" xs12>
@@ -153,7 +169,7 @@ export default {
     return {
       valid: true,
       courseId: this.$route.params.courseId,
-      userId: this.$store.state.user.userId,
+      user: this.$store.state.user,
       courseReview: {
         content: []
       },
@@ -214,6 +230,11 @@ export default {
     })
   },
   methods: {
+    loginWithGoogle() {
+      var api = this.$store.state.api.login
+      api += '?redirect_uri=' + this.getCurrentPage()
+      window.location.href = api
+    },
     async getReviewPagination() {
       const { data } = await courseRepository.getReviewPagination(
         this.courseId,
@@ -383,8 +404,8 @@ export default {
     loadMore() {
       this.reviewPagination.page++
       this.$store.commit('incrementLoader', 1)
+      this.getReviewPagination()
       setTimeout(() => {
-        this.getReviewPagination()
         this.$store.commit('incrementLoader', -1)
       }, 500)
     },
@@ -447,4 +468,8 @@ textarea {
   line-height: 1;
   letter-spacing: 0.3px;
 }
+.required-login {
+  font-size: 13px;
+}
 </style>
+

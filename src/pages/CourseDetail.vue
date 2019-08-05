@@ -64,7 +64,7 @@
                       v-for="(item, index) in subMenu"
                       :key="index"
                       class="sub-menu text-black py-2"
-                      @click="scrollTo(item.target, $event)"
+                      @click="$vuetify.goTo(item.target, options), highLightMenuTab($event)"
                     >{{ item.title }}</div>
                   </v-layout>
                 </v-card>
@@ -146,6 +146,7 @@ import Curriculum from '@/components/CourseDetail/Curriculum'
 import About from '@/components/CourseDetail/About'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const courseRepository = RepositoryFactory.get('course')
+import * as easings from 'vuetify/es5/services/goto/easing-patterns'
 export default {
   components: {
     Review,
@@ -176,19 +177,19 @@ export default {
       subMenu: [
         {
           title: 'Thông tin chung',
-          target: 'about-course'
+          target: '#about-course'
         },
         {
           title: 'Giáo trình',
-          target: 'curriculum-course'
+          target: '#curriculum-course'
         },
         {
           title: 'Giảng viên',
-          target: 'author-course'
+          target: '#author-course'
         },
         {
           title: 'Đánh giá',
-          target: 'review-course'
+          target: '#review-course'
         }
       ],
       imageIcon: {
@@ -198,7 +199,17 @@ export default {
     }
   },
   computed: {
-    ...mapState({ user: state => state.user })
+    ...mapState({ user: state => state.user }),
+    options() {
+      return {
+        duration: 900,
+        offset: 0
+      }
+    },
+    target() {
+      const value = document.getElementById('course')
+      return value
+    }
   },
   mounted() {
     this.$store.commit('incrementLoader', 1)
@@ -212,17 +223,8 @@ export default {
     this.setLayoutForEnrolDialog()
   },
   methods: {
-    scrollTo(target, event) {
-      const divTarget = document.getElementById(target)
-      this.highLightMenuTab(event.srcElement)
-      window.scrollTo({
-        behavior: 'smooth',
-        top: divTarget.offsetTop,
-        block: 'end',
-        inline: 'nearest'
-      })
-    },
-    highLightMenuTab(divTarget) {
+    highLightMenuTab(event) {
+      let divTarget = event.srcElement
       let arr = document.getElementsByClassName('sub-menu')
       if (!this.isEmpty(arr)) {
         Array.prototype.forEach.call(arr, function(sub) {
@@ -236,12 +238,12 @@ export default {
         const scroll = this.scrollY
         const divEnrolCourse = document.getElementById('enrol-course')
         if (divEnrolCourse !== null) {
-          if (scroll >= 380) {
+          if (scroll >= 368) {
             divEnrolCourse.style.top = '0px'
-          } else if (scroll >= 217) {
-            divEnrolCourse.style.top = 380 - scroll + 'px'
+          } else if (scroll >= 205) {
+            divEnrolCourse.style.top = 368 - scroll + 'px'
           } else {
-            divEnrolCourse.style.top = '163px'
+            divEnrolCourse.style.top = '162px'
           }
         }
       })
@@ -315,11 +317,11 @@ export default {
 
 <style scoped>
 >>> .v-parallax__image {
-  filter: blur(10px);
-  opacity: 0.6;
+  filter: blur(8px);
+  opacity: 0.1;
 }
 >>> .v-parallax__content {
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.35);
 }
 .v-icon {
   font-size: 32px;
@@ -335,7 +337,7 @@ export default {
   margin-left: 50%;
   width: 33.33333333333333%;
   border-radius: 7px;
-  top: 163px;
+  top: 162px;
 }
 .course-point {
   color: #4d4d4d;

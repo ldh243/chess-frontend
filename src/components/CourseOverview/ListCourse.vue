@@ -171,29 +171,42 @@ export default {
   },
   mounted() {
     this.$store.commit('incrementLoader', 1)
+    this.getCoursesPagination()
+    this.getCategories()
     setTimeout(() => {
-      this.getCoursesPagination()
-      this.getCategories()
       this.$store.commit('incrementLoader', -1)
     }, 500)
   },
   methods: {
     factoryGetCourse() {
       this.$store.commit('incrementLoader', 1)
+      if (this.filter.categoryId === 0) {
+        //search all
+        this.getCoursesPagination()
+      } else {
+        this.getCoursesPaginationByCategoryId()
+      }
+      this.mergeAllCategories()
       setTimeout(() => {
-        if (this.filter.categoryId === 0) {
-          //search all
-          this.getCoursesPagination()
-        } else {
-          this.getCoursesPaginationByCategoryId()
-        }
         this.$store.commit('incrementLoader', -1)
       }, 500)
+    },
+    mergeAllCategories() {
+      this.listCourses.forEach(course => {
+        course.tag = ''
+        course.listCategorys.forEach(el => {
+          if (course.tag.length > 0) {
+            course.tag += ', '
+          }
+          course.tag += el.name
+        })
+      })
     },
     async getCoursesPagination() {
       const { data } = await courseRepository.getCoursesPagination(this.filter)
       this.listCourses = data.data.content
       this.formatListCourse()
+      this.mergeAllCategories()
       this.filter.totalPages = data.data.totalPages
       this.totalCourse = data.data.totalElements
     },
@@ -203,6 +216,7 @@ export default {
       )
       this.listCourses = data.data.content
       this.formatListCourse()
+      this.mergeAllCategories()
       this.filter.totalPages = data.data.totalPages
       this.totalCourse = data.data.totalElements
     },

@@ -15,20 +15,7 @@
           </v-flex>
           <v-flex v-if="lessonDetails.lessonType === 3" xs8 mr-5>
             <v-card class="pa-3">
-              <iframe
-                width="100%"
-                class="iframe-video"
-                src="https://www.youtube.com/embed/xh4sO1ICS_Q"
-                frameborder="0"
-                allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture"
-                allowfullscreen
-              ></iframe>
-              <v-card-text>
-                <div v-for="(item, index) in lessonContent" :key="index">
-                  <p class="mb-1 text-black">{{ item.title }}</p>
-                  <p class="mb-3 text-black">{{ item.text }}</p>
-                </div>
-              </v-card-text>
+              <span v-html="lessonDetails.uninteractiveLesson.content"></span>
             </v-card>
           </v-flex>
           <v-flex xs4 class="direction-side">
@@ -263,7 +250,6 @@ export default {
   },
   updated() {
     if (this.lessonDetails.lessonType == 3) {
-      this.setHeightForIframe()
       this.lessonContent = this.sampleText
     } else {
       this.lessonContent = null
@@ -359,6 +345,8 @@ export default {
         this.defaultFen = this.lessonDetails.interactiveLesson.initCode
         this.currentFen = this.defaultFen
         this.loadMoveHistory()
+      } else {
+        console.log(this.lessonDetails)
       }
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)
@@ -483,13 +471,6 @@ export default {
       this.moveHistory = []
       this.currentMove = 0
       this.totalMove = 0
-    },
-    setHeightForIframe() {
-      const ratio = 16 / 9
-      let iframe = document.getElementsByClassName('iframe-video')[0]
-      const width = iframe.offsetWidth
-      const height = width / ratio
-      iframe.style.height = height + 'px'
     }
   }
 }

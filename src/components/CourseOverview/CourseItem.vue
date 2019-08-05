@@ -9,6 +9,10 @@
             class="course-image"
             @click="goToCourseDetail()"
           ></v-img>
+          <span
+            class="text-grey course-tag"
+            v-if="courseDetail.tag.length > 0"
+          >Danh mục: {{courseDetail.tag}}</span>
         </v-flex>
         <v-flex xs5>
           <v-layout wrap>
@@ -31,8 +35,13 @@
           </v-layout>
         </v-flex>
         <v-flex xs3 class="course-detail-container" pl-3>
-          <v-layout justify-space-between fill-height column align-center>
-            <v-flex style="width: 100%">
+          <v-layout column justify-space-between fill-height wrap>
+            <v-flex>
+              <div class="course-ribbon">
+                <span>123123</span>
+              </div>
+            </v-flex>
+            <v-flex>
               <v-layout fill-height justify-center column align-center pt-3>
                 <span
                   class="course-point text-black text-error"
@@ -53,7 +62,7 @@
                 </v-layout>
               </v-layout>
             </v-flex>
-            <v-flex style="width: 100%">
+            <v-flex>
               <v-layout fill-height align-end>
                 <v-btn
                   class="ma-0 btn-detail"
@@ -129,7 +138,8 @@ export default {
 .btn-detail {
   font-weight: 600;
 }
-.text-detail {
+.text-detail,
+.course-tag {
   font-size: 12px;
 }
 .course-image:hover,
@@ -141,5 +151,9 @@ export default {
 }
 .no-rating {
   font-size: 13px;
+}
+.course-ribbon {
+  background-image: linear-gradient(90deg, #4fc1e9, #4a89dc);
+  border-radius: 3px;
 }
 </style>
