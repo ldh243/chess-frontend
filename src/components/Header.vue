@@ -61,11 +61,10 @@ export default {
     return {
       chessLogo: require('@/assets/images/chess.png'),
       loginBackgroundImage: require('@/assets/images/google-logo.png'),
-      learnMenu: [
-        { title: 'Học lý thuyết', href: '/learning-theory' },
-        { title: 'Học thế cờ', href: '/learning-board' }
-      ],
-      userMenu: [{ title: 'Thông tin cá nhân', href: '/profile', method: '' }]
+      userMenu: [
+        { title: 'Thông tin cá nhân', href: '/profile/edit' },
+        { title: 'Khóa học của tôi', href: '/profile/course' }
+      ]
     }
   },
   computed: {

@@ -209,6 +209,7 @@ export default {
       this.mergeAllCategories()
       this.filter.totalPages = data.data.totalPages
       this.totalCourse = data.data.totalElements
+      console.log(this.listCourses)
     },
     async getCoursesPaginationByCategoryId() {
       const { data } = await courseRepository.getCoursesPaginationByCategoryId(
@@ -219,6 +220,7 @@ export default {
       this.mergeAllCategories()
       this.filter.totalPages = data.data.totalPages
       this.totalCourse = data.data.totalElements
+      console.log(this.listCourses)
     },
     formatListCourse() {
       this.listCourses.forEach(course => {

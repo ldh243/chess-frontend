@@ -49,22 +49,6 @@ export default Vue.mixin({
       const date = new Date(Date.parse(datetime))
       return date.toLocaleString()
     },
-    // changeChessKey(oldKey) {
-    //   switch (oldKey.charAt(0)) {
-    //     case 'R':
-    //       return 'X' + oldKey.slice(1)
-    //     case 'N':
-    //       return 'M' + oldKey.slice(1)
-    //     case 'B':
-    //       return 'T' + oldKey.slice(1)
-    //     case 'K':
-    //       return 'V' + oldKey.slice(1)
-    //     case 'Q':
-    //       return 'H' + oldKey.slice(1)
-    //     default:
-    //       return oldKey
-    //   }
-    // }
     getLessonTypeName(lessonTypeId) {
       switch (lessonTypeId) {
         case 2:
@@ -73,22 +57,27 @@ export default Vue.mixin({
           return 'Lý thuyết'
       }
     },
-    async uploadImageByDataURL(image, imageName, directory) {
+    async uploadImageByDataURL2(image, imageName, directory) {
       const uploadTask = firebase
         .storage()
         .ref(`images/${directory}/${imageName}`)
         .putString(image, 'data_url')
-      // uploadTask.on('state_changed', () => {
-      const imageLink = await firebase
-        .storage()
-        .ref(`images/${directory}`)
-        .child(`${imageName}`)
-        .getDownloadURL()
-        .then(url => {
-          return url
-        })
+
+      let imageLink = null
+      uploadTask.on(
+        firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
+        null,
+        null,
+        function() {
+          // Upload completed successfully, now we can get the download URL
+          uploadTask.snapshot.ref.getDownloadURL().then(function(downloadURL) {
+            imageLink = downloadURL
+            console.log('File available at', downloadURL)
+          })
+        }
+      )
+      console.log(imageLink)
       return imageLink
-      // })
     },
     isEmpty(obj) {
       if (obj !== null && obj !== undefined) {

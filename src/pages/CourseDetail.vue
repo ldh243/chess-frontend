@@ -146,7 +146,6 @@ import Curriculum from '@/components/CourseDetail/Curriculum'
 import About from '@/components/CourseDetail/About'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const courseRepository = RepositoryFactory.get('course')
-import * as easings from 'vuetify/es5/services/goto/easing-patterns'
 export default {
   components: {
     Review,
@@ -365,7 +364,7 @@ export default {
 .title-direction {
   position: sticky;
   top: 0px;
-  z-index: 99;
+  z-index: 4;
 }
 .btn-learn {
   font-weight: 600;

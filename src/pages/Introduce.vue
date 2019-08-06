@@ -15,7 +15,7 @@
             :vertical="mode === 'vertical'"
           >
             {{ snackbarText }}
-            <v-btn dark flat @click="snackbar = false">Đóng</v-btn>
+            <v-btn dark text @click="snackbar = false">Đóng</v-btn>
           </v-snackbar>
         </v-layout>
       </v-container>

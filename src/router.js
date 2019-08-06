@@ -19,7 +19,7 @@ export default new Router({
     { path: '/course/:courseId', component: CourseDetail },
     { path: '/learning/:courseId', component: Learning },
     { path: '/play-chess', component: PlayChess },
-    { path: '/profile', component: Profile },
+    { path: '/profile/:tabItem', component: Profile },
     { path: '/register', component: Register }
   ]
 })

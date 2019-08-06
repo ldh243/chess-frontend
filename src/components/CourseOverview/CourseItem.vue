@@ -37,16 +37,20 @@
         <v-flex xs3 class="course-detail-container" pl-3>
           <v-layout column justify-space-between fill-height wrap>
             <v-flex>
-              <div class="course-ribbon">
-                <span>123123</span>
-              </div>
+              <v-layout justify-end class="course-ribbon">
+                <span
+                  class="course-inprogress px-3 elevation-4"
+                  v-if="courseDetail.enrolled"
+                >Đã đăng ký</span>
+              </v-layout>
             </v-flex>
             <v-flex>
               <v-layout fill-height justify-center column align-center pt-3>
-                <span
-                  class="course-point text-black text-error"
-                >Yêu cầu {{ courseDetail.requiredPoint }} điểm</span>
-                <span class="course-point text-black">Nhận được {{ courseDetail.point }} điểm</span>
+                <v-layout justify-center fill-height align-center>
+                  <span class="point-reward">{{courseDetail.point}}</span>
+                  <img :src="imageProfits" height="24" class="mx-2" />
+                  <span class="point-required">{{courseDetail.requiredPoint}}</span>
+                </v-layout>
                 <span class="text-detail text-grey">{{ courseDetail.courseCreatedDate }}</span>
                 <v-layout align-center v-if="courseDetail.rating > 0">
                   <v-rating
@@ -55,22 +59,22 @@
                     color="yellow darken-3"
                     small
                   ></v-rating>
-                  <span class="pt-1 ml-1 course-total-rate text-grey">(1724)</span>
+                  <span class="pt-1 ml-1 course-total-rate text-grey">({{courseDetail.totalRating}})</span>
                 </v-layout>
-                <v-layout align-center v-else>
-                  <span class="no-rating text-grey">(Hiện chưa có đánh giá nào)</span>
-                </v-layout>
+                <span class="no-rating text-grey" v-else>(Hiện chưa có đánh giá nào)</span>
               </v-layout>
             </v-flex>
             <v-flex>
               <v-layout fill-height align-end>
-                <v-btn
-                  class="ma-0 btn-detail"
-                  outlined
-                  color="primary"
-                  block
-                  @click="goToCourseDetail()"
-                >Xem chi tiết</v-btn>
+                <v-flex xs12 mr-3>
+                  <v-btn
+                    class="ma-0 btn-detail"
+                    outlined
+                    color="primary"
+                    block
+                    @click="goToCourseDetail()"
+                  >Xem chi tiết</v-btn>
+                </v-flex>
               </v-layout>
             </v-flex>
           </v-layout>
@@ -90,11 +94,12 @@ export default {
   },
   data() {
     return {
-      rateScore: 4.2
+      rateScore: 4.2,
+      imageProfits: require('@/assets/images/profits.png')
     }
   },
   mounted() {
-    // console.log(this.courseDetail)
+    console.log(this.courseDetail)
   },
   methods: {
     goToCourseDetail() {
@@ -153,7 +158,20 @@ export default {
   font-size: 13px;
 }
 .course-ribbon {
-  background-image: linear-gradient(90deg, #4fc1e9, #4a89dc);
   border-radius: 3px;
+  color: white;
+  font-size: 14px;
+}
+.course-inprogress {
+  border-radius: 3px;
+  background-image: linear-gradient(90deg, #00b359, #00e673);
+}
+.point-reward {
+  font-size: 14px;
+  color: #57d9ad;
+}
+.point-required {
+  color: #e63950;
+  font-size: 14px;
 }
 </style>

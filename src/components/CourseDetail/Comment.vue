@@ -187,7 +187,7 @@ export default {
           ((v || '').length <= max && (v || '').length >= min) ||
           `Nội dung phải từ ${min} đến ${max} kí tự.`,
         commentRules: [
-          v => !!v || 'Name is required',
+          v => !!v || 'Nội dung không được để trống.',
           v => (v < 6 && v.length > 100) || 'Nội dung phải từ 6 đến 100 kí tự.'
         ]
       },
