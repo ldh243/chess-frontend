@@ -151,7 +151,9 @@ export default {
       if (this.isChangedAvatar) {
         this.uploadImageByDataURL(this.user.avatar, match[0], 'ava')
       }
+      this.user.roleId = 2
       if (this.isInstructor) {
+        this.user.roleId = 1
         this.certificates.forEach(el => {
           this.uploadImageByDataURL(el.path, match[0] + el.name, 'certificates')
         })
@@ -214,6 +216,7 @@ export default {
       }
       const { data } = await userRepository.signUpNewAccount(this.user)
       if (data.data) {
+        console.log(data)
         localStorage.removeItem('user')
         localStorage.setItem('user', JSON.stringify(this.user))
         localStorage.removeItem('role')

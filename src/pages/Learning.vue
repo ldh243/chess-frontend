@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-container px-0>
+    <v-container px-0 v-if="lessonDetails.lessonType === 2">
       <v-layout wrap>
         <v-flex xs12 mb-4>
           <v-breadcrumbs :items="breadcrumbs" class="py-0">
@@ -10,13 +10,8 @@
           </v-breadcrumbs>
         </v-flex>
         <v-layout>
-          <v-flex v-if="lessonDetails.lessonType === 2" xs8 mr-5>
+          <v-flex xs8 mr-5>
             <chessboard :fen="currentFen" :move="move" @onMove="showInfo" />
-          </v-flex>
-          <v-flex v-if="lessonDetails.lessonType === 3" xs8 mr-5>
-            <v-card class="pa-3">
-              <span v-html="lessonDetails.uninteractiveLesson.content"></span>
-            </v-card>
           </v-flex>
           <v-flex xs4 class="direction-side">
             <v-layout column>
@@ -163,12 +158,49 @@
                     Bài tiếp
                     <v-icon class="ml-2">fa-angle-right</v-icon>
                   </v-btn>
-                  <v-btn v-else class="font-weight-bold">Hoàn thành</v-btn>
+                  <v-btn v-else @click="finishCourse()" class="font-weight-bold">Hoàn thành</v-btn>
                 </v-layout>
               </v-flex>
             </v-layout>
           </v-flex>
         </v-layout>
+      </v-layout>
+    </v-container>
+    <v-container fill-height v-if="lessonDetails.lessonType === 3">
+      <v-layout fill-height wrap class="content-theory">
+        <v-flex xs12 mb-4>
+          <v-breadcrumbs :items="breadcrumbs" class="py-0">
+            <template v-slot:divider>
+              <v-icon>mdi-chevron-right</v-icon>
+            </template>
+          </v-breadcrumbs>
+        </v-flex>
+        <v-flex xs12 mb-3>
+          <v-card class="pa-3">
+            <span v-html="theoryContent"></span>
+          </v-card>
+        </v-flex>
+        <v-flex xs12>
+          <v-layout justify-center>
+            <v-btn
+              class="font-weight-bold mr-3"
+              :disabled="statusPreviousLesson"
+              @click="changeLesson(-1)"
+            >
+              <v-icon class="mr-2">fa-angle-left</v-icon>Bài trước
+            </v-btn>
+            <v-btn
+              v-if="!statusNextLesson"
+              class="font-weight-bold"
+              :disabled="statusNextLesson"
+              @click="changeLesson(1)"
+            >
+              Bài tiếp
+              <v-icon class="ml-2">fa-angle-right</v-icon>
+            </v-btn>
+            <v-btn v-else class="font-weight-bold" @click="finishCourse()">Hoàn1231 thành</v-btn>
+          </v-layout>
+        </v-flex>
       </v-layout>
     </v-container>
   </v-app>
@@ -231,7 +263,8 @@ export default {
         lessonContent: 0
       },
       move: '',
-      steps: []
+      steps: [],
+      theoryContent: ''
     }
   },
   computed: {
@@ -253,8 +286,8 @@ export default {
       this.lessonContent = this.sampleText
     } else {
       this.lessonContent = null
+      this.initHeightForDirecitonSide()
     }
-    this.initHeightForDirecitonSide()
   },
   created() {
     this.currentFen = this.defaultFen
@@ -268,45 +301,21 @@ export default {
     }, 500)
   },
   methods: {
+    finishCourse() {
+      const courseId = this.$route.params.courseId
+      console.log(courseId)
+      this.$router.push(`/course/${courseId}`)
+    },
     initHeightForDirecitonSide() {
       //reset height
-      document.getElementsByClassName('move-history-content')[0].style.height =
-        '0px'
-      document.getElementsByClassName('lesson-content')[0].style.height = '0px'
-
-      const totalHeight = document.getElementsByClassName('direction-side')[0]
+      const totalHeight = document.getElementsByClassName('cg-board-wrap')[0]
         .offsetHeight
-
-      if (this.lessonDetails.lessonType == 2) {
-        this.showHideMoveHistory(true)
-        const moveHeight = totalHeight * 0.6 - 92
-        document.getElementsByClassName(
-          'move-history-content'
-        )[0].style.height = moveHeight + 'px'
-        const lessonHeight = totalHeight * 0.4 - 92
-        document.getElementsByClassName('lesson-content')[0].style.height =
-          lessonHeight + 'px'
-      } else {
-        this.showHideMoveHistory(false)
-        const lessonHeight = totalHeight - 76
-        document.getElementsByClassName('lesson-content')[0].style.height =
-          lessonHeight + 'px'
-      }
-    },
-    showHideMoveHistory(status) {
-      if (status) {
-        document.getElementsByClassName('move-history')[0].style.display =
-          'block'
-        document.getElementsByClassName(
-          'move-history-direction'
-        )[0].style.display = 'block'
-      } else {
-        document.getElementsByClassName('move-history')[0].style.display =
-          'none'
-        document.getElementsByClassName(
-          'move-history-direction'
-        )[0].style.display = 'none'
-      }
+      const moveHeight = totalHeight * 0.6 - 84
+      document.getElementsByClassName('move-history-content')[0].style.height =
+        moveHeight + 'px'
+      const lessonHeight = totalHeight * 0.4 - 76
+      document.getElementsByClassName('lesson-content')[0].style.height =
+        lessonHeight + 'px'
     },
     showInfo(data) {
       // console.log(data.history[data.history.length - 1])
@@ -336,6 +345,7 @@ export default {
       this.getLessonById()
     },
     async getLessonById() {
+      this.theoryContent = ''
       this.$store.commit('incrementLoader', 1)
       const lessonModel = this.courseDetails.lessonViewModels[this.activeLesson]
       const { data } = await lessonRepository.getById(lessonModel.lessonId)
@@ -346,7 +356,11 @@ export default {
         this.currentFen = this.defaultFen
         this.loadMoveHistory()
       } else {
-        console.log(this.lessonDetails)
+        this.theoryContent = this.lessonDetails.uninteractiveLesson.content
+        this.theoryContent = this.theoryContent.replace(
+          '<img',
+          "<img class='v-responsive'"
+        )
       }
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)
@@ -497,5 +511,15 @@ export default {
 .single-move-white {
   -ms-flex: 0 0 86% !important;
   flex: 0 0 86% !important;
+}
+.content-theory > div:nth-child(2) {
+  min-height: calc(100% - 85px);
+}
+.content-theory > div:nth-child(2) > div:first-child {
+  height: 100%;
+}
+>>> .v-application--wrap {
+  margin-top: -56px;
+  padding-top: 56px !important;
 }
 </style>

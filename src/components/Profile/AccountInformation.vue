@@ -18,50 +18,49 @@
           </v-avatar>
         </v-hover>
       </v-flex>
-      <v-flex xs10>
-        <v-layout>
-          <form>
-            <v-text-field
-              v-model="name"
-              v-validate="'required|max:10'"
-              :counter="10"
-              :error-messages="errors.collect('name')"
-              label="Name"
-              data-vv-name="name"
-              required
-            ></v-text-field>
-            <v-text-field
-              v-model="email"
-              v-validate="'required|email'"
-              :error-messages="errors.collect('email')"
-              label="E-mail"
-              data-vv-name="email"
-              required
-            ></v-text-field>
-            <v-select
-              v-model="select"
-              v-validate="'required'"
-              :items="items"
-              :error-messages="errors.collect('select')"
-              label="Select"
-              data-vv-name="select"
-              required
-            ></v-select>
-            <v-checkbox
-              v-model="checkbox"
-              v-validate="'required'"
-              :error-messages="errors.collect('checkbox')"
-              value="1"
-              label="Option"
-              data-vv-name="checkbox"
-              type="checkbox"
-              required
-            ></v-checkbox>
-
-            <v-btn class="mr-4" @click="submit">submit</v-btn>
-            <v-btn @click="clear">clear</v-btn>
-          </form>
-        </v-layout>
+      <v-flex xs0 pl-5 pr-5>
+        <v-form ref="form" v-model="valid" lazy-validation>
+          <v-layout wrap>
+            <v-flex xs3>
+              <v-subheader>Họ và tên</v-subheader>
+            </v-flex>
+            <v-flex xs9>
+              <v-text-field
+                v-model="user.fullName"
+                :counter="255"
+                :rules="nameRules"
+                label="Họ và tên"
+                required
+                solo
+                clearable
+              ></v-text-field>
+            </v-flex>
+            <v-flex xs3>
+              <v-subheader>Địa chỉ email</v-subheader>
+            </v-flex>
+            <v-flex xs9>
+              <v-text-field :value="user.email" solo readonly label="E-mail"></v-text-field>
+            </v-flex>
+            <v-flex xs3>
+              <v-subheader>Vai trò</v-subheader>
+            </v-flex>
+            <v-flex xs9>
+              <v-text-field value="Học viên" readonly solo label="Vai trò"></v-text-field>
+            </v-flex>
+            <v-flex xs3>
+              <v-subheader>Điểm</v-subheader>
+            </v-flex>
+            <v-flex xs9>
+              <v-text-field :value="user.point" readonly solo label="Vai trò"></v-text-field>
+            </v-flex>
+            <v-flex xs12>
+              <v-layout>
+                <v-spacer></v-spacer>
+                <v-btn :disabled="!valid" text color="success" @click="submit">Lưu</v-btn>
+              </v-layout>
+            </v-flex>
+          </v-layout>
+        </v-form>
       </v-flex>
     </v-layout>
   </v-card>
@@ -71,12 +70,15 @@
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const userRepository = RepositoryFactory.get('user')
 export default {
-  $_veeValidate: {
-    validator: 'new'
-  },
   data() {
     return {
-      user: null
+      user: null,
+      valid: false,
+      nameRules: [
+        v => !!v || 'Họ và tên không được để trống.',
+        v => (v && v.length >= 6) || 'Họ và tên ít nhất phải 6 kí tự.',
+        v => (v && v.length <= 255) || 'Họ và tên không được quá dài.'
+      ]
     }
   },
   mounted() {
@@ -87,8 +89,27 @@ export default {
       const { data } = await userRepository.getCurrentUserDetail()
       this.user = data.data
     },
+    async updateProfile() {
+      const { data } = await userRepository.updateProfile(this.user)
+      if (data.data) {
+        localStorage.setItem('user', JSON.stringify(this.user))
+        const user = JSON.parse(localStorage.getItem('user'))
+        this.$store.commit('setUser')
+        this.$swal({
+          type: 'success',
+          title: 'Thành  công',
+          text: 'Cập nhật thông tin thành công.',
+          confirmButtonText: 'Xác nhận'
+        })
+      }
+    },
     uploadImageSuccess(formData, index, fileList) {
       this.certificates = fileList
+    },
+    submit() {
+      if (this.$refs.form.validate()) {
+        this.updateProfile()
+      }
     }
   }
 }
@@ -120,5 +141,12 @@ export default {
 .upload-file .v-icon {
   width: 23px;
   height: 23px;
+}
+>>> input {
+  font-size: 14px !important;
+}
+.v-subheader {
+  font-weight: 600 !important;
+  font-size: 15px;
 }
 </style>

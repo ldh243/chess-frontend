@@ -21,32 +21,30 @@
           >Đăng nhập</v-btn>
         </v-layout>
       </v-flex>
-      <v-flex v-else xs2 offset-xs6>
-        <v-layout justify-end>
-          <v-menu offset-y transition="slide-y-transition" bottom left>
-            <template v-slot:activator="{ on }">
-              <v-btn color="#333940" class="btn-profile" block v-on="on">
-                <v-layout align-center fill-height>
-                  <v-avatar :size="28">
-                    <img :src="user.avatar" />
-                  </v-avatar>
-                  <span class="white--text ml-2">{{ user.fullName }}</span>
-                  <v-spacer></v-spacer>
-                  <v-icon>fa-caret-down</v-icon>
-                </v-layout>
-              </v-btn>
-            </template>
-            <v-list>
-              <v-list-item v-for="(item, index) in userMenu" :key="index" :to="item.href">
-                <v-list-item-title>{{ item.title }}</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="logout()">
-                <v-list-item-title>Đăng xuất</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-        </v-layout>
-      </v-flex>
+      <v-layout justify-end v-else>
+        <v-menu offset-y transition="slide-y-transition" bottom left :max-width="200">
+          <template v-slot:activator="{ on }">
+            <v-btn color="#333940" class="btn-profile px-1" v-on="on" :max-width="300">
+              <v-layout align-center fill-height justify-start>
+                <v-avatar :size="28">
+                  <img :src="user.avatar" />
+                </v-avatar>
+                <span class="white--text ml-2 text-truncate">{{ user.fullName }}</span>
+                <v-spacer></v-spacer>
+                <v-icon color="white">fa-caret-down</v-icon>
+              </v-layout>
+            </v-btn>
+          </template>
+          <v-list>
+            <v-list-item v-for="(item, index) in userMenu" :key="index" :to="item.href">
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+            <v-list-item @click="logout()">
+              <v-list-item-title>Đăng xuất</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-menu>
+      </v-layout>
     </v-toolbar>
   </v-app-bar>
 </template>
@@ -145,5 +143,11 @@ img {
 }
 .btn-profile {
   box-shadow: none !important;
+}
+.btn-profile span {
+  max-width: 145px;
+  overflow: hidden;
+  font-size: 12px;
+  text-transform: none;
 }
 </style>

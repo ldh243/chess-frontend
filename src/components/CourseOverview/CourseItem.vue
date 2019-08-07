@@ -98,9 +98,7 @@ export default {
       imageProfits: require('@/assets/images/profits.png')
     }
   },
-  mounted() {
-    console.log(this.courseDetail)
-  },
+  mounted() {},
   methods: {
     goToCourseDetail() {
       this.$router.push(`/course/${this.courseDetail.courseId}`)

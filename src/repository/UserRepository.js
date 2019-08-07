@@ -8,5 +8,8 @@ export default {
   },
   signUpNewAccount(newUser) {
     return Repository.put(`${resource}/register`, newUser)
+  },
+  updateProfile(newUser) {
+    return Repository.put(`${resource}/update-profile`, newUser)
   }
 }

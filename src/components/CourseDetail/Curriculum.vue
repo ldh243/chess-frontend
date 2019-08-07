@@ -75,7 +75,6 @@ export default {
           el.learned = true
         }
       })
-      console.log(this.curriculum)
     }
   }
 }
