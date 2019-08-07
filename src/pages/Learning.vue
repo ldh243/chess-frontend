@@ -167,7 +167,7 @@
       </v-layout>
     </v-container>
     <v-container fill-height v-if="lessonDetails.lessonType === 3">
-      <v-layout fill-height wrap class="content-theory">
+      <v-layout fill-height wrap class="content-theory-container">
         <v-flex xs12 mb-4>
           <v-breadcrumbs :items="breadcrumbs" class="py-0">
             <template v-slot:divider>
@@ -177,7 +177,7 @@
         </v-flex>
         <v-flex xs12 mb-3>
           <v-card class="pa-3">
-            <span v-html="theoryContent"></span>
+            <span class="content-theory" v-html="theoryContent"></span>
           </v-card>
         </v-flex>
         <v-flex xs12>
@@ -303,8 +303,32 @@ export default {
   methods: {
     finishCourse() {
       const courseId = this.$route.params.courseId
-      console.log(courseId)
-      this.$router.push(`/course/${courseId}`)
+
+      let timerInterval
+      this.$swal
+        .fire({
+          title: 'Hoàn thành',
+          type: 'success',
+          html:
+            'Chúc mừng bạn đã hoàn thành khóa học. Quay về trang chi tiết trong <strong></strong>...',
+          timer: 5000,
+          onBeforeOpen: () => {
+            this.$swal.showLoading()
+            timerInterval = setInterval(() => {
+              this.$swal
+                .getContent()
+                .querySelector('strong').textContent = Math.ceil(
+                this.$swal.getTimerLeft() / 1000
+              )
+            }, 100)
+          },
+          onClose: () => {
+            clearInterval(timerInterval)
+          }
+        })
+        .then(result => {
+          this.$router.push(`/course/${courseId}`)
+        })
     },
     initHeightForDirecitonSide() {
       //reset height
@@ -357,10 +381,6 @@ export default {
         this.loadMoveHistory()
       } else {
         this.theoryContent = this.lessonDetails.uninteractiveLesson.content
-        this.theoryContent = this.theoryContent.replace(
-          '<img',
-          "<img class='v-responsive'"
-        )
       }
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)
@@ -379,6 +399,7 @@ export default {
       moveHistory.formatMoveHistory()
       this.moveHistory = moveHistory.getMoveHistory
       this.steps = moveHistory.getSteps
+      this.firstId = this.steps[0].id
     },
 
     setCurrentMove() {
@@ -397,8 +418,12 @@ export default {
       }
     },
     getPreMoveById(id) {
-      const preId = document.getElementById(id).getAttribute('preId')
-      return document.getElementById(preId)
+      if (id === 0) {
+        return null
+      } else {
+        const preId = document.getElementById(id).getAttribute('preId')
+        return document.getElementById(preId)
+      }
     },
     getNextMoveById(id) {
       let nextId = null
@@ -512,14 +537,25 @@ export default {
   -ms-flex: 0 0 86% !important;
   flex: 0 0 86% !important;
 }
-.content-theory > div:nth-child(2) {
+.content-theory-container > div:nth-child(2) {
   min-height: calc(100% - 85px);
 }
-.content-theory > div:nth-child(2) > div:first-child {
+.content-theory-container > div:nth-child(2) > div:first-child {
   height: 100%;
 }
 >>> .v-application--wrap {
   margin-top: -56px;
   padding-top: 56px !important;
+}
+>>> .content-theory img {
+  position: relative;
+  overflow: hidden;
+  -webkit-box-flex: 1;
+  -ms-flex: 1 0 auto;
+  flex: 1 0 auto;
+  max-width: 100%;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
 }
 </style>

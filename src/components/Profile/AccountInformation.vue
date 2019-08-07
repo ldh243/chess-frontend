@@ -76,6 +76,10 @@ export default {
       valid: false,
       nameRules: [
         v => !!v || 'Họ và tên không được để trống.',
+        v =>
+          /^[a-zA-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]+$/g.test(
+            v
+          ) || 'Tên không được chứa số hoặc kí tự khác.',
         v => (v && v.length >= 6) || 'Họ và tên ít nhất phải 6 kí tự.',
         v => (v && v.length <= 255) || 'Họ và tên không được quá dài.'
       ]
@@ -94,7 +98,7 @@ export default {
       if (data.data) {
         localStorage.setItem('user', JSON.stringify(this.user))
         const user = JSON.parse(localStorage.getItem('user'))
-        this.$store.commit('setUser')
+        this.$store.commit('setUser', user)
         this.$swal({
           type: 'success',
           title: 'Thành  công',

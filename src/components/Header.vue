@@ -22,14 +22,14 @@
         </v-layout>
       </v-flex>
       <v-layout justify-end v-else>
-        <v-menu offset-y transition="slide-y-transition" bottom left :max-width="200">
+        <v-menu offset-y transition="slide-y-transition" bottom left :max-width="250">
           <template v-slot:activator="{ on }">
-            <v-btn color="#333940" class="btn-profile px-1" v-on="on" :max-width="300">
+            <v-btn color="#333940" class="btn-profile px-1" v-on="on" :max-width="350">
               <v-layout align-center fill-height justify-start>
                 <v-avatar :size="28">
                   <img :src="user.avatar" />
                 </v-avatar>
-                <span class="white--text ml-2 text-truncate">{{ user.fullName }}</span>
+                <span class="white--text mx-2 text-truncate">{{ user.fullName }}</span>
                 <v-spacer></v-spacer>
                 <v-icon color="white">fa-caret-down</v-icon>
               </v-layout>
@@ -145,7 +145,7 @@ img {
   box-shadow: none !important;
 }
 .btn-profile span {
-  max-width: 145px;
+  max-width: 200px;
   overflow: hidden;
   font-size: 12px;
   text-transform: none;

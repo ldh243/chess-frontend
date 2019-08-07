@@ -79,7 +79,7 @@
                 <InstructorInfo :author="courseDetail.author" />
               </v-flex>
               <v-flex id="review-course" xs12 mt-3>
-                <Review />
+                <Review :enrolled="courseDetail.enrolled" />
               </v-flex>
             </v-layout>
           </v-flex>
@@ -218,7 +218,6 @@ export default {
     }, 500)
   },
   updated() {
-    this.setEventScroll()
     this.setLayoutForEnrolDialog()
   },
   methods: {
@@ -232,21 +231,7 @@ export default {
       }
       divTarget.classList.add('active')
     },
-    setEventScroll() {
-      window.addEventListener('scroll', function() {
-        const scroll = this.scrollY
-        const divEnrolCourse = document.getElementById('enrol-course')
-        if (divEnrolCourse !== null) {
-          if (scroll >= 368) {
-            divEnrolCourse.style.top = '0px'
-          } else if (scroll >= 205) {
-            divEnrolCourse.style.top = 368 - scroll + 'px'
-          } else {
-            divEnrolCourse.style.top = '162px'
-          }
-        }
-      })
-    },
+
     async getCourseById() {
       const { data } = await courseRepository.getById(this.courseId)
       this.courseDetail = data.data
@@ -260,7 +245,7 @@ export default {
     showConfirmEnrolCourse() {
       this.$swal({
         title: 'Xác nhận?',
-        text: `Bạn có chắc chắn sử dụng ${this.courseDetail.requiredPoint} điểm để đăng ký khóa học này`,
+        html: `Bạn có chắc chắn sử dụng <strong>${this.courseDetail.requiredPoint} điểm</strong> để đăng ký khóa học này`,
         type: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
