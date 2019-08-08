@@ -153,4 +153,10 @@ export default {
   font-weight: 600 !important;
   font-size: 15px;
 }
+>>> .v-text-field.v-text-field--solo .v-input__control {
+  min-height: 40px !important;
+}
+.v-input {
+  height: 70px;
+}
 </style>

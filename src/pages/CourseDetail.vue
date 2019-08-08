@@ -219,8 +219,24 @@ export default {
   },
   updated() {
     this.setLayoutForEnrolDialog()
+    this.setEventScroll()
   },
   methods: {
+    setEventScroll() {
+      window.addEventListener('scroll', function() {
+        const scroll = this.scrollY
+        const divEnrolCourse = document.getElementById('enrol-course')
+        if (divEnrolCourse !== null) {
+          if (scroll >= 368) {
+            divEnrolCourse.style.top = '0px'
+          } else if (scroll >= 205) {
+            divEnrolCourse.style.top = 368 - scroll + 'px'
+          } else {
+            divEnrolCourse.style.top = '162px'
+          }
+        }
+      })
+    },
     highLightMenuTab(event) {
       let divTarget = event.srcElement
       let arr = document.getElementsByClassName('sub-menu')
