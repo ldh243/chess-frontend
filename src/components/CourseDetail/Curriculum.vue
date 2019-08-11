@@ -81,6 +81,9 @@ export default {
 </script>
 
 <style scoped>
+>>> .v-icon.v-icon {
+  font-size: 18px !important;
+}
 .course-title {
   font-size: 16px;
   color: #464646;

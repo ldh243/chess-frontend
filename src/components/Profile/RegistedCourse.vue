@@ -1,13 +1,57 @@
 <template>
   <v-card flat>
-    <v-card-title>Khóa học của tôi</v-card-title>
-    <v-layout></v-layout>
+    <v-card-title class="tab-title">Khóa học của tôi</v-card-title>
+    <v-layout wrap px-4 v-if="listCourse !== null">
+      <RegistedCourseRow :course-group="item" v-for="(item, index) in listCourse" :key="index" />
+    </v-layout>
   </v-card>
 </template>
 
 <script>
-export default {}
+import { RepositoryFactory } from '@/repository/RepositoryFactory'
+const courseRepository = RepositoryFactory.get('course')
+import RegistedCourseRow from '@/components/Profile/RegistedCourseRow'
+export default {
+  components: {
+    RegistedCourseRow
+  },
+  data() {
+    return {
+      filter: {
+        page: 1,
+        pageSize: 12,
+        userId: 0
+      },
+      listCourse: null
+    }
+  },
+  mounted() {
+    this.getCoursesPaginationsByUserId()
+  },
+  methods: {
+    async getCoursesPaginationsByUserId() {
+      this.filter.userId = this.$store.state.user.userId
+      const { data } = await courseRepository.getCoursesPaginationsByUserId(
+        this.filter
+      )
+      this.listCourse = data.data.content
+      console.log(this.listCourse)
+      this.listCourse = this.arrayToGroup(this.listCourse, 4)
+    },
+    arrayToGroup(list, howMany) {
+      var result = []
+      let input = [...list]
+      while (input[0]) {
+        result.push(input.splice(0, howMany))
+      }
+      return result
+    }
+  }
+}
 </script>
 
-<style>
+<style scoped>
+.tab-title {
+  font-size: 18px;
+}
 </style>

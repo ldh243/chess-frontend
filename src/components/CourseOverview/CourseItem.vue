@@ -56,6 +56,7 @@
                     background-color="yellow darken-3"
                     color="yellow darken-3"
                     small
+                    readonly
                   ></v-rating>
                   <span class="pt-1 ml-1 course-total-rate text-grey">({{courseDetail.totalRating}})</span>
                 </v-layout>

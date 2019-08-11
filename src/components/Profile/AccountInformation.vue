@@ -1,6 +1,6 @@
 <template>
   <v-card flat v-if="user !== null">
-    <v-card-title>Thông tin tài khoản</v-card-title>
+    <v-card-title class="tab-title">Thông tin tài khoản</v-card-title>
     <v-layout class="pa-3">
       <v-flex xs2>
         <v-hover>
@@ -158,5 +158,8 @@ export default {
 }
 .v-input {
   height: 70px;
+}
+.tab-title {
+  font-size: 18px;
 }
 </style>

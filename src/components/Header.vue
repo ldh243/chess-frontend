@@ -49,6 +49,7 @@
                     <v-list-item v-for="(item, index) in userMenu" :key="index" :to="item.href">
                       <v-list-item-title>{{ item.title }}</v-list-item-title>
                     </v-list-item>
+                    <v-divider></v-divider>
                     <v-list-item @click="logout()">
                       <v-list-item-title>Đăng xuất</v-list-item-title>
                     </v-list-item>
@@ -130,7 +131,7 @@ export default {
       localStorage.removeItem('role')
       this.$store.commit('setUser', null)
       this.$store.commit('setUserToken', null)
-      location.reload()
+      this.$router.push('/')
     }
   }
 }

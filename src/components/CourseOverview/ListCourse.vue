@@ -201,7 +201,6 @@ export default {
       }
     },
     'filter.chips.courseShow': function() {
-      console.log(this.filter.chips.courseShow)
       if (!this.filter.chips.courseShow) {
         //xóa chip course name
         this.filter.nameCourse = ''
