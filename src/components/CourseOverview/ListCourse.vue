@@ -23,9 +23,10 @@
             <v-flex xs10>
               <v-text-field
                 class="search-field"
-                v-model="filter.nameCourse"
+                v-model="searchCourseName"
                 solo
                 label="Tìm kiếm khóa học..."
+                @keydown="$event.keyCode === 13 ? searchCourse() : false"
               ></v-text-field>
             </v-flex>
             <v-flex xs2>
@@ -35,7 +36,7 @@
                 min-height="40"
                 tile
                 color="success"
-                @click="factoryGetCourse()"
+                @click="searchCourse()"
               >Tìm kiếm</v-btn>
             </v-flex>
           </v-layout>
@@ -174,7 +175,8 @@ export default {
           sortDirection: null
         }
       ],
-      totalCourse: 0
+      totalCourse: 0,
+      searchCourseName: ''
     }
   },
   computed: {
@@ -216,6 +218,12 @@ export default {
     }, 500)
   },
   methods: {
+    searchCourse() {
+      if (this.filter.nameCourse !== this.searchCourseName) {
+        this.filter.nameCourse = this.searchCourseName
+        this.factoryGetCourse()
+      }
+    },
     factoryGetCourse() {
       if (this.filter.nameCourse.length > 0) {
         this.filter.chips.courseShow = true
@@ -230,6 +238,7 @@ export default {
       } else {
         this.getCoursesPaginationByCategoryId()
       }
+      this.searchCourseName = this.filter.nameCourse
       this.mergeAllCategories()
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)

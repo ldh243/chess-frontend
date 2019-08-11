@@ -291,6 +291,13 @@ export default {
         if (data.data.success) {
           this.showNewReview(data.data.savedId)
           this.$emit('getCourseOverview')
+          this.$swal({
+            type: 'success',
+            title: 'Thành công',
+            text:
+              'Đánh giá thành công. Cảm ơn bạn đã đánh giá về khóa học này.',
+            confirmButtonText: 'Xác nhận'
+          })
         } else {
           this.$swal({
             type: 'error',
