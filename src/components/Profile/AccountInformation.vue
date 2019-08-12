@@ -1,6 +1,6 @@
 <template>
   <v-card flat v-if="user !== null">
-    <v-card-title>Thông tin tài khoản</v-card-title>
+    <v-card-title class="tab-title">Thông tin tài khoản</v-card-title>
     <v-layout class="pa-3">
       <v-flex xs2>
         <v-hover>
@@ -76,6 +76,10 @@ export default {
       valid: false,
       nameRules: [
         v => !!v || 'Họ và tên không được để trống.',
+        v =>
+          /^[a-zA-Z_ÀÁÂÃÈÉÊÌÍÒÓÔÕÙÚĂĐĨŨƠàáâãèéêìíòóôõùúăđĩũơƯĂẠẢẤẦẨẪẬẮẰẲẴẶẸẺẼỀỀỂưăạảấầẩẫậắằẳẵặẹẻẽềềểỄỆỈỊỌỎỐỒỔỖỘỚỜỞỠỢỤỦỨỪễệỉịọỏốồổỗộớờởỡợụủứừỬỮỰỲỴÝỶỸửữựỳỵỷỹ\s]+$/g.test(
+            v
+          ) || 'Tên không được chứa số hoặc kí tự khác.',
         v => (v && v.length >= 6) || 'Họ và tên ít nhất phải 6 kí tự.',
         v => (v && v.length <= 255) || 'Họ và tên không được quá dài.'
       ]
@@ -94,7 +98,7 @@ export default {
       if (data.data) {
         localStorage.setItem('user', JSON.stringify(this.user))
         const user = JSON.parse(localStorage.getItem('user'))
-        this.$store.commit('setUser')
+        this.$store.commit('setUser', user)
         this.$swal({
           type: 'success',
           title: 'Thành  công',
@@ -148,5 +152,14 @@ export default {
 .v-subheader {
   font-weight: 600 !important;
   font-size: 15px;
+}
+>>> .v-text-field.v-text-field--solo .v-input__control {
+  min-height: 40px !important;
+}
+.v-input {
+  height: 70px;
+}
+.tab-title {
+  font-size: 18px;
 }
 </style>

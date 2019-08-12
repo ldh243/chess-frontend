@@ -9,6 +9,12 @@ export default {
     }
     return Repository.get(`${resource}/get-course-pagination`, data)
   },
+  getCoursesPaginationsByUserId(searchParams) {
+    const data = {
+      params: searchParams
+    }
+    return Repository.get(`${resource}/get-course-paginations-by-userid`, data)
+  },
   getCoursesPaginationByCategoryId(searchParams) {
     const data = {
       params: searchParams

@@ -21,30 +21,45 @@
           >Đăng nhập</v-btn>
         </v-layout>
       </v-flex>
-      <v-layout justify-end v-else>
-        <v-menu offset-y transition="slide-y-transition" bottom left :max-width="200">
-          <template v-slot:activator="{ on }">
-            <v-btn color="#333940" class="btn-profile px-1" v-on="on" :max-width="300">
-              <v-layout align-center fill-height justify-start>
-                <v-avatar :size="28">
-                  <img :src="user.avatar" />
-                </v-avatar>
-                <span class="white--text ml-2 text-truncate">{{ user.fullName }}</span>
-                <v-spacer></v-spacer>
-                <v-icon color="white">fa-caret-down</v-icon>
+      <template v-else>
+        <v-flex xs10>
+          <v-layout justify-end align-center>
+            <v-flex xs3 mr-2>
+              <v-layout fill-height align-center justify-end>
+                <v-img :src="coin" height="25" max-width="25" />
+                <span class="ml-3 user-point">{{user.point}}</span>
               </v-layout>
-            </v-btn>
-          </template>
-          <v-list>
-            <v-list-item v-for="(item, index) in userMenu" :key="index" :to="item.href">
-              <v-list-item-title>{{ item.title }}</v-list-item-title>
-            </v-list-item>
-            <v-list-item @click="logout()">
-              <v-list-item-title>Đăng xuất</v-list-item-title>
-            </v-list-item>
-          </v-list>
-        </v-menu>
-      </v-layout>
+            </v-flex>
+            <v-flex xs3>
+              <v-layout justify-end>
+                <v-menu offset-y transition="slide-y-transition" bottom left :max-width="250">
+                  <template v-slot:activator="{ on }">
+                    <v-btn color="#333940" class="btn-profile px-1" v-on="on" :max-width="350">
+                      <v-layout align-center fill-height justify-start>
+                        <v-avatar :size="28">
+                          <img :src="user.avatar" />
+                        </v-avatar>
+                        <span class="white--text mx-2 text-truncate">{{ user.fullName }}</span>
+                        <v-spacer></v-spacer>
+                        <v-icon color="white">fa-caret-down</v-icon>
+                      </v-layout>
+                    </v-btn>
+                  </template>
+                  <v-list>
+                    <v-list-item v-for="(item, index) in userMenu" :key="index" :to="item.href">
+                      <v-list-item-title>{{ item.title }}</v-list-item-title>
+                    </v-list-item>
+                    <v-divider></v-divider>
+                    <v-list-item @click="logout()">
+                      <v-list-item-title>Đăng xuất</v-list-item-title>
+                    </v-list-item>
+                  </v-list>
+                </v-menu>
+              </v-layout>
+            </v-flex>
+          </v-layout>
+        </v-flex>
+      </template>
     </v-toolbar>
   </v-app-bar>
 </template>
@@ -58,6 +73,7 @@ export default {
   data() {
     return {
       chessLogo: require('@/assets/images/chess.png'),
+      coin: require('@/assets/images/euro.png'),
       loginBackgroundImage: require('@/assets/images/google-logo.png'),
       userMenu: [
         { title: 'Thông tin cá nhân', href: '/profile/edit' },
@@ -115,7 +131,7 @@ export default {
       localStorage.removeItem('role')
       this.$store.commit('setUser', null)
       this.$store.commit('setUserToken', null)
-      location.reload()
+      this.$router.push('/')
     }
   }
 }
@@ -145,9 +161,13 @@ img {
   box-shadow: none !important;
 }
 .btn-profile span {
-  max-width: 145px;
+  max-width: 170px;
   overflow: hidden;
   font-size: 12px;
   text-transform: none;
+}
+.user-point {
+  color: white;
+  font-size: 13px;
 }
 </style>

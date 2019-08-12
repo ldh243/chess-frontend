@@ -1,6 +1,6 @@
 <template>
   <v-layout wrap px-3>
-    <template v-if="user !== null">
+    <template v-if="user !== null && enrolled">
       <v-flex xs12>
         <span class="comment-title">Đánh giá của bạn</span>
       </v-flex>
@@ -36,7 +36,7 @@
         <v-btn color="info" @click="createReview()" :min-width="88">Đăng</v-btn>
       </v-flex>
     </template>
-    <template v-else>
+    <template v-if="user === null">
       <v-flex xs12 mb-3>
         <v-layout justify-center>
           <span class="text-grey required-login">
@@ -47,110 +47,130 @@
         </v-layout>
       </v-flex>
     </template>
-    <v-flex v-for="(item, index) in courseReview.content" :key="index" xs12 mb-1>
-      <v-layout wrap class="comment-item">
-        <v-flex xs1>
-          <v-avatar :size="50">
-            <img :src="item.reviewer.avatar" alt="avatar" />
-          </v-avatar>
-        </v-flex>
-        <v-flex xs8 pl-3>
-          <v-layout wrap align-center fill-height>
-            <v-flex xs12>
-              <span class="ml-1 reviewer-name">{{ item.reviewer.fullName }}</span>
+
+    <template v-if="user !== null && !enrolled ">
+      <v-flex xs12 mb-3>
+        <v-layout justify-center>
+          <span class="text-grey required-login">Bạn phải đăng ký khóa học trước khi đánh giá.</span>
+        </v-layout>
+      </v-flex>
+    </template>
+    <v-flex xs12 my-3>
+      <span class="comment-title">Đánh giá về khóa học</span>
+    </v-flex>
+    <template v-if="courseReview.content.length > 0">
+      <v-flex v-for="(item, index) in courseReview.content" :key="index" xs12 mb-1>
+        <v-layout wrap class="comment-item">
+          <v-flex xs1>
+            <v-avatar :size="50">
+              <img :src="item.reviewer.avatar" alt="avatar" />
+            </v-avatar>
+          </v-flex>
+          <v-flex xs8 pl-3>
+            <v-layout wrap align-center fill-height>
+              <v-flex xs12>
+                <span class="ml-1 reviewer-name">{{ item.reviewer.fullName }}</span>
+              </v-flex>
+              <v-flex xs12>
+                <v-layout>
+                  <v-flex :id="'rating-score' + item.reviewId" xs6 class="rating-score">
+                    <v-rating
+                      v-model="item.rating"
+                      :empty-icon="emptyIcon"
+                      :full-icon="fullIcon"
+                      background-color="grey lighten-1"
+                      color="yellow darken-3"
+                      :size="14"
+                      readonly
+                    ></v-rating>
+                  </v-flex>
+                  <v-flex :id="'rating-' + item.reviewId" xs6 class="edit-rating">
+                    <v-rating
+                      v-model="item.rating"
+                      :empty-icon="emptyIcon"
+                      :full-icon="fullIcon"
+                      background-color="grey lighten-1"
+                      color="yellow darken-3"
+                      :size="14"
+                      hover
+                    ></v-rating>
+                  </v-flex>
+                </v-layout>
+              </v-flex>
+            </v-layout>
+          </v-flex>
+          <v-flex xs3>
+            <span class="caption">{{ item.relativeTime }}</span>
+          </v-flex>
+          <v-flex xs11 mt-2 offset-xs1 pl-3>
+            <span :id="'content-' + item.reviewId" class="review-content">{{ item.content }}</span>
+          </v-flex>
+          <template v-if="user !== null">
+            <v-flex
+              :id="'edit-container-' + item.reviewId"
+              xs11
+              offset-xs1
+              pl-3
+              class="review-content-edit"
+            >
+              <v-textarea
+                v-if="user.userId == item.reviewer.userId"
+                :id="'edit-' + item.reviewId"
+                v-model="item.content"
+                filled
+                label="Chỉnh sửa bình luận"
+                no-resize
+                :counter="100"
+                rows="3"
+                :rules="[rules.length(6, 100)]"
+              ></v-textarea>
             </v-flex>
-            <v-flex xs12>
-              <v-layout>
-                <v-flex :id="'rating-score' + item.reviewId" xs6 class="rating-score">
-                  <v-rating
-                    v-model="item.rating"
-                    :empty-icon="emptyIcon"
-                    :full-icon="fullIcon"
-                    background-color="grey lighten-1"
-                    color="yellow darken-3"
-                    :size="14"
-                    readonly
-                  ></v-rating>
-                </v-flex>
-                <v-flex :id="'rating-' + item.reviewId" xs6 class="edit-rating">
-                  <v-rating
-                    v-model="item.rating"
-                    :empty-icon="emptyIcon"
-                    :full-icon="fullIcon"
-                    background-color="grey lighten-1"
-                    color="yellow darken-3"
-                    :size="14"
-                    hover
-                  ></v-rating>
-                </v-flex>
+            <v-flex v-if="user.userId == item.reviewer.userId" xs12>
+              <v-layout :id="'action-' + item.reviewId" justify-end class="action-review">
+                <span class="mr-3" @click="editComment(item.reviewId)">Sửa</span>
+                <span @click="showConfirmDeleteComment(item.reviewId)">Xóa</span>
               </v-layout>
             </v-flex>
-          </v-layout>
-        </v-flex>
-        <v-flex xs3>
-          <span class="caption">{{ item.relativeTime }}</span>
-        </v-flex>
-        <v-flex xs11 mt-2 offset-xs1 pl-3>
-          <span :id="'content-' + item.reviewId" class="review-content">{{ item.content }}</span>
-        </v-flex>
-        <template v-if="user !== null">
-          <v-flex
-            :id="'edit-container-' + item.reviewId"
-            xs11
-            offset-xs1
-            pl-3
-            class="review-content-edit"
-          >
-            <v-textarea
-              v-if="user.userId == item.reviewer.userId"
-              :id="'edit-' + item.reviewId"
-              v-model="item.content"
-              filled
-              label="Chỉnh sửa bình luận"
-              no-resize
-              :counter="100"
-              rows="3"
-              :rules="[rules.length(6, 100)]"
-            ></v-textarea>
-          </v-flex>
-          <v-flex v-if="user.userId == item.reviewer.userId" xs12>
-            <v-layout :id="'action-' + item.reviewId" justify-end class="action-review">
-              <span class="mr-3" @click="editComment(item.reviewId)">Sửa</span>
-              <span @click="showConfirmDeleteComment(item.reviewId)">Xóa</span>
-            </v-layout>
-          </v-flex>
 
-          <v-flex v-else xs12>
-            <v-layout justify-end class="action-review">
-              <span style="z-index: -1;">a</span>
-            </v-layout>
-          </v-flex>
-          <v-flex v-if="user.userId == item.reviewer.userId" xs12>
-            <v-layout :id="'edit-action-' + item.reviewId" justify-end class="edit-action">
-              <v-btn
-                color="info"
-                text
-                small
-                class="ma-0 mr-1"
-                @click="saveEditComment(item.reviewId)"
-              >Lưu</v-btn>
-              <v-btn
-                color="error"
-                text
-                class="ma-0"
-                small
-                @click="cancelEditComment(item.reviewId)"
-              >Hủy</v-btn>
-            </v-layout>
-          </v-flex>
-        </template>
-      </v-layout>
-    </v-flex>
-    <v-flex v-if="courseReview.content.length < courseReview.totalElements" xs12>
-      <v-layout justify-center>
-        <span class="load-more" @click="loadMore()">Xem thêm</span>
-      </v-layout>
-    </v-flex>
+            <v-flex v-else xs12>
+              <v-layout justify-end class="action-review">
+                <span style="z-index: -1;">a</span>
+              </v-layout>
+            </v-flex>
+            <v-flex v-if="user.userId == item.reviewer.userId" xs12>
+              <v-layout :id="'edit-action-' + item.reviewId" justify-end class="edit-action">
+                <v-btn
+                  color="info"
+                  text
+                  small
+                  class="ma-0 mr-1"
+                  @click="saveEditComment(item.reviewId)"
+                >Lưu</v-btn>
+                <v-btn
+                  color="error"
+                  text
+                  class="ma-0"
+                  small
+                  @click="cancelEditComment(item.reviewId)"
+                >Hủy</v-btn>
+              </v-layout>
+            </v-flex>
+          </template>
+        </v-layout>
+      </v-flex>
+      <v-flex v-if="courseReview.content.length < courseReview.totalElements" xs12>
+        <v-layout justify-center>
+          <span class="load-more" @click="loadMore()">Xem thêm</span>
+        </v-layout>
+      </v-flex>
+    </template>
+    <template v-else>
+      <v-flex xs12>
+        <v-layout justify-center>
+          <span class="text-grey required-login">(Hiện chưa có đánh giá nào về khóa học này)</span>
+        </v-layout>
+      </v-flex>
+    </template>
   </v-layout>
 </template>
 
@@ -271,6 +291,13 @@ export default {
         if (data.data.success) {
           this.showNewReview(data.data.savedId)
           this.$emit('getCourseOverview')
+          this.$swal({
+            type: 'success',
+            title: 'Thành công',
+            text:
+              'Đánh giá thành công. Cảm ơn bạn đã đánh giá về khóa học này.',
+            confirmButtonText: 'Xác nhận'
+          })
         } else {
           this.$swal({
             type: 'error',
@@ -463,8 +490,8 @@ textarea {
   font-weight: 600;
 }
 .comment-title {
-  font-size: 20px;
-  font-weight: 500;
+  font-size: 18px;
+  font-weight: 600;
   line-height: 1;
   letter-spacing: 0.3px;
 }

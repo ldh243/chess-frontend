@@ -4,16 +4,20 @@
       <div class="title-about text-black">Thông tin chung</div>
     </v-card-title>
     <v-card-text>
-      <span class="text-black">
-        Listen to your favorite artists and albums whenever and wherever,
-        online and offline.
-      </span>
+      <span class="text-black">{{description}}</span>
     </v-card-text>
   </v-card>
 </template>
 
 <script>
-export default {}
+export default {
+  props: {
+    description: {
+      type: String,
+      default: ''
+    }
+  }
+}
 </script>
 
 <style scoped>

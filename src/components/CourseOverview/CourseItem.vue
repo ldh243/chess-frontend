@@ -47,9 +47,7 @@
             <v-flex>
               <v-layout fill-height justify-center column align-center pt-3>
                 <v-layout justify-center fill-height align-center>
-                  <span class="point-reward">{{courseDetail.point}}</span>
-                  <img :src="imageProfits" height="24" class="mx-2" />
-                  <span class="point-required">{{courseDetail.requiredPoint}}</span>
+                  <span class="point-required">{{courseDetail.requiredPoint}} điểm</span>
                 </v-layout>
                 <span class="text-detail text-grey">{{ courseDetail.courseCreatedDate }}</span>
                 <v-layout align-center v-if="courseDetail.rating > 0">
@@ -58,6 +56,7 @@
                     background-color="yellow darken-3"
                     color="yellow darken-3"
                     small
+                    readonly
                   ></v-rating>
                   <span class="pt-1 ml-1 course-total-rate text-grey">({{courseDetail.totalRating}})</span>
                 </v-layout>
@@ -162,14 +161,15 @@ export default {
 }
 .course-inprogress {
   border-radius: 3px;
-  background-image: linear-gradient(90deg, #00b359, #00e673);
+  background-image: linear-gradient(90deg, #00b359, #00cc66);
 }
 .point-reward {
   font-size: 14px;
   color: #57d9ad;
 }
 .point-required {
-  color: #e63950;
-  font-size: 14px;
+  /* color: #e63950; */
+  font-size: 18px;
+  font-weight: 600;
 }
 </style>

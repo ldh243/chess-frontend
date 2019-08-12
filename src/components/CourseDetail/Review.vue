@@ -59,7 +59,7 @@
         </v-layout>
       </v-flex>
       <v-flex xs8 class="comment-container">
-        <Comment @getCourseOverview="getCourseOverview" />
+        <Comment @getCourseOverview="getCourseOverview" :enrolled="enrolled" />
       </v-flex>
     </v-layout>
   </v-card>
@@ -70,6 +70,12 @@ import Comment from '@/components/CourseDetail/Comment'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const courseRepository = RepositoryFactory.get('course')
 export default {
+  props: {
+    enrolled: {
+      type: Boolean,
+      default: false
+    }
+  },
   components: {
     Comment
   },

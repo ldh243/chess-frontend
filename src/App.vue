@@ -18,6 +18,23 @@ export default {
     Header,
     Footer,
     Loader
+  },
+  watch: {
+    $route(to, from) {
+      if (to.path === '/') {
+        document.getElementsByTagName('header')[0].style.display = 'none'
+        document.getElementsByTagName('footer')[0].style.display = 'none'
+      } else {
+        document.getElementsByTagName('header')[0].style.display = 'block'
+        document.getElementsByTagName('footer')[0].style.display = 'flex'
+      }
+    }
+  },
+  mounted() {
+    if (this.$route.path === '/') {
+      document.getElementsByTagName('header')[0].style.display = 'none'
+      document.getElementsByTagName('footer')[0].style.display = 'none'
+    }
   }
 }
 </script>

@@ -3,13 +3,8 @@
     <v-flex xs3 mr-2>
       <v-card class="mx-auto category-container pa-3">
         <v-list class="category-container" dense>
-          <v-list-item-group v-model="selectedCategory" color="primary">
+          <v-list-item-group v-model="selectedCategory">
             <v-subheader>Danh mục</v-subheader>
-            <v-list-item @click="changeFilter(1, 0, '')">
-              <v-list-item-content>
-                <v-list-item-title class="category-name" v-text="`Tất cả`"></v-list-item-title>
-              </v-list-item-content>
-            </v-list-item>
             <template v-for="(item, index) in listCategories">
               <v-list-item :key="index" @click="changeFilter(1, item.categoryId, item.name)">
                 <v-list-item-content>
@@ -23,6 +18,29 @@
     </v-flex>
     <v-flex xs9>
       <v-layout wrap>
+        <v-flex xs12>
+          <v-layout justify-end>
+            <v-flex xs10>
+              <v-text-field
+                class="search-field"
+                v-model="searchCourseName"
+                solo
+                label="Tìm kiếm khóa học..."
+                @keydown="$event.keyCode === 13 ? searchCourse() : false"
+              ></v-text-field>
+            </v-flex>
+            <v-flex xs2>
+              <v-btn
+                class="btn-search"
+                block
+                min-height="40"
+                tile
+                color="success"
+                @click="searchCourse()"
+              >Tìm kiếm</v-btn>
+            </v-flex>
+          </v-layout>
+        </v-flex>
         <v-flex xs12>
           <v-layout justify-end>
             <div class="filter-container">
@@ -52,6 +70,16 @@
               <b>{{ getTotalCourse }}</b>
               khóa học
             </span>
+            <v-chip
+              v-if="filter.chips.courseShow"
+              close
+              class="mr-2"
+              color="#e6e6e6"
+              label
+              outlined
+              text-color="#333333"
+              @click:close="filter.chips.courseShow = false"
+            >{{ filter.chips.courseName }}</v-chip>
             <v-chip
               v-if="filter.chips.categoryShow"
               close
@@ -118,8 +146,11 @@ export default {
           categoryName: '',
           categoryShow: false,
           sortBy: '',
-          sortShow: false
-        }
+          sortShow: false,
+          courseName: '',
+          courseShow: false
+        },
+        nameCourse: ''
       },
       sortFilters: [
         {
@@ -144,7 +175,8 @@ export default {
           sortDirection: null
         }
       ],
-      totalCourse: 0
+      totalCourse: 0,
+      searchCourseName: ''
     }
   },
   computed: {
@@ -167,6 +199,13 @@ export default {
         //xóa chip sort
         this.changeFilter(2, '', '')
       }
+    },
+    'filter.chips.courseShow': function() {
+      if (!this.filter.chips.courseShow) {
+        //xóa chip course name
+        this.filter.nameCourse = ''
+        this.factoryGetCourse()
+      }
     }
   },
   mounted() {
@@ -178,7 +217,19 @@ export default {
     }, 500)
   },
   methods: {
+    searchCourse() {
+      if (this.filter.nameCourse !== this.searchCourseName) {
+        this.filter.nameCourse = this.searchCourseName
+        this.factoryGetCourse()
+      }
+    },
     factoryGetCourse() {
+      if (this.filter.nameCourse.length > 0) {
+        this.filter.chips.courseShow = true
+        this.filter.chips.courseName = 'Từ khóa: ' + this.filter.nameCourse
+      } else {
+        this.filter.chips.courseShow = false
+      }
       this.$store.commit('incrementLoader', 1)
       if (this.filter.categoryId === 0) {
         //search all
@@ -186,6 +237,7 @@ export default {
       } else {
         this.getCoursesPaginationByCategoryId()
       }
+      this.searchCourseName = this.filter.nameCourse
       this.mergeAllCategories()
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)
@@ -232,7 +284,10 @@ export default {
     async getCategories() {
       const { data } = await categoryRepository.getCategories()
       this.listCategories = data.data
-      this.activeCategory = this.listCategories[0].categoryId
+      this.listCategories.unshift({
+        categoryId: 0,
+        name: 'Tất cả'
+      })
     },
     changeFilter(filterType, categoryId, name) {
       //filterType = 1 is category, 2 is sortBy
@@ -383,5 +438,16 @@ export default {
 .filter-active > i {
   background: #333333;
   color: #ffffff;
+}
+>>> .search-field .v-input__slot {
+  /* box-shadow: none !important; */
+  border-radius: 0px !important;
+  /* border: 1px solid #999999; */
+}
+>>> .btn-search span {
+  font-size: 12px;
+}
+>>> .v-text-field.v-text-field--solo .v-input__control {
+  min-height: 40px !important;
 }
 </style>

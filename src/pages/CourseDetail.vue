@@ -70,7 +70,7 @@
                 </v-card>
               </v-flex>
               <v-flex id="about-course" xs12 mt-3>
-                <About />
+                <About :description="courseDetail.description" />
               </v-flex>
               <v-flex id="curriculum-course" xs12 mt-3>
                 <Curriculum :courseDetail="courseDetail" />
@@ -79,7 +79,7 @@
                 <InstructorInfo :author="courseDetail.author" />
               </v-flex>
               <v-flex id="review-course" xs12 mt-3>
-                <Review />
+                <Review :enrolled="courseDetail.enrolled" />
               </v-flex>
             </v-layout>
           </v-flex>
@@ -218,20 +218,10 @@ export default {
     }, 500)
   },
   updated() {
-    this.setEventScroll()
     this.setLayoutForEnrolDialog()
+    this.setEventScroll()
   },
   methods: {
-    highLightMenuTab(event) {
-      let divTarget = event.srcElement
-      let arr = document.getElementsByClassName('sub-menu')
-      if (!this.isEmpty(arr)) {
-        Array.prototype.forEach.call(arr, function(sub) {
-          sub.classList.remove('active')
-        })
-      }
-      divTarget.classList.add('active')
-    },
     setEventScroll() {
       window.addEventListener('scroll', function() {
         const scroll = this.scrollY
@@ -247,6 +237,17 @@ export default {
         }
       })
     },
+    highLightMenuTab(event) {
+      let divTarget = event.srcElement
+      let arr = document.getElementsByClassName('sub-menu')
+      if (!this.isEmpty(arr)) {
+        Array.prototype.forEach.call(arr, function(sub) {
+          sub.classList.remove('active')
+        })
+      }
+      divTarget.classList.add('active')
+    },
+
     async getCourseById() {
       const { data } = await courseRepository.getById(this.courseId)
       this.courseDetail = data.data
@@ -260,7 +261,7 @@ export default {
     showConfirmEnrolCourse() {
       this.$swal({
         title: 'Xác nhận?',
-        text: `Bạn có chắc chắn sử dụng ${this.courseDetail.requiredPoint} điểm để đăng ký khóa học này`,
+        html: `Bạn có chắc chắn sử dụng <strong>${this.courseDetail.requiredPoint} điểm</strong> để đăng ký khóa học này`,
         type: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -280,6 +281,17 @@ export default {
         )
         if (data.data) {
           this.courseDetail.enrolled = true
+          this.$swal({
+            type: 'success',
+            title: 'Đăng ký thành công.',
+            text:
+              'Chúc mừng bạn đã đăng ký thành công. Chào mừng bạn đến với khóa học này.',
+            confirmButtonText: 'Xác nhận'
+          })
+          let user = JSON.parse(localStorage.getItem('user'))
+          user.point -= this.courseDetail.requiredPoint
+          localStorage.setItem('user', JSON.stringify(user))
+          this.$store.commit('setUser', user)
         }
       } else {
         this.$swal({
@@ -292,7 +304,16 @@ export default {
       }
     },
     goToLearningPage() {
-      this.$router.push(`/learning/${this.courseDetail.courseId}`)
+      if (this.courseDetail.lessonViewModels.length === 0) {
+        this.$swal({
+          type: 'info',
+          text:
+            'Khóa học này hiện chưa có bài học nào. Xin vui lòng quay lại sau.',
+          confirmButtonText: 'Xác nhận'
+        })
+      } else {
+        this.$router.push(`/learning/${this.courseDetail.courseId}`)
+      }
     },
     getLessonType() {
       this.courseDetail.lessonViewModels.forEach(element => {

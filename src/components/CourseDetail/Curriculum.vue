@@ -24,7 +24,7 @@
               <v-icon color="teal" size="18">mdi-check</v-icon>
             </template>
           </v-expansion-panel-header>
-          <v-expansion-panel-content>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</v-expansion-panel-content>
+          <v-expansion-panel-content class="mt-2">{{item.description}}</v-expansion-panel-content>
         </v-expansion-panel>
       </v-expansion-panels>
     </v-layout>
@@ -49,7 +49,7 @@ export default {
   },
   created() {
     this.curriculum = this.courseDetail.lessonViewModels
-    console.log(this.courseDetail.enrolled)
+    console.log(this.curriculum)
   },
   mounted() {
     this.$store.commit('incrementLoader', 1)
@@ -81,6 +81,9 @@ export default {
 </script>
 
 <style scoped>
+>>> .v-icon.v-icon {
+  font-size: 18px !important;
+}
 .course-title {
   font-size: 16px;
   color: #464646;
@@ -113,7 +116,8 @@ export default {
   letter-spacing: 0.3px;
 }
 .total-lesson-title,
-.total-lesson {
+.total-lesson,
+>>> .v-expansion-panel-content__wrap {
   font-size: 14px;
 }
 </style>
