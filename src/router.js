@@ -8,6 +8,7 @@ import Learning from '@/pages/Learning'
 import PlayChess from '@/pages/PlayChess'
 import Profile from '@/pages/Profile'
 import Register from '@/pages/Register'
+import Exercise from '@/pages/Exercise'
 Vue.use(Router)
 
 export default new Router({
@@ -20,6 +21,7 @@ export default new Router({
     { path: '/learning/:courseId', component: Learning },
     { path: '/play-chess', component: PlayChess },
     { path: '/profile/:tabItem', component: Profile },
-    { path: '/register', component: Register }
+    { path: '/register', component: Register },
+    { path: '/test', component: Exercise }
   ]
 })

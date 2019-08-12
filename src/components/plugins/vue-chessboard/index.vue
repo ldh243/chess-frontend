@@ -44,7 +44,11 @@ export default {
     status: {
       type: String,
       default: 'playing' //playing, new and pausing
-    }
+    },
+    // preMove: {
+    //   type: Array,
+    //   default: []
+    // }
   },
   data() {
     return {
@@ -54,8 +58,11 @@ export default {
   },
   watch: {
     fen: function(newFen) {
+      console.log("reload fen")
       this.fen = newFen
-      this.loadPosition()
+      this.board.set({
+        fen: this.fen
+      })
     },
     orientation: function(orientation) {
       console.log('watch orientation________', orientation)
@@ -63,11 +70,23 @@ export default {
       this.game.reset()
       this.loadPosition()
     },
-    status: function(start) {
-      this.start = start
-      if (this.start === 'new') {
+    status: function(status) {
+      this.status = status
+      if (this.status === 'new') {
         this.game.reset()
         this.loadPosition()
+      }
+      console.log(this.status)
+      if (this.status === 'wrong_ans') {
+        console.log(this.fen)
+        let timeout = window.setTimeout(() => {
+          this.game.load(this.fen)
+          this.board.set({
+            fen: this.game.fen(),
+            turnColor: this.toColor()
+          })
+          this.afterMove()
+        }, 1500)
       }
     },
     showThreats: function(st) {
@@ -77,12 +96,12 @@ export default {
       }
     },
     move: function(move) {
-      console.log('watch occur')
       this.move = move
       this.loadMove()
     }
   },
   mounted() {
+    console.log('first load')
     this.loadPosition()
   },
   created() {
@@ -156,6 +175,7 @@ export default {
           this.hisMoves += this.promoteTo
         }
         this.game.move({ from: orig, to: dest, promotion: this.promoteTo }) // promote to queen for simplicity
+
         this.board.set({
           fen: this.game.fen(),
           turnColor: this.toColor(),
@@ -164,8 +184,24 @@ export default {
             dests: this.possibleMoves()
           }
         })
-        this.calculatePromotions()
-        this.afterMove()
+        // console.log(this.preMove)
+        // if (this.preMove.length === 0 || this.preMove.indexOf(orig + dest) !== -1) {
+          this.calculatePromotions()
+          this.afterMove()
+        // } else {
+        //   this.$emit('onWrong', true)
+        //   let timeout = window.setTimeout(() => {
+        //     this.game.load(this.fen)
+        //     this.board.set({
+        //       fen: this.game.fen(),
+        //       turnColor: this.toColor(),
+        //       movable: {
+        //         color: this.toColor(),
+        //         dests: this.possibleMoves()
+        //       }
+        //     })
+        //   }, 500)
+        // }
       }
     },
     afterMove() {
@@ -175,10 +211,14 @@ export default {
       let threats = this.countThreats(this.toColor()) || {}
       threats['history'] = this.game.history()
       threats['fen'] = this.game.fen()
+      threats['pgn'] = this.game.pgn()
       threats['hisMoves'] = this.hisMoves
-      this.game.game_over()
-        ? (threats['end_game'] = this.game.game_over())
-        : (threats['end_game'] = false)
+      if (this.game.game_over()) {
+        threats['end_game'] = this.toColor()
+      }
+      if (this.game.in_draw()) {
+        threats['end_game'] = 'draw'
+      }
       this.$emit('onMove', threats)
     },
     countThreats(color) {
@@ -247,16 +287,12 @@ export default {
       this.afterMove()
     },
     loadMove() {
-      this.loadPosition()
       this.hisMoves += ' ' + this.move
-      console.log('ahihi load ne')
-      // console.log(this.move)
       this.game.move({
         from: this.move.substring(0, 2),
         to: this.move.substring(2, 4),
         promotion: this.move.charAt(4)
       })
-      console.log(this.game.fen())
       this.board.set({
         fen: this.game.fen(),
         turnColor: this.toColor(),

@@ -1,22 +1,34 @@
 <template>
   <v-container>
     <v-layout>
-      <v-flex xs8 mr-5>
+      <v-flex xs6 xl8 offset-xs1 offset-xl0 mr-5>
         <chessboard
           :move="move"
-          :show-threats="true"
           :orientation="userColor"
           :fen="currentFen"
-          :status="gameStatus"
+          :status="currentGameStatus"
           @onMove="showInfo"
         />
       </v-flex>
-      <v-flex xs4>
+      <v-flex xs4 offset-xs1>
         <v-layout column>
-          <player :time="botTime" :image-link="botImgLink"></player>
+          <player :time="botTime" :image-link="botImgLink" :point="currentGame.winPoint"></player>
           <v-flex class="move-history">
-            <v-card-title class="pl-0 py-2">
+            <v-card-title class="pl-0 mb-2 py-0 mt-1" style="height:60px">
               <span class="title font-weight-bold">Nước đi</span>
+              <v-fab-transition>
+                <v-btn
+                  v-show="!isStart"
+                  color="primary"
+                  fab
+                  dark
+                  small
+                  class="ml-3"
+                  @click="startDialog = true"
+                >
+                  <v-icon>fa-plus</v-icon>
+                </v-btn>
+              </v-fab-transition>
             </v-card-title>
             <div class="move-history-content">
               <div v-for="(item, index) in moveHistory" :key="index">
@@ -37,51 +49,50 @@
           </v-flex>
           <v-flex mb-2>
             <v-layout>
-              <v-btn text :disabled="statusPreviousMove" @click="turnToFirstMove()">
+              <v-btn text :disabled="statusPreviousMove || this.isStart" @click="turnToFirstMove()">
                 <v-icon>fa-fast-backward</v-icon>
               </v-btn>
               <v-btn
                 text
                 class="main-button"
-                :disabled="statusPreviousMove"
+                :disabled="statusPreviousMove || this.isStart"
                 @click="turnToPreviousMove()"
               >
                 <v-icon>fa-backward</v-icon>
               </v-btn>
 
-              <v-btn text class="main-button" :disabled="statusNextMove" @click="turnToNextMove()">
+              <v-btn
+                text
+                class="main-button"
+                :disabled="statusNextMove || this.isStart"
+                @click="turnToNextMove()"
+              >
                 <v-icon>fa-forward</v-icon>
               </v-btn>
-              <v-btn text :disabled="statusNextMove" @click="turnToLastMove()">
+              <v-btn text :disabled="statusNextMove || this.isStart" @click="turnToLastMove()">
                 <v-icon>fa-fast-forward</v-icon>
               </v-btn>
             </v-layout>
           </v-flex>
           <v-flex class="move-analyse" mb-2>
             <v-card height="135">
-              <div class="move-analyse-content">
-                <div></div>
+              <div class="game-information" id="game-information-area">
+                <div
+                  :id="`game-information-item-${index}`"
+                  class="game-information-item"
+                  v-for="(item, index) in gameHistory"
+                  :key="index"
+                >{{item}}</div>
               </div>
             </v-card>
           </v-flex>
           <player :time="playerTime" :image-link="player.avatar" :point="player.point"></player>
-          <v-btn
-            block
-            color="primary"
-            dark
-            class="pa-2"
-            :disabled="isStart"
-            @click="
-              startDialog = true
-              gameStatus = 'pausing'
-            "
-          >Ván đấu mới</v-btn>
           <v-dialog v-model="startDialog" persistent max-width="600px">
             <v-card>
               <v-card-title>
                 <span class="headline">Ván đấu mới</span>
               </v-card-title>
-              <v-container grid-list-md pt-0>
+              <v-container grid-list-md pt-0 px-5>
                 <v-layout wrap>
                   <v-flex xs12>
                     <v-subheader class="pl-0">Cấp độ</v-subheader>
@@ -139,12 +150,12 @@
                         :allowed-seconds="allowedSeconds"
                       >
                         <v-spacer></v-spacer>
-                        <v-btn text color="primary" @click="timePicker = false">Cancel</v-btn>
-                        <v-btn text color="primary" @click="$refs.dialog.save(time)">OK</v-btn>
+                        <v-btn text color="primary" @click="timePicker = false">Đóng</v-btn>
+                        <v-btn text color="primary" @click="$refs.dialog.save(time)">Xác nhận</v-btn>
                       </v-time-picker>
                     </v-dialog>
                   </v-flex>
-                  <v-flex xs12>
+                  <!-- <v-flex xs12>
                     <v-switch
                       v-model="ex11"
                       label="Dùng chế độ gợi ý nước đi"
@@ -152,7 +163,7 @@
                       value="indigo"
                       hide-details
                     ></v-switch>
-                  </v-flex>
+                  </v-flex>-->
                 </v-layout>
               </v-container>
               <v-card-actions>
@@ -172,6 +183,8 @@
 import Chessboard from '@/components/plugins/vue-chessboard/index.vue'
 import Player from '../components/PlayChess/Player'
 import { setInterval, clearInterval } from 'timers'
+import {RepositoryFactory} from '@/repository/RepositoryFactory'
+const gameHistoryRepository = RepositoryFactory.get('gameHistory')
 export default {
   components: {
     Player,
@@ -180,6 +193,7 @@ export default {
   data() {
     return {
       moveHistory: [],
+      gameHistory: [],
       defaultFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
       currentFen: 'rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1',
       updateMove: true,
@@ -192,7 +206,7 @@ export default {
       timePicker: false,
       level: 3,
       botImgLink: '',
-      colorPicker: 1,
+      colorPicker: 0,
       userColor: 'white',
       botTime: '',
       playerTime: '',
@@ -202,9 +216,14 @@ export default {
       move: '',
       moves: '',
       isStart: false,
-      gameStatus: '',
-      newestFen: '',
-      ex11: ''
+      ex11: '',
+      gameNumber: 0,
+      pgn: '',
+      currentGame: {
+        winPoint: 0
+      },
+      currentGameStatus: '',
+      sampleData: {}
     }
   },
   computed: {
@@ -236,33 +255,56 @@ export default {
         this.calculateMove()
       }
     },
-    playerTime: function(playerTime) {
-      playerTime == '00:00:00'
-        ? (this.isPlayerWin = false)
-        : (this.isPlayerWin = true)
+    playerTime: function() {
+      if (this.playerTime == '00:00:00') {
+        this.isStart = false
+        this.currentGame.result = 2
+        this.currentGameStatus = 'end_game'
+      }
     },
-    botTime: function(botTime) {
-      botTime == '00:00:00'
-        ? (this.isPlayerWin = true)
-        : (this.isPlayerWin = false)
+    botTime: function() {
+      if (this.botTime == '00:00:00') {
+        this.isStart = false
+        this.currentGame.result = 4
+        this.currentGameStatus = 'end_game'
+      }
     },
-    isPlayerWin: function(isPlayerWin) {
-      if (isPlayerWin) {
-        console.log('Player')
-      } else {
-        console.log('Bot')
+    isStart: function() {
+      if (!this.isStart) {
+        this.currentGameStatus = 'end_game'
+        this.turn = ''
+        let point = 0
+        switch (this.currentGame.result) {
+          case 3:
+            point = this.currentGame.drawPoint
+            this.gameHistory.push(`Kết quả: Hòa`)
+            break
+          case 2:
+            point = this.currentGame.requiredPoint
+            this.gameHistory.push(`Kết quả: Thua`)
+            break
+          case 4:
+            point = this.currentGame.winPoint
+            this.gameHistory.push(`Kết quả: Thắng`)
+            break
+          default:
+            break
+        }
+        const result = {
+          gameHistoryId: this.currentGame.gameId,
+          record: this.pgn,
+          point: point,
+          status: this.currentGame.result
+        }
+        console.log(result)
+        this.updateGameHistory(result)
+        this.$swal('Kết quả', `+${point}`, 'success')
+        //update db, reload player
       }
     }
   },
   updated() {
-    if (this.updateMove) {
-      this.currentMove = this.totalMove
-      this.setCurrentMove()
-      if (!this.currentFen) {
-        this.currentFen = this.defaultFen
-      }
-    }
-    this.updateMove = true
+    this.setCurrentMove()
   },
   created() {
     this.currentFen = this.defaultFen
@@ -275,58 +317,35 @@ export default {
     resetBoard() {
       this.moveHistory = []
       this.moves = ''
-      this.updateMove = true
       this.currentFen = this.defaultFen
       this.currentMove = 0
       this.totalMove = 0
       clearInterval(this.interval)
     },
     loadFen(fen, event) {
-      console.log('load fen')
-      this.updateMove = false
-      this.currentFen = fen
-      if (event != undefined) {
+      if (this.currentGameStatus === 'end_game') {
+        this.currentFen = fen
         const divTarget = event.srcElement
-        //Lấy id của nó parse sang int
-        this.currentMove = this.getIdNumberOfMove(divTarget)
-        this.setCurrentMove()
+        let id = divTarget.id
+        this.currentMove = parseInt(id.replace('move-', ''))
       }
     },
     showInfo(data) {
-      console.log('show info')
-      this.gameStatus = 'playing'
-      //example data
-      // moveHistory: [
-      //     {
-      //         index:
-      //         whiteMove: {
-      //             move:
-      //             fen:
-      //             moveCount:
-      //         }
-      //         blackMove: {
-      //             move:
-      //             fen:
-      //             moveCount:
-      //         }
-      //     }
-      // ]
-
-      // get all moves
+      console.log(data)
+      this.currentGameStatus = 'playing'
       this.moves = data.hisMoves
       const black = 'black'
       let moveHistory = this.moveHistory
-      //Lấy nước đi mới
       let newMove = data.history[data.history.length - 1]
-      //Lấy nước đi cuối cùng
       let lastMove = moveHistory[moveHistory.length - 1]
       if (newMove === undefined || !this.currentFen) return
-      //   newMove = this.changeChessKey(newMove)
-      //Lấy turn hiện tại
-      if (data.end_game) {
-        this.isStart = false
+      if (data.turn === undefined) {
+        //end game
+        this.turn = this.turn === 'white' ? 'black' : 'white'
+        this.pgn = data.pgn
+      } else {
+        this.turn = data.turn
       }
-      this.turn = data.turn
       this.totalMove++
       if (this.turn === black) {
         //tạo thêm turn mới
@@ -349,7 +368,15 @@ export default {
         }
       }
       this.currentMove = this.totalMove
-      console.log(data.fen)
+      if (data.end_game !== undefined) {
+        this.isStart = false
+        if (data.end_game !== 'draw') {
+          this.currentGame.result = data.end_game === this.userColor ? 2 : 4
+        } else {
+          this.currentGame.result = 3
+        }
+        this.pgn = data.pgn
+      }
     },
     setCurrentMove() {
       //set highlight div dựa trên this.current move hiện tại
@@ -419,7 +446,7 @@ export default {
       this.turn = 'white'
       switch (this.colorPicker) {
         case 0:
-          this.userColor = 'white'
+          this.userColor = Math.round(Math.random()) === 0 ? 'white' : 'black'
           break
         case 1:
           this.userColor = 'white'
@@ -428,11 +455,88 @@ export default {
           this.userColor = 'black'
           break
       }
-      this.gameStatus = 'new'
+      this.currentGameStatus = 'new'
       this.botTime = this.playerTime = this.time
       this.startDialog = false
       this.isStart = true
+      this.currentGame = {
+        bonusPoint: 0
+      }
       this.interval = setInterval(this.runClock, 1000)
+      this.gameNumber++
+      let point = this.calculatePoint()
+      this.currentGame = {
+        userColor: this.userColor,
+        time: this.time,
+        requiredPoint: point.required,
+        winPoint: point.win,
+        drawPoint: point.draw
+      }
+      let newGame = `Ván ${this.gameNumber} - Người chơi: ${
+        this.userColor === 'white' ? 'Trắng' : 'Đen'
+      }`
+      this.gameHistory.push(newGame)
+      this.gameHistory.push(
+        `Người chơi: ${this.player.point} - Cọc: ${this.currentGame.requiredPoint}`
+      )
+      //perform minus point in db
+      this.player.point = this.player.point - point.required
+      this.gameHistory.push(
+        `Thắng +${this.currentGame.winPoint} - Thua +${this.currentGame.requiredPoint} - Hòa +${this.currentGame.drawPoint}`
+      )
+      let gameHistoryEl = document.getElementById('game-information-area')
+      // gameHistoryEl.scrollTop = document.getElementById(`game-information-item-${this.gameHistory.length - 1}`).offsetTop
+      this.createGameHistory()
+    },
+    async createGameHistory() {
+      let timeArr = this.time.split(':')
+      let date = new Date()
+      const newGame = {
+        color: this.userColor === 'white' ? 1 : 0,
+        gameTime: parseInt(timeArr[0]) * 60 * 60 + parseInt(timeArr[1]) * 60 + parseInt(timeArr[2]),
+        level: this.level
+      }
+      const data = await gameHistoryRepository.createGame(newGame).then(res => {
+        this.currentGame['gameId'] = res.data.data.savedId
+      })
+    },
+    async updateGameHistory(updateGameObj) {
+      const data = gameHistoryRepository.updateGame(updateGameObj).then(res => {
+        console.log(res)
+      })
+    },
+    calculatePoint() {
+      let point = {}
+      switch (this.level) {
+        case 1:
+          point['win'] = 100
+          point['draw'] = 75
+          point['required'] = 50
+          break
+        case 2:
+          point['win'] = 200
+          point['draw'] = 150
+          point['required'] = 100
+          break
+        case 3:
+          point['win'] = 300
+          point['draw'] = 225
+          point['required'] = 150
+          break
+        case 4:
+          point['win'] = 400
+          point['draw'] = 300
+          point['required'] = 200
+          break
+        case 5:
+          point['win'] = 500
+          point['draw'] = 375
+          point['required'] = 250
+          break
+        default:
+          break
+      }
+      return point
     },
     countDownTime(time) {
       const timeArr = time.split(':')
@@ -480,9 +584,9 @@ export default {
       this.sendUCI('position startpos moves' + this.moves)
       this.sendUCI('go depth 15')
       this.engine.onmessage = function(event) {
-        console.log(event.data)
         let line = event.data
         if (event.data.indexOf('bestmove') > -1) {
+          console.log(event.data)
           let match = line.match(/^bestmove ([a-h][1-8])([a-h][1-8])([qrbn])?/)
           match[3] == undefined
             ? (self.move = match[1] + match[2])
@@ -497,6 +601,19 @@ export default {
 <style scoped>
 .move-history-content {
   height: 180px !important;
+}
+.game-information {
+  height: 135px;
+  overflow: auto;
+}
+.game-information-item {
+  padding: 5px;
+}
+.game-information-item:nth-child(odd) {
+  background-color: #bcd1d8;
+}
+.game-information-item:nth-child(even) {
+  background-color: #9db9cc;
 }
 </style>
 

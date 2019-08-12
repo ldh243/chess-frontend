@@ -10,7 +10,7 @@
           </v-breadcrumbs>
         </v-flex>
         <v-layout>
-          <v-flex xs8 mr-5>
+          <v-flex xs6 xl8 offset-xs1 offset-xl0 mr-5>
             <chessboard :fen="currentFen" :move="move" @onMove="showInfo" />
           </v-flex>
           <v-flex xs4 class="direction-side">
@@ -375,6 +375,8 @@ export default {
     },
     loadMoveHistory() {
       this.loadFen(this.lessonDetails.interactiveLesson.initCode)
+      this.lessonDetails.interactiveLesson.steps = this.sampleLesson
+      console.log(this.sampleLesson)
       const moveHistory = new MoveHistory(this.lessonDetails)
       moveHistory.formatMoveHistory()
       this.moveHistory = moveHistory.getMoveHistory
