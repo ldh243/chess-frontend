@@ -92,13 +92,16 @@ export default {
     }
   },
   mounted() {
-    this.$store.commit('incrementLoader', 1)
-    this.getCourseOverview()
-    setTimeout(() => {
-      this.$store.commit('incrementLoader', -1)
-    }, 500)
+    this.fetchData()
   },
   methods: {
+    async fetchData() {
+      this.$store.commit('incrementLoader', 1)
+      await this.getCourseOverview()
+      setTimeout(() => {
+        this.$store.commit('incrementLoader', -1)
+      }, 500)
+    },
     async getCourseOverview() {
       const { data } = await courseRepository.getCourseOverview(this.courseId)
       this.courseOverview = data.data

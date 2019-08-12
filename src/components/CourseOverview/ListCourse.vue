@@ -209,21 +209,24 @@ export default {
     }
   },
   mounted() {
-    this.$store.commit('incrementLoader', 1)
-    this.getCoursesPagination()
-    this.getCategories()
-    setTimeout(() => {
-      this.$store.commit('incrementLoader', -1)
-    }, 500)
+    this.fetchData()
   },
   methods: {
+    async fetchData() {
+      this.$store.commit('incrementLoader', 1)
+      await this.getCoursesPagination()
+      await this.getCategories()
+      setTimeout(() => {
+        this.$store.commit('incrementLoader', -1)
+      }, 500)
+    },
     searchCourse() {
       if (this.filter.nameCourse !== this.searchCourseName) {
         this.filter.nameCourse = this.searchCourseName
         this.factoryGetCourse()
       }
     },
-    factoryGetCourse() {
+    async factoryGetCourse() {
       if (this.filter.nameCourse.length > 0) {
         this.filter.chips.courseShow = true
         this.filter.chips.courseName = 'Từ khóa: ' + this.filter.nameCourse
@@ -233,9 +236,9 @@ export default {
       this.$store.commit('incrementLoader', 1)
       if (this.filter.categoryId === 0) {
         //search all
-        this.getCoursesPagination()
+        await this.getCoursesPagination()
       } else {
-        this.getCoursesPaginationByCategoryId()
+        await this.getCoursesPaginationByCategoryId()
       }
       this.searchCourseName = this.filter.nameCourse
       this.mergeAllCategories()

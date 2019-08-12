@@ -49,20 +49,22 @@ export default {
   },
   created() {
     this.curriculum = this.courseDetail.lessonViewModels
-    console.log(this.curriculum)
   },
   mounted() {
-    this.$store.commit('incrementLoader', 1)
-    if (this.courseDetail.enrolled) {
-      this.getCurrentUserLearningLogByCourseId()
-    } else {
-      this.learningLog = []
-    }
-    setTimeout(() => {
-      this.$store.commit('incrementLoader', -1)
-    }, 500)
+    this.fetchData()
   },
   methods: {
+    async fetchData() {
+      this.$store.commit('incrementLoader', 1)
+      if (this.courseDetail.enrolled) {
+        await this.getCurrentUserLearningLogByCourseId()
+      } else {
+        this.learningLog = []
+      }
+      setTimeout(() => {
+        this.$store.commit('incrementLoader', -1)
+      }, 500)
+    },
     async getCurrentUserLearningLogByCourseId() {
       const { data } = await learningRepository.getLearningLog(this.courseId)
       this.learningLog = new Map()

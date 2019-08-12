@@ -86,9 +86,16 @@ export default {
     }
   },
   mounted() {
-    this.getCurrentUserDetail()
+    this.fetchData()
   },
   methods: {
+    async fetchData() {
+      this.$store.commit('incrementLoader', 1)
+      await this.getCurrentUserDetail()
+      setTimeout(() => {
+        this.$store.commit('incrementLoader', -1)
+      }, 500)
+    },
     async getCurrentUserDetail() {
       const { data } = await userRepository.getCurrentUserDetail()
       this.user = data.data

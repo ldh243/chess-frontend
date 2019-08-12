@@ -198,7 +198,7 @@
               Bài tiếp
               <v-icon class="ml-2">fa-angle-right</v-icon>
             </v-btn>
-            <v-btn v-else class="font-weight-bold" @click="finishCourse()">Hoàn1231 thành</v-btn>
+            <v-btn v-else class="font-weight-bold" @click="finishCourse()">Hoàn thành</v-btn>
           </v-layout>
         </v-flex>
       </v-layout>
@@ -264,7 +264,8 @@ export default {
       },
       move: '',
       steps: [],
-      theoryContent: ''
+      theoryContent: '',
+      learningLog: []
     }
   },
   computed: {
@@ -294,13 +295,16 @@ export default {
     // console.log(JSON.stringify(this.sampleLesson))
   },
   mounted() {
-    this.$store.commit('incrementLoader', 1)
-    this.getCourseById()
-    setTimeout(() => {
-      this.$store.commit('incrementLoader', -1)
-    }, 500)
+    this.fetchData()
   },
   methods: {
+    async fetchData() {
+      this.$store.commit('incrementLoader', 1)
+      await this.getCourseById()
+      setTimeout(() => {
+        this.$store.commit('incrementLoader', -1)
+      }, 500)
+    },
     finishCourse() {
       const courseId = this.$route.params.courseId
 
@@ -386,17 +390,23 @@ export default {
         this.$store.commit('incrementLoader', -1)
       }, 500)
     },
+    async getCurrentUserLearningLogByCourseId() {
+      const courseId = this.$route.params.courseId
+      const { data } = await learningRepository.getLearningLog(courseId)
+      this.learningLog = data.data
+    },
     async createLearningLog(courseId, lessonId) {
-      const { data } = await learningRepository.createLearningLog(
-        courseId,
-        lessonId
-      )
-      console.log(data)
+      await this.getCurrentUserLearningLogByCourseId()
+      if (this.learningLog.indexOf(lessonId) === -1) {
+        const { data } = await learningRepository.createLearningLog(
+          courseId,
+          lessonId
+        )
+      }
     },
     loadMoveHistory() {
       this.loadFen(this.lessonDetails.interactiveLesson.initCode)
-      this.lessonDetails.interactiveLesson.steps = this.sampleLesson
-      console.log(this.sampleLesson)
+      // this.lessonDetails.interactiveLesson.steps = this.sampleLesson
       const moveHistory = new MoveHistory(this.lessonDetails)
       moveHistory.formatMoveHistory()
       this.moveHistory = moveHistory.getMoveHistory
@@ -475,16 +485,16 @@ export default {
       this.currentFen = this.defaultFen
       this.setCurrentMove()
     },
-    changeLesson(val) {
+    async changeLesson(val) {
       if (0 <= this.activeLesson + val <= this.lessons.length) {
         this.activeLesson += val
         this.$store.commit('incrementLoader', 1)
-        this.createLearningLog(
+        await this.createLearningLog(
           this.$route.params.courseId,
           this.lessonDetails.lessonId
         )
         this.resetBoardAndResetHistory()
-        this.getLessonById()
+        await this.getLessonById()
         this.checkStatusDirectLesson()
         setTimeout(() => {
           this.$store.commit('incrementLoader', -1)
@@ -512,6 +522,7 @@ export default {
       this.moveHistory = []
       this.currentMove = 0
       this.totalMove = 0
+      this.currentId = 0
     }
   }
 }

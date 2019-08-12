@@ -26,16 +26,22 @@ export default {
     }
   },
   mounted() {
-    this.getCoursesPaginationsByUserId()
+    this.fetchData()
   },
   methods: {
+    async fetchData() {
+      this.$store.commit('incrementLoader', 1)
+      await this.getCoursesPaginationsByUserId()
+      setTimeout(() => {
+        this.$store.commit('incrementLoader', -1)
+      }, 500)
+    },
     async getCoursesPaginationsByUserId() {
       this.filter.userId = this.$store.state.user.userId
       const { data } = await courseRepository.getCoursesPaginationsByUserId(
         this.filter
       )
       this.listCourse = data.data.content
-      console.log(this.listCourse)
       this.listCourse = this.arrayToGroup(this.listCourse, 4)
     },
     arrayToGroup(list, howMany) {

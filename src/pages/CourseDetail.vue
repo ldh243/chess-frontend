@@ -211,17 +211,20 @@ export default {
     }
   },
   mounted() {
-    this.$store.commit('incrementLoader', 1)
-    this.getCourseById()
-    setTimeout(() => {
-      this.$store.commit('incrementLoader', -1)
-    }, 500)
+    this.fetchData()
   },
   updated() {
     this.setLayoutForEnrolDialog()
     this.setEventScroll()
   },
   methods: {
+    async fetchData() {
+      this.$store.commit('incrementLoader', 1)
+      await this.getCourseById()
+      setTimeout(() => {
+        this.$store.commit('incrementLoader', -1)
+      }, 500)
+    },
     setEventScroll() {
       window.addEventListener('scroll', function() {
         const scroll = this.scrollY
