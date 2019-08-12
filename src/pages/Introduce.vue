@@ -11,6 +11,16 @@
           <v-layout fill-height align-center justify-center>Chơi với máy</v-layout>
         </router-link>
       </div>
+      <v-snackbar
+        v-model="snackbar"
+        :color="color"
+        :multi-line="mode === 'multi-line'"
+        :timeout="timeout"
+        :vertical="mode === 'vertical'"
+      >
+        {{ snackbarText }}
+        <v-btn dark text @click="snackbar = false">Đóng</v-btn>
+      </v-snackbar>
     </v-app>
   </div>
 </template>
@@ -28,7 +38,8 @@ export default {
       color: '',
       mode: '',
       timeout: 6000,
-      snackbarText: 'Chúc mừng bạn đã đăng kí tài khoản thành công!'
+      snackbarText:
+        'Chúc mừng bạn đã đăng kí tài khoản thành công! Bạn vừa nhận được 1000 điểm vào tài khoản.'
     }
   },
   created() {

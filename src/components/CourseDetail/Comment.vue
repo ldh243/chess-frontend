@@ -224,11 +224,7 @@ export default {
     }
   },
   mounted() {
-    this.$store.commit('incrementLoader', 1)
-    this.getReviewPagination()
-    setTimeout(() => {
-      this.$store.commit('incrementLoader', -1)
-    }, 500)
+    this.fetchData()
   },
   created() {
     moment.updateLocale('en', {
@@ -250,6 +246,13 @@ export default {
     })
   },
   methods: {
+    async fetchData() {
+      this.$store.commit('incrementLoader', 1)
+      await this.getReviewPagination()
+      setTimeout(() => {
+        this.$store.commit('incrementLoader', -1)
+      }, 500)
+    },
     loginWithGoogle() {
       var api = this.$store.state.api.login
       api += '?redirect_uri=' + this.getCurrentPage()
@@ -342,7 +345,7 @@ export default {
         this.$store.commit('incrementLoader', 1)
         this.$emit('getCourseOverview')
         this.emptyListReview()
-        this.getReviewPagination()
+        await this.getReviewPagination()
         setTimeout(() => {
           this.$store.commit('incrementLoader', -1)
         }, 500)

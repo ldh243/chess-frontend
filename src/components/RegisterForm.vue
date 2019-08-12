@@ -216,6 +216,7 @@ export default {
       }
       const { data } = await userRepository.signUpNewAccount(this.user)
       if (data.data) {
+        this.user = data.data
         localStorage.removeItem('user')
         localStorage.setItem('user', JSON.stringify(this.user))
         localStorage.removeItem('role')

@@ -93,19 +93,22 @@ export default {
     }
   },
   mounted() {
-    this.$store.commit('incrementLoader', 1)
-    if (
-      localStorage.getItem('access-token') != null &&
-      this.$store.state.user === null
-    ) {
-      setAuthorizationHeader(Repository, localStorage.getItem('access-token'))
-      this.getCurrentUserDetail()
-    }
-    setTimeout(() => {
-      this.$store.commit('incrementLoader', -1)
-    }, 500)
+    this.fetchData()
   },
   methods: {
+    async fetchData() {
+      this.$store.commit('incrementLoader', 1)
+      if (
+        localStorage.getItem('access-token') != null &&
+        this.$store.state.user === null
+      ) {
+        setAuthorizationHeader(Repository, localStorage.getItem('access-token'))
+        await this.getCurrentUserDetail()
+      }
+      setTimeout(() => {
+        this.$store.commit('incrementLoader', -1)
+      }, 500)
+    },
     loginWithGoogle() {
       var api = this.$store.state.api.login
       api += '?redirect_uri=' + this.getCurrentPage()
