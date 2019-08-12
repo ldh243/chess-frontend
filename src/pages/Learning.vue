@@ -11,7 +11,7 @@
         </v-flex>
         <v-layout>
           <v-flex xs6 xl8 offset-xs1 offset-xl0 mr-5>
-            <chessboard :fen="currentFen" :move="move" @onMove="showInfo" />
+            <chessboard :status="'viewOnly'" :fen="currentFen" :move="move" @onMove="showInfo" />
           </v-flex>
           <v-flex xs4 class="direction-side">
             <v-layout column>
@@ -209,7 +209,7 @@
 <script>
 import Chessboard from '@/components/plugins/vue-chessboard/index.vue'
 import sampleText from '@/data/sampletext.json'
-import sampleLesson from '@/data/lesson.json'
+import sampleLesson from '@/data/algorithmsample.json'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const courseRepository = RepositoryFactory.get('course')
 const lessonRepository = RepositoryFactory.get('lesson')
@@ -351,7 +351,8 @@ export default {
         if (divTarget.id) {
           this.stepContent = content
           this.currentId = divTarget.id
-          this.currentFen = divTarget.getAttribute('preFen')
+          this.currentFen = divTarget.getAttribute('prefen')
+          console.log(this.currentFen)
           this.move = divTarget.getAttribute('move')
           this.setCurrentMove()
         }
@@ -395,8 +396,6 @@ export default {
     },
     loadMoveHistory() {
       this.loadFen(this.lessonDetails.interactiveLesson.initCode)
-      this.lessonDetails.interactiveLesson.steps = this.sampleLesson
-      console.log(this.sampleLesson)
       const moveHistory = new MoveHistory(this.lessonDetails)
       moveHistory.formatMoveHistory()
       this.moveHistory = moveHistory.getMoveHistory

@@ -44,7 +44,7 @@ export default {
     status: {
       type: String,
       default: 'playing' //playing, new and pausing
-    },
+    }
     // preMove: {
     //   type: Array,
     //   default: []
@@ -58,10 +58,13 @@ export default {
   },
   watch: {
     fen: function(newFen) {
-      console.log("reload fen")
       this.fen = newFen
+      if (this.status === 'viewOnly') {
+        this.game.load(this.fen)
+      }
       this.board.set({
-        fen: this.fen
+        fen: this.fen,
+        viewOnly: this.status === 'viewOnly'
       })
     },
     orientation: function(orientation) {
@@ -101,7 +104,6 @@ export default {
     }
   },
   mounted() {
-    console.log('first load')
     this.loadPosition()
   },
   created() {
@@ -175,7 +177,6 @@ export default {
           this.hisMoves += this.promoteTo
         }
         this.game.move({ from: orig, to: dest, promotion: this.promoteTo }) // promote to queen for simplicity
-
         this.board.set({
           fen: this.game.fen(),
           turnColor: this.toColor(),
@@ -184,24 +185,8 @@ export default {
             dests: this.possibleMoves()
           }
         })
-        // console.log(this.preMove)
-        // if (this.preMove.length === 0 || this.preMove.indexOf(orig + dest) !== -1) {
-          this.calculatePromotions()
-          this.afterMove()
-        // } else {
-        //   this.$emit('onWrong', true)
-        //   let timeout = window.setTimeout(() => {
-        //     this.game.load(this.fen)
-        //     this.board.set({
-        //       fen: this.game.fen(),
-        //       turnColor: this.toColor(),
-        //       movable: {
-        //         color: this.toColor(),
-        //         dests: this.possibleMoves()
-        //       }
-        //     })
-        //   }, 500)
-        // }
+        this.calculatePromotions()
+        this.afterMove()
       }
     },
     afterMove() {
@@ -267,23 +252,6 @@ export default {
       this.board.set({
         movable: { events: { after: this.changeTurn() } }
       })
-      this.afterMove()
-    },
-    loadOnlyFen() {
-      console.log('load Only fen')
-      console.log('fen')
-      console.log(this.fen)
-      console.log('game')
-      console.log(this.game.fen())
-      this.board = Chessground(this.$refs.board, {
-        fen: this.fen,
-        movable: {
-          color: this.fen.split(' ')[1] === 'w' ? 'white' : 'black',
-          free: this.free,
-          dests: this.possibleMoves()
-        }
-      })
-
       this.afterMove()
     },
     loadMove() {
