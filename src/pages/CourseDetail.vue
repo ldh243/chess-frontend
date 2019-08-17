@@ -278,7 +278,7 @@ export default {
       })
     },
     async enrollCourse() {
-      if (this.courseDetail.requiredPoint < this.$store.state.user.point) {
+      if (this.courseDetail.requiredPoint <= this.$store.state.user.point) {
         const { data } = await courseRepository.enrollCourse(
           this.courseDetail.courseId
         )
