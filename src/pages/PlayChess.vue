@@ -10,7 +10,7 @@
           @onMove="showInfo"
         />
       </v-flex>
-      <v-flex xs4 offset-xs1>
+      <v-flex xs4>
         <v-layout column>
           <player :time="botTime" :image-link="botImgLink" :point="currentGame.winPoint"></player>
           <v-flex class="move-history">

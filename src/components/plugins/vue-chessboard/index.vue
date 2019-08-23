@@ -83,12 +83,18 @@ export default {
       if (this.status === 'wrong_ans') {
         console.log(this.fen)
         let timeout = window.setTimeout(() => {
-          this.game.load(this.fen)
+          this.game.undo()
+          console.log(this.toColor())
           this.board.set({
             fen: this.game.fen(),
-            turnColor: this.toColor()
+            turnColor: this.toColor(),
+          movable: {
+            color: this.toColor(),
+            dests: this.possibleMoves()
+          }
           })
           this.afterMove()
+          this.game.status = 'playing'
         }, 1500)
       }
     },
