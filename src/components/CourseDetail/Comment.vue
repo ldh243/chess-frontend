@@ -431,10 +431,10 @@ export default {
         }
       })
     },
-    loadMore() {
+    async loadMore() {
       this.reviewPagination.page++
       this.$store.commit('incrementLoader', 1)
-      this.getReviewPagination()
+      await this.getReviewPagination()
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)
       }, 500)
