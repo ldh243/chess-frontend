@@ -315,7 +315,10 @@ export default {
           confirmButtonText: 'Xác nhận'
         })
       } else {
-        this.$router.push(`/learning/${this.courseDetail.courseId}`)
+        const firstLessonId = this.courseDetail.lessonViewModels[0].lessonId
+        this.$router.push(
+          `/learning/course/${this.courseDetail.courseId}/lesson/${firstLessonId}`
+        )
       }
     },
     getLessonType() {

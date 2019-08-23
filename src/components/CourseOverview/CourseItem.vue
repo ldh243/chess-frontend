@@ -46,8 +46,16 @@
             </v-flex>
             <v-flex>
               <v-layout fill-height justify-center column align-center pt-3>
-                <v-layout justify-center fill-height align-center>
-                  <span class="point-required">{{courseDetail.requiredPoint}} điểm</span>
+                <v-layout justify-center fill-height align-center py-2>
+                  <span class="point-required" style="color: #4caf50 ">
+                    {{courseDetail.point}}
+                    <br />điểm
+                  </span>
+                  <v-divider vertical class="mx-3"></v-divider>
+                  <span class="point-required">
+                    {{courseDetail.requiredPoint}}
+                    <br />điểm
+                  </span>
                 </v-layout>
                 <span class="text-detail text-grey">{{ courseDetail.courseCreatedDate }}</span>
                 <v-layout align-center v-if="courseDetail.rating > 0">
@@ -168,8 +176,9 @@ export default {
   color: #57d9ad;
 }
 .point-required {
-  /* color: #e63950; */
-  font-size: 18px;
+  font-size: 14px;
   font-weight: 600;
+  text-align: center;
+  color: #ff5252;
 }
 </style>

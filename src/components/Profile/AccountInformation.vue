@@ -63,13 +63,31 @@
         </v-form>
       </v-flex>
     </v-layout>
+    <v-dialog v-model="avaDialog" max-width="382">
+      <v-card>
+        <v-card-title class="headline">Ảnh đại diện</v-card-title>
+
+        <vue-avatar
+          :width="300"
+          :height="300"
+          :has-rotation="false"
+          :border-radius="150"
+          @finished="handlerUploadImage"
+        ></vue-avatar>
+      </v-card>
+    </v-dialog>
   </v-card>
 </template>
 
 <script>
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
+import VueAvatar from '@/components/plugins/vue-avatar/VueAvatarEditor'
 const userRepository = RepositoryFactory.get('user')
+import firebase from 'firebase'
 export default {
+  components: {
+    VueAvatar
+  },
   data() {
     return {
       user: null,
@@ -82,7 +100,11 @@ export default {
           ) || 'Tên không được chứa số hoặc kí tự khác.',
         v => (v && v.length >= 6) || 'Họ và tên ít nhất phải 6 kí tự.',
         v => (v && v.length <= 255) || 'Họ và tên không được quá dài.'
-      ]
+      ],
+      avaDialog: false,
+      isChangedAvatar: false,
+      updateImage: false,
+      listUpload: []
     }
   },
   mounted() {
@@ -96,6 +118,11 @@ export default {
         this.$store.commit('incrementLoader', -1)
       }, 500)
     },
+    handlerUploadImage(data) {
+      this.user.avatar = data.toDataURL()
+      this.isChangedAvatar = true
+      this.avaDialog = false
+    },
     async getCurrentUserDetail() {
       const { data } = await userRepository.getCurrentUserDetail()
       this.user = data.data
@@ -106,21 +133,63 @@ export default {
         localStorage.setItem('user', JSON.stringify(this.user))
         const user = JSON.parse(localStorage.getItem('user'))
         this.$store.commit('setUser', user)
+        this.$store.commit('incrementLoader', -1)
         this.$swal({
           type: 'success',
-          title: 'Thành  công',
+          title: 'Thành công',
           text: 'Cập nhật thông tin thành công.',
           confirmButtonText: 'Xác nhận'
         })
       }
     },
-    uploadImageSuccess(formData, index, fileList) {
-      this.certificates = fileList
-    },
-    submit() {
+    async submit() {
       if (this.$refs.form.validate()) {
-        this.updateProfile()
+        this.$store.commit('incrementLoader', 1)
+        if (this.isChangedAvatar) {
+          let match = this.user.email.match(/^([^@]*)/)
+          this.uploadImageByDataURL(this.user.avatar, match[0], 'ava')
+        }
+        var checkUploadImgProgress = setInterval(() => {
+          let done = true
+          this.listUpload.forEach(el => {
+            if (!el.done) {
+              done = false
+            }
+          })
+          if (done) {
+            this.listUpload.forEach(el => {
+              this.user.avatar = el.url
+            })
+            this.updateProfile()
+            clearInterval(checkUploadImgProgress)
+          }
+        }, 1000)
       }
+    },
+    async uploadImageByDataURL(image, imageName, directory) {
+      const uploadTask = firebase
+        .storage()
+        .ref(`images/${directory}/${imageName}`)
+        .putString(image, 'data_url')
+      uploadTask.on(
+        firebase.storage.TaskEvent.STATE_CHANGED, // or 'state_changed'
+        null,
+        null,
+        () => {
+          // Upload completed successfully, now we can get the download URL
+          uploadTask.snapshot.ref.getDownloadURL().then(downloadURL => {
+            newImage.done = true
+            newImage.url = downloadURL
+          })
+        }
+      )
+      let newImage = {
+        file: uploadTask,
+        done: false,
+        url: null
+      }
+
+      this.listUpload.push(newImage)
     }
   }
 }

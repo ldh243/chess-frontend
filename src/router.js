@@ -9,6 +9,7 @@ import PlayChess from '@/pages/PlayChess'
 import Profile from '@/pages/Profile'
 import Register from '@/pages/Register'
 import Exercise from '@/pages/Exercise'
+import Instructor from '@/pages/Instructor'
 Vue.use(Router)
 
 export default new Router({
@@ -18,10 +19,14 @@ export default new Router({
     { path: '/', name: 'home', component: Introduce },
     { path: '/course', component: CourseOverview },
     { path: '/course/:courseId', component: CourseDetail },
-    { path: '/learning/:courseId', component: Learning },
+    {
+      path: '/learning/course/:courseId/lesson/:lessonId',
+      component: Learning
+    },
     { path: '/play-chess', component: PlayChess },
     { path: '/profile/:tabItem', component: Profile },
     { path: '/register', component: Register },
+    { path: '/instructor/:instructorId', component: Instructor },
     { path: '/test', component: Exercise }
   ]
 })

@@ -15,9 +15,38 @@
           </v-flex>
           <v-flex xs4 class="direction-side">
             <v-layout column>
+              <v-flex>
+                <v-layout>
+                  <v-flex xs10>
+                    <v-layout align-center>
+                      <v-icon class="mr-2" :size="20" color="black">fa-bars</v-icon>
+                      <div class="lesson-name text-truncate">{{lessonDetails.name}}</div>
+                    </v-layout>
+                  </v-flex>
+                  <v-flex xs2>
+                    <v-layout justify-end align-center fill-height>
+                      <v-tooltip bottom>
+                        <template v-slot:activator="{ on }">
+                          <v-btn
+                            color="#e0e1e2 elevation-0"
+                            class="pa-0"
+                            min-width="36"
+                            text
+                            v-on="on"
+                            @click="backToCourseDetail()"
+                          >
+                            <v-icon :size="20" color="#8b8b8c">fa-sign-out-alt</v-icon>
+                          </v-btn>
+                        </template>
+                        <span>Quay trở lại</span>
+                      </v-tooltip>
+                    </v-layout>
+                  </v-flex>
+                </v-layout>
+              </v-flex>
               <v-flex class="move-history mb-2">
                 <v-card-title class="pa-0">
-                  <span class="title font-weight-bold">Nước đi</span>
+                  <span class="title-table">Nước đi</span>
                 </v-card-title>
                 <div class="move-history-content">
                   <div v-for="(moved1, index) in moveHistory" :key="index">
@@ -118,23 +147,44 @@
               </v-flex>
               <v-flex mb-2 class="move-history-direction">
                 <v-layout>
-                  <v-btn text class="extra-button" @click="turnToFirstMove()">
-                    <v-icon>fa-fast-backward</v-icon>
-                  </v-btn>
-                  <v-btn text class="main-button" @click="turnToPreviousMove()">
-                    <v-icon>fa-backward</v-icon>
-                  </v-btn>
-                  <v-btn text class="main-button" @click="turnToNextMove()">
-                    <v-icon>fa-forward</v-icon>
-                  </v-btn>
-                  <v-btn text class="extra-button" @click="turnToLastMove()">
-                    <v-icon>fa-fast-forward</v-icon>
-                  </v-btn>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn text class="extra-button" @click="turnToFirstMove()" v-on="on">
+                        <v-icon>fa-fast-backward</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Về bước đầu tiên</span>
+                  </v-tooltip>
+
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn text class="main-button" @click="turnToPreviousMove()" v-on="on">
+                        <v-icon>fa-backward</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Bước trước</span>
+                  </v-tooltip>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn text class="main-button" @click="turnToNextMove()" v-on="on">
+                        <v-icon>fa-forward</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Bước tiếp theo</span>
+                  </v-tooltip>
+                  <v-tooltip bottom>
+                    <template v-slot:activator="{ on }">
+                      <v-btn text class="extra-button" @click="turnToLastMove()" v-on="on">
+                        <v-icon>fa-fast-forward</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Bước cuối cùng</span>
+                  </v-tooltip>
                 </v-layout>
               </v-flex>
               <v-flex class="lesson-area" mb-2>
                 <v-card-title class="pa-0">
-                  <span class="title font-weight-bold">Nội dung</span>
+                  <span class="title-table">Nội dung</span>
                 </v-card-title>
                 <div class="lesson-content">
                   <v-card-text v-if="lessonDetails.interactiveLesson != null">{{ stepContent }}</v-card-text>
@@ -142,22 +192,33 @@
               </v-flex>
               <v-flex class="lesson-direction">
                 <v-layout justify-space-between>
-                  <v-btn
-                    class="font-weight-bold"
-                    :disabled="statusPreviousLesson"
-                    @click="changeLesson(-1)"
-                  >
-                    <v-icon class="mr-2">fa-angle-left</v-icon>Bài trước
-                  </v-btn>
-                  <v-btn
-                    v-if="!statusNextLesson"
-                    class="font-weight-bold"
-                    :disabled="statusNextLesson"
-                    @click="changeLesson(1)"
-                  >
-                    Bài tiếp
-                    <v-icon class="ml-2">fa-angle-right</v-icon>
-                  </v-btn>
+                  <v-tooltip top>
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        class="font-weight-bold"
+                        :disabled="statusPreviousLesson"
+                        @click="changeLesson(-1)"
+                        v-on="on"
+                      >
+                        <v-icon class="mr-2">fa-angle-left</v-icon>Bài trước
+                      </v-btn>
+                    </template>
+                    <span>Về lại bài trước</span>
+                  </v-tooltip>
+                  <v-tooltip top v-if="!statusNextLesson">
+                    <template v-slot:activator="{ on }">
+                      <v-btn
+                        class="font-weight-bold"
+                        :disabled="statusNextLesson"
+                        @click="changeLesson(1)"
+                        v-on="on"
+                      >
+                        Tiếp theo
+                        <v-icon class="ml-2">fa-angle-right</v-icon>
+                      </v-btn>
+                    </template>
+                    <span>Tới bài tiếp theo</span>
+                  </v-tooltip>
                   <v-btn v-else @click="finishCourse()" class="font-weight-bold">Hoàn thành</v-btn>
                 </v-layout>
               </v-flex>
@@ -209,7 +270,7 @@
 <script>
 import Chessboard from '@/components/plugins/vue-chessboard/index.vue'
 import sampleText from '@/data/sampletext.json'
-import sampleLesson from '@/data/algorithmsample.json'
+import sampleLesson from '@/data/lesson.json'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const courseRepository = RepositoryFactory.get('course')
 const lessonRepository = RepositoryFactory.get('lesson')
@@ -265,7 +326,15 @@ export default {
       move: '',
       steps: [],
       theoryContent: '',
-      learningLog: []
+      learningLog: [],
+      courseId: this.$route.params.courseId,
+      lessonId: this.$route.params.lessonId
+    }
+  },
+  watch: {
+    $route() {
+      console.log('router')
+      this.lessonId = this.$route.params.lessonId
     }
   },
   computed: {
@@ -301,13 +370,14 @@ export default {
     async fetchData() {
       this.$store.commit('incrementLoader', 1)
       await this.getCourseById()
+      await this.getLessonById()
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)
       }, 500)
     },
-    finishCourse() {
+    async finishCourse() {
       const courseId = this.$route.params.courseId
-
+      await this.createLearningLog(courseId, this.lessonDetails.lessonId)
       let timerInterval
       this.$swal
         .fire({
@@ -338,7 +408,7 @@ export default {
       //reset height
       const totalHeight = document.getElementsByClassName('cg-board-wrap')[0]
         .offsetHeight
-      const moveHeight = totalHeight * 0.6 - 84
+      const moveHeight = totalHeight * 0.6 - 120
       document.getElementsByClassName('move-history-content')[0].style.height =
         moveHeight + 'px'
       const lessonHeight = totalHeight * 0.4 - 76
@@ -348,6 +418,7 @@ export default {
     showInfo(data) {
       // console.log(data.history[data.history.length - 1])
       // console.log(data.fen)
+      // console.log(data)
     },
     loadFen(fen, event, content) {
       if (event != undefined) {
@@ -356,7 +427,6 @@ export default {
           this.stepContent = content
           this.currentId = divTarget.id
           this.currentFen = divTarget.getAttribute('prefen')
-          console.log(this.currentFen)
           this.move = divTarget.getAttribute('move')
           this.setCurrentMove()
         }
@@ -365,19 +435,27 @@ export default {
       }
     },
     async getCourseById() {
-      const courseId = this.$route.params.courseId
-      const { data } = await courseRepository.getById(courseId)
+      const { data } = await courseRepository.getById(this.courseId)
       this.courseDetails = data.data
       this.lessons = this.courseDetails.lessonViewModels
+      this.sortLessonViewModel()
       this.breadcrumbs[2].text = this.courseDetails.name
-      this.breadcrumbs[2].href = `/course/${this.$route.params.courseId}`
-      this.getLessonById()
+      this.breadcrumbs[2].href = `/course/${this.courseId}`
+      this.activeLesson = this.lessons
+        .map(el => {
+          return el.lessonId
+        })
+        .indexOf(parseInt(this.lessonId))
+    },
+    sortLessonViewModel() {
+      this.lessons.sort((a, b) => (a.lessonOrdered > b.lessonOrdered ? 1 : -1))
     },
     async getLessonById() {
+      this.resetBoardAndResetHistory()
       this.theoryContent = ''
       this.$store.commit('incrementLoader', 1)
-      const lessonModel = this.courseDetails.lessonViewModels[this.activeLesson]
-      const { data } = await lessonRepository.getById(lessonModel.lessonId)
+      console.log(this.lessonId)
+      const { data } = await lessonRepository.getById(this.lessonId)
       this.lessonDetails = data.data
       this.checkStatusDirectLesson()
       if (this.lessonDetails.lessonType == 2) {
@@ -412,6 +490,7 @@ export default {
       this.moveHistory = moveHistory.getMoveHistory
       this.steps = moveHistory.getSteps
       this.firstId = this.steps[0].id
+      // console.log(this.moveHistory)
     },
 
     setCurrentMove() {
@@ -489,13 +568,22 @@ export default {
       if (0 <= this.activeLesson + val <= this.lessons.length) {
         this.activeLesson += val
         this.$store.commit('incrementLoader', 1)
-        await this.createLearningLog(
-          this.$route.params.courseId,
-          this.lessonDetails.lessonId
+        if (val === 1) {
+          await this.createLearningLog(
+            this.$route.params.courseId,
+            this.lessonDetails.lessonId
+          )
+        }
+        const nextLessonId = this.lessons[this.activeLesson].lessonId
+        if (this.lessons[this.activeLesson].lessonType === 5) {
+          //chuyểnqua trang bài tập
+        }
+        this.lessonId = nextLessonId
+        this.$router.push(
+          `/learning/course/${this.courseId}/lesson/${nextLessonId}`
         )
-        this.resetBoardAndResetHistory()
-        await this.getLessonById()
-        this.checkStatusDirectLesson()
+        this.getLessonById()
+        // this.checkStatusDirectLesson()
         setTimeout(() => {
           this.$store.commit('incrementLoader', -1)
         }, 500)
@@ -523,6 +611,9 @@ export default {
       this.currentMove = 0
       this.totalMove = 0
       this.currentId = 0
+    },
+    backToCourseDetail() {
+      this.$router.push(`/course/${this.courseDetails.courseId}`)
     }
   }
 }
@@ -570,5 +661,13 @@ export default {
   display: -webkit-box;
   display: -ms-flexbox;
   display: flex;
+}
+.title-table {
+  font-size: 16px;
+  font-weight: 600;
+}
+.lesson-name {
+  font-size: 19px;
+  font-weight: 700;
 }
 </style>

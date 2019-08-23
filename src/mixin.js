@@ -52,9 +52,11 @@ export default Vue.mixin({
     getLessonTypeName(lessonTypeId) {
       switch (lessonTypeId) {
         case 2:
-          return 'Thực hành'
+          return 'Trận đấu'
         case 3:
           return 'Lý thuyết'
+        case 5:
+          return 'Bài tập'
       }
     },
     async uploadImageByDataURL2(image, imageName, directory) {

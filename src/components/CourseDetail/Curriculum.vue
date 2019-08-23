@@ -1,38 +1,52 @@
 <template>
-  <v-card v-if="curriculum !== null && learningLog !== null">
+  <v-card v-if="curriculum !== null">
     <v-card-title primary-title>
       <v-layout wrap>
         <v-layout pr-3 align-center>
           <span class="title-curriculum text-black">Giáo trình</span>
-          <v-spacer></v-spacer>
-          <span class="text-black total-lesson-title">Số bài: &nbsp;</span>
-          <span class="total-lesson">{{ curriculum.length }}</span>
         </v-layout>
-        <v-flex xs12></v-flex>
       </v-layout>
     </v-card-title>
-    <v-layout pa-3>
-      <v-expansion-panels popout inset focusable>
-        <v-expansion-panel v-for="(item,index) in curriculum" :key="index">
-          <v-expansion-panel-header disable-icon-rotate>
-            <v-layout>
-              Bài {{index + 1}}: {{item.name}}
-              <v-spacer></v-spacer>
-              <div class="course-type pr-3">{{ item.lessonTypeName }}</div>
-            </v-layout>
-            <template v-slot:actions v-if="item.learned === true">
-              <v-icon color="teal" size="18">mdi-check</v-icon>
-            </template>
-          </v-expansion-panel-header>
-          <v-expansion-panel-content class="mt-2">{{item.description}}</v-expansion-panel-content>
-        </v-expansion-panel>
-      </v-expansion-panels>
+    <v-layout pa-3 wrap justify-center>
+      <v-flex xs10 mb-1>
+        <v-progress-linear :value="value" rounded :height="13">
+          <template v-slot="{ value }">
+            <span class="curriculum-percentage">{{ Math.ceil(value) }}%</span>
+          </template>
+        </v-progress-linear>
+      </v-flex>
+      <v-flex xs10 mb-3>
+        <v-layout justify-center>
+          <span
+            class="learning-log-caption"
+          >{{learningLog.size}} trong {{curriculum.length}} bài đã hoàn thành</span>
+        </v-layout>
+      </v-flex>
+      <v-flex xs12>
+        <v-expansion-panels popout inset focusable>
+          <v-expansion-panel v-for="(item,index) in curriculum" :key="index">
+            <v-expansion-panel-header disable-icon-rotate>
+              <v-layout align-center>
+                <v-icon
+                  v-if="item.learned === true"
+                  color="#21ba45"
+                  size="18"
+                  class="mr-2"
+                >fa-check-circle</v-icon>
+                <v-icon v-else size="18" class="mr-2" color="#999999">far fa-circle</v-icon>
+                Bài {{index + 1}}: {{item.name}}
+                <v-spacer></v-spacer>
+                <div class="course-type pr-3">{{ item.lessonTypeName }}</div>
+              </v-layout>
+            </v-expansion-panel-header>
+            <v-expansion-panel-content class="mt-2">{{item.description}}</v-expansion-panel-content>
+          </v-expansion-panel>
+        </v-expansion-panels>
+      </v-flex>
     </v-layout>
   </v-card>
 </template>
 <script>
-import { RepositoryFactory } from '@/repository/RepositoryFactory'
-const learningRepository = RepositoryFactory.get('learning')
 export default {
   props: {
     courseDetail: {
@@ -42,13 +56,10 @@ export default {
   },
   data() {
     return {
-      courseId: this.$route.params.courseId,
       learningLog: null,
-      curriculum: null
+      curriculum: null,
+      value: 0
     }
-  },
-  created() {
-    this.curriculum = this.courseDetail.lessonViewModels
   },
   mounted() {
     this.fetchData()
@@ -56,19 +67,22 @@ export default {
   methods: {
     async fetchData() {
       this.$store.commit('incrementLoader', 1)
+      this.sortLessonViewModel()
+      this.curriculum = this.courseDetail.lessonViewModels
       if (this.courseDetail.enrolled) {
-        await this.getCurrentUserLearningLogByCourseId()
+        this.getLearningLog()
       } else {
         this.learningLog = []
       }
+      this.value = (this.learningLog.size / this.curriculum.length) * 100
+      this.value = Math.ceil(this.value)
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)
       }, 500)
     },
-    async getCurrentUserLearningLogByCourseId() {
-      const { data } = await learningRepository.getLearningLog(this.courseId)
+    getLearningLog() {
       this.learningLog = new Map()
-      data.data.forEach(el => {
+      this.courseDetail.listLearningLogLessonIds.forEach(el => {
         this.learningLog.set(el, true)
       })
       this.curriculum.forEach(el => {
@@ -77,6 +91,11 @@ export default {
           el.learned = true
         }
       })
+    },
+    sortLessonViewModel() {
+      this.courseDetail.lessonViewModels.sort((a, b) =>
+        a.lessonOrdered > b.lessonOrdered ? 1 : -1
+      )
     }
   }
 }
@@ -121,5 +140,14 @@ export default {
 .total-lesson,
 >>> .v-expansion-panel-content__wrap {
   font-size: 14px;
+}
+.curriculum-percentage {
+  font-size: 11px;
+  color: white;
+  font-weight: 600;
+}
+.learning-log-caption {
+  font-weight: 600;
+  font-size: 13px;
 }
 </style>

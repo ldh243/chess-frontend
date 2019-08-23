@@ -146,6 +146,15 @@ export default {
       done()
     },
     async submit() {
+      if (this.isInstructor && this.isEmpty(this.certificates)) {
+        this.$swal({
+          type: 'error',
+          title: 'Không thể đăng kí',
+          text: 'Bạn phải cập nhật các chứng nhận.',
+          confirmButtonText: 'Xác nhận'
+        })
+        return
+      }
       this.$store.commit('incrementLoader', 1)
       let match = this.user.email.match(/^([^@]*)/)
       if (this.isChangedAvatar) {
@@ -158,7 +167,7 @@ export default {
           this.uploadImageByDataURL(el.path, match[0] + el.name, 'certificates')
         })
       }
-      var checkUploadImgProgress = setInterval(() => {
+      var checkUploadImgProgress = setInterval(async () => {
         let done = true
         this.listUpload.forEach(el => {
           if (!el.done) {

@@ -8,7 +8,11 @@
     >
       <v-layout wrap>
         <v-flex xs12>
-          <v-img :src="courseDetail.courseImage" height="115px"></v-img>
+          <v-img :src="courseDetail.courseImage" height="115px">
+            <v-overlay absolute opacity="0.8">
+              <v-progress-circular :value="80" :size="55" color="grey lighten-1">80%</v-progress-circular>
+            </v-overlay>
+          </v-img>
         </v-flex>
         <v-flex xs12>
           <v-layout align-center fill-height v-if="courseDetail.rating > 0" px-4>
@@ -34,7 +38,7 @@
             </span>
           </v-card-title>
         </v-flex>
-        <v-flex xs12 mb-2>
+        <v-flex xs12 mb-2 v-if="courseDetail.author !== null">
           <v-layout px-3 fill-height align-center>
             <v-flex xs2>
               <v-avatar :size="30">
@@ -77,6 +81,9 @@ export default {
     goToCourseDetail() {
       this.$router.push(`/course/${this.courseDetail.courseId}`)
     }
+  },
+  created() {
+    console.log(this.courseDetail)
   }
 }
 </script>

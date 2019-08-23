@@ -36,7 +36,7 @@
                     </v-flex>
                     <v-flex xs6 mr-2>
                       <v-layout fill-height align-center>
-                        <v-progress-linear height="7" v-model="item.ratio" color="yellow darken-3"></v-progress-linear>
+                        <v-progress-linear height="7" :value="item.ratio" color="yellow darken-3"></v-progress-linear>
                       </v-layout>
                     </v-flex>
                     <v-flex xs3>
