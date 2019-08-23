@@ -203,11 +203,15 @@
         </v-flex>
       </v-layout>
     </v-container>
+    <v-container fill-height v-if="lessonDetails.lessonType === 5">
+      <Exercise/>
+    </v-container>
   </v-app>
 </template>
 
 <script>
 import Chessboard from '@/components/plugins/vue-chessboard/index.vue'
+import Exercise from '@/components/Exercise.vue'
 import sampleText from '@/data/sampletext.json'
 import sampleLesson from '@/data/algorithmsample.json'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
@@ -217,7 +221,8 @@ const learningRepository = RepositoryFactory.get('learning')
 import MoveHistory from '@/library/ChessHistory.js'
 export default {
   components: {
-    Chessboard
+    Chessboard,
+    Exercise
   },
   data() {
     return {
@@ -287,7 +292,9 @@ export default {
       this.lessonContent = this.sampleText
     } else {
       this.lessonContent = null
-      this.initHeightForDirecitonSide()
+      if (this.lessonDetails.lessonType !== 5) {
+        this.initHeightForDirecitonSide()
+      }
     }
   },
   created() {
@@ -384,7 +391,7 @@ export default {
         this.defaultFen = this.lessonDetails.interactiveLesson.initCode
         this.currentFen = this.defaultFen
         this.loadMoveHistory()
-      } else {
+      } else if (this.lessonDetails.lessonType == 3) {
         this.theoryContent = this.lessonDetails.uninteractiveLesson.content
       }
       setTimeout(() => {
