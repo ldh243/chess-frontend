@@ -56,7 +56,7 @@ export default Vue.mixin({
         case 3:
           return 'Lý thuyết'
         case 5:
-          return 'Bài tập'
+          return 'Thực hành'
       }
     },
     async uploadImageByDataURL2(image, imageName, directory) {

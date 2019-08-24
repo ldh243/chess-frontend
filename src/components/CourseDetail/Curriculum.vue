@@ -8,18 +8,25 @@
       </v-layout>
     </v-card-title>
     <v-layout pa-3 wrap justify-center>
-      <v-flex xs10 mb-1>
-        <v-progress-linear :value="value" rounded :height="13">
-          <template v-slot="{ value }">
-            <span class="curriculum-percentage">{{ Math.ceil(value) }}%</span>
-          </template>
-        </v-progress-linear>
-      </v-flex>
-      <v-flex xs10 mb-3>
+      <template v-if="curriculum.length !== 0">
+        <v-flex xs10 mb-1>
+          <v-progress-linear :value="value" rounded :height="13">
+            <template v-slot="{ value }">
+              <span class="curriculum-percentage">{{ Math.ceil(value) }}%</span>
+            </template>
+          </v-progress-linear>
+        </v-flex>
+        <v-flex xs10 mb-3>
+          <v-layout justify-center>
+            <span
+              class="learning-log-caption"
+            >{{learningLog.size}} trong {{curriculum.length}} bài đã hoàn thành</span>
+          </v-layout>
+        </v-flex>
+      </template>
+      <v-flex xs10 v-else>
         <v-layout justify-center>
-          <span
-            class="learning-log-caption"
-          >{{learningLog.size}} trong {{curriculum.length}} bài đã hoàn thành</span>
+          <span class="text-grey empty-curriculum">(Khóa học này hiện chưa có bài học nào)</span>
         </v-layout>
       </v-flex>
       <v-flex xs12>
@@ -69,19 +76,18 @@ export default {
       this.$store.commit('incrementLoader', 1)
       this.sortLessonViewModel()
       this.curriculum = this.courseDetail.lessonViewModels
+      this.learningLog = new Map()
       if (this.courseDetail.enrolled) {
         this.getLearningLog()
-      } else {
-        this.learningLog = []
       }
       this.value = (this.learningLog.size / this.curriculum.length) * 100
       this.value = Math.ceil(this.value)
+      console.log(this.learningLog.size)
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)
       }, 500)
     },
     getLearningLog() {
-      this.learningLog = new Map()
       this.courseDetail.listLearningLogLessonIds.forEach(el => {
         this.learningLog.set(el, true)
       })
@@ -148,6 +154,9 @@ export default {
 }
 .learning-log-caption {
   font-weight: 600;
+  font-size: 13px;
+}
+.empty-curriculum {
   font-size: 13px;
 }
 </style>

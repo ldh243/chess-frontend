@@ -1,6 +1,6 @@
 <template>
   <v-layout>
-    <v-flex xs6 offset-xs1 offset-xl0 mr-5>
+    <v-flex xs6 xl8 offset-xs1 offset-xl0 mr-5>
       <chessboard
         :move="move"
         :orientation="userColor"
@@ -73,10 +73,43 @@
           </v-card>
         </v-flex>
         <v-flex xs12>
-          <v-layout>
-            <v-btn class="font-weight-bold mr-3">
-              <v-icon class="mr-2">fa-angle-left</v-icon>Bài trước
-            </v-btn>
+          <v-layout justify-space-between>
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  class="font-weight-bold"
+                  :disabled="statusPreviousLesson"
+                  @click="changeLesson(-1)"
+                  v-on="on"
+                >
+                  <v-icon class="mr-2">fa-angle-left</v-icon>Bài trước
+                </v-btn>
+              </template>
+              <span>Về lại bài trước</span>
+            </v-tooltip>
+            <v-tooltip top v-if="!statusNextLesson">
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  class="font-weight-bold"
+                  :disabled="statusNextLesson"
+                  @click="changeLesson(1)"
+                  v-on="on"
+                >
+                  Tiếp theo
+                  <v-icon class="ml-2">fa-angle-right</v-icon>
+                </v-btn>
+              </template>
+              <span>Tới bài tiếp theo</span>
+            </v-tooltip>
+            <v-tooltip top v-else>
+              <template v-slot:activator="{ on }">
+                <v-btn class="font-weight-bold" @click="finishCourse()" v-on="on">
+                  Hoàn thành
+                  <v-icon class="ml-2">fa-angle-right</v-icon>
+                </v-btn>
+              </template>
+              <span>Hoàn tất khóa học</span>
+            </v-tooltip>
           </v-layout>
         </v-flex>
       </v-layout>
@@ -87,8 +120,23 @@
 <script>
 import Chessboard from '@/components/plugins/vue-chessboard/index.vue'
 export default {
+  props: {
+    statusNextLesson: {
+      type: Boolean,
+      default: false
+    },
+    statusPreviousLesson: {
+      type: Boolean,
+      default: false
+    }
+  },
   components: {
     Chessboard
+  },
+  watch: {
+    statusNextLesson: function(val) {
+      console.log(val)
+    }
   },
   data() {
     return {
@@ -148,6 +196,7 @@ export default {
     this.setCurrentMove()
   },
   created() {
+    console.log(this.statusNextLesson)
     this.gameHistory.push('Tìm nước đi thích hợp để bên trắng thắng?')
     this.engine = new Worker('stockfish.js')
     this.sendUCI('uci')
@@ -427,6 +476,12 @@ export default {
             : (self.move = match[1] + match[2] + match[3])
         }
       }
+    },
+    async changeLesson(val) {
+      await this.$emit('changeLesson', val)
+    },
+    async finishCourse() {
+      await this.$emit('finishCourse')
     }
   }
 }

@@ -2,7 +2,7 @@
   <v-flex xs12>
     <v-layout v-if="courseGroup !== null">
       <v-flex xs3 v-for="(item, index) in this.courseGroup" :key="index">
-        <RegistedCourseItem :course-detail="item" class="mb-2" />
+        <RegistedCourseItem :isAuthor="isAuthor" :course-detail="item" class="mb-2" />
       </v-flex>
     </v-layout>
   </v-flex>
@@ -19,6 +19,10 @@ export default {
     courseGroup: {
       type: Array,
       default: null
+    },
+    isAuthor: {
+      type: Boolean,
+      default: false
     }
   }
 }

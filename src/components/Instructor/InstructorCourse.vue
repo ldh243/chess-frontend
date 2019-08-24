@@ -7,7 +7,12 @@
     </v-flex>
     <v-flex xs12>
       <v-layout wrap px-4 v-if="listCourse !== null">
-        <RegistedCourseRow :course-group="item" v-for="(item, index) in listCourse" :key="index" />
+        <RegistedCourseRow
+          :isAuthor="true"
+          :course-group="item"
+          v-for="(item, index) in listCourse"
+          :key="index"
+        />
       </v-layout>
     </v-flex>
   </v-layout>
@@ -60,7 +65,6 @@ export default {
       })
       this.listCourse = data.data.content
       this.listCourse = this.arrayToGroup(this.listCourse, 4)
-      console.log(this.listCourse)
     }
   }
 }

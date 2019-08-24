@@ -213,13 +213,18 @@
                         @click="changeLesson(1)"
                         v-on="on"
                       >
-                        Tiếp theo
+                        Tiếp tục
                         <v-icon class="ml-2">fa-angle-right</v-icon>
                       </v-btn>
                     </template>
                     <span>Tới bài tiếp theo</span>
                   </v-tooltip>
-                  <v-btn v-else @click="finishCourse()" class="font-weight-bold">Hoàn thành</v-btn>
+                  <v-tooltip top v-else>
+                    <template v-slot:activator="{ on }">
+                      <v-btn @click="finishCourse()" class="font-weight-bold">Hoàn thành</v-btn>
+                    </template>
+                    <span>Hoàn tất khóa học</span>
+                  </v-tooltip>
                 </v-layout>
               </v-flex>
             </v-layout>
@@ -243,29 +248,59 @@
         </v-flex>
         <v-flex xs12>
           <v-layout justify-center>
-            <v-btn
-              class="font-weight-bold mr-3"
-              :disabled="statusPreviousLesson"
-              @click="changeLesson(-1)"
-            >
-              <v-icon class="mr-2">fa-angle-left</v-icon>Bài trước
-            </v-btn>
-            <v-btn
-              v-if="!statusNextLesson"
-              class="font-weight-bold"
-              :disabled="statusNextLesson"
-              @click="changeLesson(1)"
-            >
-              Bài tiếp
-              <v-icon class="ml-2">fa-angle-right</v-icon>
-            </v-btn>
-            <v-btn v-else class="font-weight-bold" @click="finishCourse()">Hoàn thành</v-btn>
+            <v-tooltip top>
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  class="font-weight-bold mr-3"
+                  :disabled="statusPreviousLesson"
+                  @click="changeLesson(-1)"
+                  v-on="on"
+                >
+                  <v-icon class="mr-2">fa-angle-left</v-icon>Bài trước
+                </v-btn>
+              </template>
+              <span>Quay trở lại</span>
+            </v-tooltip>
+            <v-tooltip top v-if="!statusNextLesson">
+              <template v-slot:activator="{ on }">
+                <v-btn
+                  class="font-weight-bold"
+                  :disabled="statusNextLesson"
+                  @click="changeLesson(1)"
+                  v-on="on"
+                >
+                  Tiếp tục
+                  <v-icon class="ml-2">fa-angle-right</v-icon>
+                </v-btn>
+              </template>
+              <span>Tới bài tiếp theo</span>
+            </v-tooltip>
+            <v-tooltip top v-else>
+              <template v-slot:activator="{ on }">
+                <v-btn class="font-weight-bold" v-on="on" @click="finishCourse()">Hoàn thành</v-btn>
+              </template>
+              <span>Hoàn tất khóa học</span>
+            </v-tooltip>
           </v-layout>
         </v-flex>
       </v-layout>
     </v-container>
-    <v-container fill-height v-if="lessonDetails.lessonType === 5">
-      <Exercise/>
+    <v-container v-if="lessonDetails.lessonType === 5" px-0>
+      <v-layout wrap>
+        <v-flex xs12 mb-4>
+          <v-breadcrumbs :items="breadcrumbs" class="py-0">
+            <template v-slot:divider>
+              <v-icon>mdi-chevron-right</v-icon>
+            </template>
+          </v-breadcrumbs>
+        </v-flex>
+        <Exercise
+          @changeLesson="changeLesson"
+          @finishCourse="finishCourse"
+          :statusPreviousLesson="statusPreviousLesson"
+          :statusNextLesson="statusNextLesson"
+        />
+      </v-layout>
     </v-container>
   </v-app>
 </template>
@@ -338,7 +373,6 @@ export default {
   },
   watch: {
     $route() {
-      console.log('router')
       this.lessonId = this.$route.params.lessonId
     }
   },
@@ -461,7 +495,6 @@ export default {
       this.resetBoardAndResetHistory()
       this.theoryContent = ''
       this.$store.commit('incrementLoader', 1)
-      console.log(this.lessonId)
       const { data } = await lessonRepository.getById(this.lessonId)
       this.lessonDetails = data.data
       this.checkStatusDirectLesson()
@@ -582,15 +615,12 @@ export default {
           )
         }
         const nextLessonId = this.lessons[this.activeLesson].lessonId
-        if (this.lessons[this.activeLesson].lessonType === 5) {
-          //chuyểnqua trang bài tập
-        }
         this.lessonId = nextLessonId
         this.$router.push(
           `/learning/course/${this.courseId}/lesson/${nextLessonId}`
         )
+        this.checkStatusDirectLesson()
         this.getLessonById()
-        // this.checkStatusDirectLesson()
         setTimeout(() => {
           this.$store.commit('incrementLoader', -1)
         }, 500)
@@ -599,6 +629,9 @@ export default {
     checkStatusDirectLesson() {
       this.statusNextLesson = this.checkStatusNextLesson()
       this.statusPreviousLesson = this.checkStatusPreviousLesson()
+      console.log(this.statusNextLesson)
+      console.log(this.lessonDetails)
+      console.log(this.courseDetails)
     },
     checkStatusNextLesson() {
       if (this.activeLesson === this.lessons.length - 1) {

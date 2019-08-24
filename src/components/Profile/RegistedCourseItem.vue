@@ -9,8 +9,12 @@
       <v-layout wrap>
         <v-flex xs12>
           <v-img :src="courseDetail.courseImage" height="115px">
-            <v-overlay absolute opacity="0.8">
-              <v-progress-circular :value="80" :size="55" color="grey lighten-1">80%</v-progress-circular>
+            <v-overlay absolute opacity="0.8" v-if="!isAuthor">
+              <v-progress-circular
+                :value="courseDetail.learningProcessPercent"
+                :size="55"
+                color="grey lighten-1"
+              >{{courseDetail.learningProcessPercent}}%</v-progress-circular>
             </v-overlay>
           </v-img>
         </v-flex>
@@ -70,6 +74,10 @@ export default {
     courseDetail: {
       type: Object,
       default: null
+    },
+    isAuthor: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -81,9 +89,6 @@ export default {
     goToCourseDetail() {
       this.$router.push(`/course/${this.courseDetail.courseId}`)
     }
-  },
-  created() {
-    console.log(this.courseDetail)
   }
 }
 </script>

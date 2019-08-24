@@ -2,7 +2,12 @@
   <v-card flat>
     <v-card-title class="tab-title">Khóa học của tôi</v-card-title>
     <v-layout wrap px-4 v-if="listCourse !== null">
-      <RegistedCourseRow :course-group="item" v-for="(item, index) in listCourse" :key="index" />
+      <RegistedCourseRow
+        :isAuthor="false"
+        :course-group="item"
+        v-for="(item, index) in listCourse"
+        :key="index"
+      />
     </v-layout>
   </v-card>
 </template>

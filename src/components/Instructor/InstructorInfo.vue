@@ -1,19 +1,21 @@
 <template>
   <v-layout v-if="instructorDetail !== null">
     <div class="round-border">
-      <v-avatar :size="150">
+      <v-avatar :size="120">
         <img :src="instructorDetail.avatar" />
       </v-avatar>
     </div>
     <v-flex xs6 ml-3>
-      <v-layout align-center wrap justify-center>
-        <v-flex xs12 class="title-achievement">Giảng viên</v-flex>
-        <v-flex xs12 py-1 class="author-fullname text-truncate">{{ instructorDetail.fullName }}</v-flex>
+      <v-layout align-center wrap fill-height>
+        <v-layout wrap>
+          <v-flex xs12 class="title-achievement">Giảng viên</v-flex>
+          <v-flex xs12 py-1 class="author-fullname text-truncate">{{ instructorDetail.fullName }}</v-flex>
+        </v-layout>
       </v-layout>
     </v-flex>
     <v-divider vertical></v-divider>
-    <v-flex xs3 pl-3>
-      <v-layout wrap>
+    <v-flex xs3 pl-3 fill-height>
+      <v-layout wrap fill-height>
         <v-flex xs12 class="title-achievement">Thành tích</v-flex>
         <v-flex xs12>{{instructorDetail.achievement}}</v-flex>
       </v-layout>
@@ -28,9 +30,6 @@ export default {
       type: Object,
       default: null
     }
-  },
-  created() {
-    console.log(this.instructorDetail)
   }
 }
 </script>
@@ -44,8 +43,8 @@ export default {
 }
 .round-border {
   border-radius: 50%;
-  width: 166px;
-  height: 166px;
+  width: 136px;
+  height: 136px;
   border: 1px solid #e3e4e5;
   padding: 7px;
 }

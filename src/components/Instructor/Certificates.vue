@@ -52,9 +52,6 @@ export default {
         slidesToShow: 5
       }
     }
-  },
-  created() {
-    console.log(this.certificates)
   }
 }
 </script>

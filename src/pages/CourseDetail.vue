@@ -76,7 +76,7 @@
                 <Curriculum :courseDetail="courseDetail" />
               </v-flex>
               <v-flex id="author-course" xs12 mt-3>
-                <InstructorInfo :author="courseDetail.author" />
+                <InstructorInfo :author="courseDetail.author" :courseDetail="courseDetail" />
               </v-flex>
               <v-flex id="review-course" xs12 mt-3>
                 <Review :enrolled="courseDetail.enrolled" />
