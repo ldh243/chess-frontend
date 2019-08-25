@@ -180,11 +180,13 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 import Chessboard from '@/components/plugins/vue-chessboard/index.vue'
 import Player from '../components/PlayChess/Player'
 import { setInterval, clearInterval } from 'timers'
 import {RepositoryFactory} from '@/repository/RepositoryFactory'
 const gameHistoryRepository = RepositoryFactory.get('gameHistory')
+const userRepository = RepositoryFactory.get('user')
 export default {
   components: {
     Player,
@@ -481,6 +483,8 @@ export default {
       )
       //perform minus point in db
       this.player.point = this.player.point - point.required
+            localStorage.setItem('user', this.player)
+            this.$store.commit('setUser', this.player)
       this.gameHistory.push(
         `Thắng +${this.currentGame.winPoint} - Thua +${this.currentGame.requiredPoint} - Hòa +${this.currentGame.drawPoint}`
       )
@@ -502,7 +506,11 @@ export default {
     },
     async updateGameHistory(updateGameObj) {
       const data = gameHistoryRepository.updateGame(updateGameObj).then(res => {
-        console.log(res)
+        if (res.status === 200) {
+            this.player.point += updateGameObj.point
+            localStorage.setItem('user', this.player)
+            this.$store.commit('setUser', this.player)
+        }
       })
     },
     calculatePoint() {
