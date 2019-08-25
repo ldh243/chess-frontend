@@ -297,6 +297,7 @@
         <Exercise
           @changeLesson="changeLesson"
           @finishCourse="finishCourse"
+          @createLearningLog="createLearningLog"
           :statusPreviousLesson="statusPreviousLesson"
           :statusNextLesson="statusNextLesson"
           :lessonId="parseInt(lessonId)"
@@ -428,7 +429,7 @@ export default {
           title: 'Hoàn thành',
           type: 'success',
           html:
-            'Chúc mừng bạn đã hoàn thành khóa học. Quay về trang chi tiết trong <strong></strong>...',
+            'Bạn đã hoàn thành khóa học. Quay về trang chi tiết trong <strong></strong>...',
           timer: 5000,
           onBeforeOpen: () => {
             this.$swal.showLoading()
