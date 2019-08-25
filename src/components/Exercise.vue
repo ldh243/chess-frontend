@@ -181,6 +181,7 @@ export default {
       lastFen: '',
       currentMoveInArr: 0,
       moveData: {},
+      isPassed: false,
       turn: ''
     }
   },
@@ -336,6 +337,7 @@ export default {
             }
             if (this.currentMoveInArr === ableMoveArr[0].length - 1) {
               this.$swal('Kết quả', `Hoàn thành`, 'success')
+              this.isPassed = true
             } else {
               this.currentMoveInArr++
               this.move = ableMoveArr[0][this.currentMoveInArr].moveDirection
@@ -358,7 +360,10 @@ export default {
         } else if (data.end_game === this.userColor) {
           this.$swal('Kết quả', `Xin vui lòng thực hiện lại`, 'error')
         } else {
-          this.$swal('Kết quả', `Hoàn thành`, 'success')
+          this.isPassed = true
+          this.$swal('Kết quả', `Hoàn thành`, 'success').then(result => {
+            this.createLearningLog()
+          })
         }
       }
     },
@@ -483,10 +488,18 @@ export default {
       }
     },
     async changeLesson(val) {
-      await this.$emit('changeLesson', val)
+      console.log(this.isPassed)
+      await this.$emit('changeLesson', val, false)
+      this.isPassed = false
     },
     async finishCourse() {
-      await this.$emit('finishCourse')
+      await this.$emit('finishCourse', false)
+    },
+    async createLearningLog() {
+      const courseId = this.$route.params.courseId
+      const lessonId = this.$route.params.lessonId
+
+      await this.$emit('createLearningLog', courseId, lessonId)
     },
     async getLessonById() {
       this.theoryContent = ''
