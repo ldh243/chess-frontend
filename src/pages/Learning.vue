@@ -299,6 +299,7 @@
           @finishCourse="finishCourse"
           :statusPreviousLesson="statusPreviousLesson"
           :statusNextLesson="statusNextLesson"
+          :lessonId="parseInt(lessonId)"
         />
       </v-layout>
     </v-container>
