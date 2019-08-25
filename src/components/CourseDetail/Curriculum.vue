@@ -43,10 +43,31 @@
                 <v-icon v-else size="18" class="mr-2" color="#999999">far fa-circle</v-icon>
                 Bài {{index + 1}}: {{item.name}}
                 <v-spacer></v-spacer>
+
                 <div class="course-type pr-3">{{ item.lessonTypeName }}</div>
               </v-layout>
             </v-expansion-panel-header>
-            <v-expansion-panel-content class="mt-2">{{item.description}}</v-expansion-panel-content>
+            <v-expansion-panel-content class="mt-2">
+              <v-layout wrap>
+                <v-flex xs12 mb-2 v-if="item.description.length > 0">{{item.description}}</v-flex>
+                <v-flex xs12 v-if="courseDetail.enrolled">
+                  <v-layout justify-end>
+                    <v-btn
+                      icon
+                      text
+                      min-width="20"
+                      min-height="20"
+                      width="40"
+                      height="40"
+                      color="success"
+                      :to="`/learning/course/${courseDetail.courseId}/lesson/${item.lessonId}`"
+                    >
+                      <v-icon :size="16">fa-play</v-icon>
+                    </v-btn>
+                  </v-layout>
+                </v-flex>
+              </v-layout>
+            </v-expansion-panel-content>
           </v-expansion-panel>
         </v-expansion-panels>
       </v-flex>
@@ -70,6 +91,7 @@ export default {
   },
   mounted() {
     this.fetchData()
+    console.log(this.courseDetail)
   },
   methods: {
     async fetchData() {
@@ -82,7 +104,6 @@ export default {
       }
       this.value = (this.learningLog.size / this.curriculum.length) * 100
       this.value = Math.ceil(this.value)
-      console.log(this.learningLog.size)
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)
       }, 500)
@@ -108,9 +129,6 @@ export default {
 </script>
 
 <style scoped>
->>> .v-icon.v-icon {
-  font-size: 18px !important;
-}
 .course-title {
   font-size: 16px;
   color: #464646;

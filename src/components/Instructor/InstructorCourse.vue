@@ -33,7 +33,8 @@ export default {
       filter: {
         page: 1,
         pageSize: 12,
-        userId: this.$route.params.instructorId
+        userId: this.$route.params.instructorId,
+        statusId: 2
       }
     }
   },
