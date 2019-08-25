@@ -197,7 +197,7 @@
                       <v-btn
                         class="font-weight-bold"
                         :disabled="statusPreviousLesson"
-                        @click="changeLesson(-1)"
+                        @click="changeLesson(-1, false)"
                         v-on="on"
                       >
                         <v-icon class="mr-2">fa-angle-left</v-icon>Bài trước
@@ -210,7 +210,7 @@
                       <v-btn
                         class="font-weight-bold"
                         :disabled="statusNextLesson"
-                        @click="changeLesson(1)"
+                        @click="changeLesson(1, true)"
                         v-on="on"
                       >
                         Tiếp tục
@@ -221,7 +221,7 @@
                   </v-tooltip>
                   <v-tooltip top v-else>
                     <template v-slot:activator="{ on }">
-                      <v-btn @click="finishCourse()" class="font-weight-bold">Hoàn thành</v-btn>
+                      <v-btn @click="finishCourse(true)" class="font-weight-bold">Hoàn thành</v-btn>
                     </template>
                     <span>Hoàn tất khóa học</span>
                   </v-tooltip>
@@ -253,7 +253,7 @@
                 <v-btn
                   class="font-weight-bold mr-3"
                   :disabled="statusPreviousLesson"
-                  @click="changeLesson(-1)"
+                  @click="changeLesson(-1, false)"
                   v-on="on"
                 >
                   <v-icon class="mr-2">fa-angle-left</v-icon>Bài trước
@@ -266,7 +266,7 @@
                 <v-btn
                   class="font-weight-bold"
                   :disabled="statusNextLesson"
-                  @click="changeLesson(1)"
+                  @click="changeLesson(1, true)"
                   v-on="on"
                 >
                   Tiếp tục
@@ -277,7 +277,7 @@
             </v-tooltip>
             <v-tooltip top v-else>
               <template v-slot:activator="{ on }">
-                <v-btn class="font-weight-bold" v-on="on" @click="finishCourse()">Hoàn thành</v-btn>
+                <v-btn class="font-weight-bold" v-on="on" @click="finishCourse(true)">Hoàn thành</v-btn>
               </template>
               <span>Hoàn tất khóa học</span>
             </v-tooltip>
@@ -416,9 +416,11 @@ export default {
         this.$store.commit('incrementLoader', -1)
       }, 500)
     },
-    async finishCourse() {
+    async finishCourse(isPassed) {
       const courseId = this.$route.params.courseId
-      await this.createLearningLog(courseId, this.lessonDetails.lessonId)
+      if (isPassed) {
+        await this.createLearningLog(courseId, this.lessonDetails.lessonId)
+      }
       let timerInterval
       this.$swal
         .fire({
@@ -604,11 +606,11 @@ export default {
       this.currentFen = this.defaultFen
       this.setCurrentMove()
     },
-    async changeLesson(val) {
+    async changeLesson(val, isPassed) {
       if (0 <= this.activeLesson + val <= this.lessons.length) {
         this.activeLesson += val
         this.$store.commit('incrementLoader', 1)
-        if (val === 1) {
+        if (isPassed) {
           await this.createLearningLog(
             this.$route.params.courseId,
             this.lessonDetails.lessonId
@@ -629,9 +631,6 @@ export default {
     checkStatusDirectLesson() {
       this.statusNextLesson = this.checkStatusNextLesson()
       this.statusPreviousLesson = this.checkStatusPreviousLesson()
-      console.log(this.statusNextLesson)
-      console.log(this.lessonDetails)
-      console.log(this.courseDetails)
     },
     checkStatusNextLesson() {
       if (this.activeLesson === this.lessons.length - 1) {

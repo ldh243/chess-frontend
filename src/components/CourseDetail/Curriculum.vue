@@ -48,9 +48,9 @@
               </v-layout>
             </v-expansion-panel-header>
             <v-expansion-panel-content class="mt-2">
-              <v-layout wrap>
-                <v-flex xs12 mb-2 v-if="item.description.length > 0">{{item.description}}</v-flex>
-                <v-flex xs12 v-if="courseDetail.enrolled">
+              <v-layout>
+                <v-flex xs11 mr-2>{{item.description}}</v-flex>
+                <v-flex xs1 v-if="courseDetail.enrolled">
                   <v-layout justify-end>
                     <v-btn
                       icon
