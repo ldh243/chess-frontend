@@ -119,6 +119,8 @@
 
 <script>
 import Chessboard from '@/components/plugins/vue-chessboard/index.vue'
+import { RepositoryFactory } from '@/repository/RepositoryFactory'
+const lessonRepository = RepositoryFactory.get('lesson')
 export default {
   props: {
     statusNextLesson: {
@@ -128,6 +130,10 @@ export default {
     statusPreviousLesson: {
       type: Boolean,
       default: false
+    },
+    lessonId: {
+      type: Number,
+      default: -1
     }
   },
   components: {
@@ -174,7 +180,8 @@ export default {
       answerArr: [],
       lastFen: '',
       currentMoveInArr: 0,
-      moveData: {}
+      moveData: {},
+      turn: ''
     }
   },
   computed: {
@@ -196,14 +203,14 @@ export default {
     this.setCurrentMove()
   },
   created() {
-    console.log(this.statusNextLesson)
-    this.gameHistory.push('Tìm nước đi thích hợp để bên trắng thắng?')
-    this.engine = new Worker('stockfish.js')
-    this.sendUCI('uci')
-    this.sampleData = {
-      fen: '4k3/8/8/8/8/Q7/K7/8 w - - 0 1',
-      answerType: 1
-    }
+    // console.log(this.statusNextLesson)
+    // this.gameHistory.push('Tìm nước đi thích hợp để bên trắng thắng?')
+    // this.engine = new Worker('stockfish.js')
+    // this.sendUCI('uci')
+    // this.sampleData = {
+    //   fen: '4k3/8/8/8/8/Q7/K7/8 w - - 0 1',
+    //   answerType: 1
+    // }
     this.sampleData1 = {
       fen: '4r2k/1p3rpp/p1q1p3/5p2/3Q1P2/2P1R3/PP4PP/4R2K w - - 0 1',
       answerType: 2,
@@ -214,24 +221,24 @@ export default {
             moveDirection: 'e3e6',
             move: 'Rxe6',
             preId: null,
-            rightRes: 'Chúc mừng',
-            wrongRes: 'Sai rồi, vui lòng thực hiện lại'
+            rightResponse: 'Chúc mừng',
+            wrongResponse: 'Sai rồi, vui lòng thực hiện lại'
           },
           {
             id: 2,
             moveDirection: 'c6e6',
             move: 'Qxe6',
             preId: 1,
-            rightRes: 'Nó mún ngăn chiếu bí đó',
-            wrongRes: ''
+            rightResponse: 'Nó mún ngăn chiếu bí đó',
+            wrongResponse: ''
           },
           {
             id: 3,
             moveDirection: 'e1e6',
             move: 'Rxe6',
             preId: 2,
-            rightRes: 'Chúc mừng',
-            wrongRes: 'Ocschos tập 2'
+            rightResponse: 'Chúc mừng',
+            wrongResponse: 'Ocschos tập 2'
           }
         ],
         [
@@ -240,36 +247,36 @@ export default {
             moveDirection: 'd4d1',
             move: 'Qd1',
             preId: null,
-            rightRes: 'Chúc mừng',
-            wrongRes: 'Ocschoss'
+            rightResponse: 'Chúc mừng',
+            wrongResponse: 'Ocschoss'
           },
           {
             id: 2,
             moveDirection: 'c6d6',
             move: 'Qd6',
             preId: 1,
-            rightRes: 'LOL ngu quá',
-            wrongRes: ''
+            rightResponse: 'LOL ngu quá',
+            wrongResponse: ''
           },
           {
             id: 3,
             moveDirection: 'd1d6',
             move: 'Qxd6',
             preId: 2,
-            rightRes: 'Chúc mừng, nó phải thua rồi',
-            wrongRes: 'Ocschos'
+            rightResponse: 'Chúc mừng, nó phải thua rồi',
+            wrongResponse: 'Ocschos'
           }
         ]
       ]
     }
-    this.currentFen = this.sampleData1.fen
-    // this.lastFen = this.sampleData1.fen
-    this.answerType = this.sampleData1.answerType
-    this.userColor =
-      this.sampleData1.fen.split(' ')[1] === 'w' ? 'white' : 'black'
-    this.answerArr = this.sampleData1.answerArr
-    this.gameStatus = 'new'
-    // this.lastFen = this.currentFen
+    // this.currentFen = this.sampleData1.fen
+    // // this.lastFen = this.sampleData1.fen
+    // this.answerType = this.sampleData1.answerType
+    // this.userColor =
+    //   this.sampleData1.fen.split(' ')[1] === 'w' ? 'white' : 'black'
+    // this.answerArr = this.sampleData1.answerArr
+    // this.gameStatus = 'new'
+    this.getLessonById()
   },
   methods: {
     performWrongMove() {
@@ -292,21 +299,22 @@ export default {
       if (this.answerType === 2) {
         if (data.turn !== this.userColor) {
           let ableMoveArr = this.answerArr.filter(moveArr => {
+            console.log(moveArr[this.currentMoveInArr])
             return moveArr[this.currentMoveInArr].move === this.newMove
           })
           if (ableMoveArr.length === 0) {
             this.currentGameStatus = 'wrong_ans'
             let wrongResArr = this.answerArr.filter(moveArr => {
-              return moveArr[this.currentMoveInArr].wrongRes.length !== 0
+              return moveArr[this.currentMoveInArr].wrongResponse.length !== 0
             })
             if (wrongResArr.length === 1) {
               this.gameHistory.push(
-                wrongResArr[0][this.currentMoveInArr].wrongRes
+                wrongResArr[0][this.currentMoveInArr].wrongResponse
               )
             } else if (wrongResArr.length > 1) {
               let randomArr = this.getRandomInt(wrongResArr.length)
               this.gameHistory.push(
-                wrongResArr[randomArr][this.currentMoveInArr].wrongRes
+                wrongResArr[randomArr][this.currentMoveInArr].wrongResponse
               )
             }
             return
@@ -318,9 +326,11 @@ export default {
               })
             }
             this.createNewMoveInMoveHistory()
-            if (ableMoveArr[0][this.currentMoveInArr].rightRes.length !== 0) {
+            if (
+              ableMoveArr[0][this.currentMoveInArr].rightResponse.length !== 0
+            ) {
               this.gameHistory.push(
-                ableMoveArr[0][this.currentMoveInArr].rightRes
+                ableMoveArr[0][this.currentMoveInArr].rightResponse
               )
             }
             if (this.currentMoveInArr === ableMoveArr[0].length - 1) {
@@ -340,13 +350,6 @@ export default {
         this.moves = data.hisMoves
         if (this.newMove === undefined || !this.currentFen) return
         this.createNewMoveInMoveHistory()
-        if (data.turn === undefined) {
-          //end game
-          this.turn = this.turn === 'white' ? 'black' : 'white'
-          this.currentGameStatus = 'end_game'
-        } else {
-          this.turn = data.turn
-        }
         if (data.end_game === undefined) {
           if (this.turn !== this.userColor) {
             this.calculateMove()
@@ -362,7 +365,8 @@ export default {
       const black = 'black'
       let moveHistory = this.moveHistory
       let lastMove = moveHistory[moveHistory.length - 1]
-      if (this.moveData.turn === black) {
+      console.log(this.moveData.turn)
+      if (this.turn === black) {
         //tạo thêm turn mới
         const newTurn = {
           index: moveHistory.length + 1,
@@ -482,6 +486,21 @@ export default {
     },
     async finishCourse() {
       await this.$emit('finishCourse')
+    },
+    async getLessonById() {
+      this.theoryContent = ''
+      this.$store.commit('incrementLoader', 1)
+      const { data } = await lessonRepository.getById(this.lessonId)
+      this.currentFen = data.data.exercise.answer.fen
+      this.answerType = data.data.exercise.answer.answerType
+      this.userColor =
+        data.data.exercise.answer.fen.split(' ')[1] === 'w' ? 'white' : 'black'
+      this.answerArr = data.data.exercise.answer.answerArr
+      this.currentGameStatus = 'new'
+      this.gameHistory.push(data.data.exercise.question)
+      setTimeout(() => {
+        this.$store.commit('incrementLoader', -1)
+      }, 500)
     }
   }
 }
