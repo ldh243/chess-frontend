@@ -360,7 +360,9 @@ export default {
           this.$swal('Kết quả', `Xin vui lòng thực hiện lại`, 'error')
         } else {
           this.isPassed = true
-          this.$swal('Kết quả', `Hoàn thành`, 'success')
+          this.$swal('Kết quả', `Hoàn thành`, 'success').then(result => {
+            this.createLearningLog()
+          })
         }
       }
     },
@@ -491,6 +493,12 @@ export default {
     },
     async finishCourse() {
       await this.$emit('finishCourse', false)
+    },
+    async createLearningLog() {
+      const courseId = this.$route.params.courseId
+      const lessonId = this.$route.params.lessonId
+
+      await this.$emit('createLearningLog', courseId, lessonId)
     },
     async getLessonById() {
       this.theoryContent = ''
