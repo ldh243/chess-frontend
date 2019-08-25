@@ -290,6 +290,7 @@ export default {
       this.totalMove = 0
     },
     showInfo(data) {
+      this.currentGameStatus = 'playing'
       console.log(data)
       const black = 'black'
       this.moveData = data
