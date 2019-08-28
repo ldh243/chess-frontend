@@ -1,14 +1,9 @@
 import Repository from '@/repository/Repository'
 
-const resource = '/lesson'
+const resource = '/lessons'
 
 export default {
   getById(lessonId) {
-    const data = {
-      params: {
-        lessonId: lessonId
-      }
-    }
-    return Repository.get(`${resource}/get-by-id`, data)
+    return Repository.get(`${resource}/`+lessonId)
   }
 }

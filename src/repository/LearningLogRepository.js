@@ -1,17 +1,11 @@
 import Repository from '@/repository/Repository'
 
-const resource = '/learning-log'
+const resource = '/learning-logs'
 
 export default {
   getLearningLog(courseId) {
-    const data = {
-      params: {
-        courseId: courseId
-      }
-    }
     return Repository.get(
-      `${resource}/get-current-user-learning-log-by-course-id`,
-      data
+      `${resource}/current-user/`+courseId
     )
   },
   createLearningLog(courseId, lessonId) {
@@ -19,6 +13,6 @@ export default {
       courseId: courseId,
       lessonId: lessonId
     }
-    return Repository.post(`${resource}/create-learning-log`, data)
+    return Repository.post(`${resource}`, data)
   }
 }
