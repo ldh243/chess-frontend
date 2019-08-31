@@ -1,37 +1,33 @@
 import Repository from '@/repository/Repository'
 
-const resource = '/course'
+const resource = '/courses'
+const review = '/review'
 
 export default {
   getCoursesPagination(searchParams) {
     const data = {
       params: searchParams
     }
-    return Repository.get(`${resource}/get-course-pagination`, data)
+    return Repository.get(`${resource}`, data)
   },
   getCoursesPaginationsByUserId(searchParams) {
     const data = {
       params: searchParams
     }
-    return Repository.get(`${resource}/get-course-paginations-by-userid`, data)
+    return Repository.get(`${resource}/userid`, data)
   },
   getCoursesPaginationByCategoryId(searchParams) {
     const data = {
       params: searchParams
     }
     return Repository.get(
-      `${resource}/get-course-paginations-by-category-id`,
+      `${resource}/category-id`,
       data
     )
   },
 
   getById(courseId) {
-    const data = {
-      params: {
-        courseId: courseId
-      }
-    }
-    return Repository.get(`${resource}/get-by-id`, data)
+    return Repository.get(`${resource}/${courseId}`)
   },
   enrollCourse(courseId) {
     const data = {
@@ -47,7 +43,7 @@ export default {
         pageSize: pageSize
       }
     }
-    return Repository.get(`${resource}/get-review-pagination`, data)
+    return Repository.get(`${resource}/reviews`, data)
   },
   getCourseOverview(courseId) {
     const data = {
@@ -55,21 +51,21 @@ export default {
         courseId: courseId
       }
     }
-    return Repository.get(`${resource}/get-course-overview`, data)
+    return Repository.get(`${resource}/overview`, data)
   },
   createReview(newReview) {
     const data = newReview
-    return Repository.post(`${resource}/create-review`, data)
+    return Repository.post(`${resource}${review}`, data)
   },
   updateReview(updatedReview) {
     const data = updatedReview
-    return Repository.put(`${resource}/update-review`, data)
+    return Repository.put(`${resource}${review}`, data)
   },
   removeReview(courseId, reviewId) {
     const data = {
       courseId: courseId,
       reviewId: reviewId
     }
-    return Repository.put(`${resource}/remove-review`, data)
+    return Repository.put(`${resource}${review}`, data)
   }
 }

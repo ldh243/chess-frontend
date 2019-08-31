@@ -1,9 +1,9 @@
 import Repository from '@/repository/Repository'
 
-const resource = '/category'
+const resource = '/categories'
 
 export default {
   getCategories() {
-    return Repository.get(`${resource}/get-categories`)
+    return Repository.get(`${resource}`)
   }
 }

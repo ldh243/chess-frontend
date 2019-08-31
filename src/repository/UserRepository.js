@@ -1,10 +1,10 @@
 import Repository from '@/repository/Repository'
 
-const resource = '/user'
+const resource = '/users'
 
 export default {
   getCurrentUserDetail() {
-    return Repository.get(`${resource}/get-current-user-detail`)
+    return Repository.get(`${resource}/current-user-detail`)
   },
   signUpNewAccount(newUser) {
     return Repository.put(`${resource}/register`, newUser)

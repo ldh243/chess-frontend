@@ -8,6 +8,7 @@
           :fen="currentFen"
           :status="currentGameStatus"
           @onMove="showInfo"
+          :onPromotion="promote"
         />
       </v-flex>
       <v-flex xs4>
@@ -483,7 +484,7 @@ export default {
       )
       //perform minus point in db
       this.player.point = this.player.point - point.required
-            localStorage.setItem('user', this.player)
+            localStorage.setItem('user', JSON.stringify(this.player))
             this.$store.commit('setUser', this.player)
       this.gameHistory.push(
         `Thắng +${this.currentGame.winPoint} - Thua +${this.currentGame.requiredPoint} - Hòa +${this.currentGame.drawPoint}`
@@ -508,7 +509,7 @@ export default {
       const data = gameHistoryRepository.updateGame(updateGameObj).then(res => {
         if (res.status === 200) {
             this.player.point += updateGameObj.point
-            localStorage.setItem('user', this.player)
+            localStorage.setItem('user', JSON.stringify(this.player))
             this.$store.commit('setUser', this.player)
         }
       })
@@ -601,6 +602,9 @@ export default {
             : (self.move = match[1] + match[2] + match[3])
         }
       }
+    },
+    promote() {
+      
     }
   }
 }

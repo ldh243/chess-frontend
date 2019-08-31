@@ -139,11 +139,6 @@ export default {
   components: {
     Chessboard
   },
-  watch: {
-    statusNextLesson: function(val) {
-      console.log(val)
-    }
-  },
   data() {
     return {
       moveHistory: [],
@@ -154,35 +149,22 @@ export default {
       updateMove: true,
       currentMove: 0,
       totalMove: 0,
-      startDialog: false,
-      tickLabels: [1, 2, 3, 4, 5],
       player: JSON.parse(localStorage.getItem('user')),
-      timePicker: false,
-      level: 3,
-      botImgLink: '',
-      colorPicker: 0,
       userColor: 'white',
-      botTime: '',
-      playerTime: '',
       turn: '',
       move: '',
       moves: '',
       isStart: false,
-      gameNumber: 0,
-      pgn: '',
-      currentGame: {
-        bonusPoint: 0
-      },
       currentGameStatus: '',
       sampleData: {},
       answerType: 0,
-      preMove: [],
       answerArr: [],
       lastFen: '',
       currentMoveInArr: 0,
       moveData: {},
       isPassed: false,
-      turn: ''
+      turn: '',
+      ableMoveArr: []
     }
   },
   computed: {
@@ -206,8 +188,8 @@ export default {
   created() {
     // console.log(this.statusNextLesson)
     // this.gameHistory.push('Tìm nước đi thích hợp để bên trắng thắng?')
-    // this.engine = new Worker('stockfish.js')
-    // this.sendUCI('uci')
+    this.engine = new Worker('../../../../../../stockfish.js')
+    this.sendUCI('uci')
     // this.sampleData = {
     //   fen: '4k3/8/8/8/8/Q7/K7/8 w - - 0 1',
     //   answerType: 1
@@ -270,13 +252,6 @@ export default {
         ]
       ]
     }
-    // this.currentFen = this.sampleData1.fen
-    // // this.lastFen = this.sampleData1.fen
-    // this.answerType = this.sampleData1.answerType
-    // this.userColor =
-    //   this.sampleData1.fen.split(' ')[1] === 'w' ? 'white' : 'black'
-    // this.answerArr = this.sampleData1.answerArr
-    // this.gameStatus = 'new'
     this.getLessonById()
   },
   methods: {
@@ -292,7 +267,6 @@ export default {
     },
     showInfo(data) {
       this.currentGameStatus = 'playing'
-      console.log(data)
       const black = 'black'
       this.moveData = data
       let fen = data.fen
@@ -300,11 +274,10 @@ export default {
       this.newMove = data.history[data.history.length - 1]
       if (this.answerType === 2) {
         if (data.turn !== this.userColor) {
-          let ableMoveArr = this.answerArr.filter(moveArr => {
-            console.log(moveArr[this.currentMoveInArr])
+          this.ableMoveArr = this.answerArr.filter(moveArr => {
             return moveArr[this.currentMoveInArr].move === this.newMove
           })
-          if (ableMoveArr.length === 0) {
+          if (this.ableMoveArr.length === 0) {
             this.currentGameStatus = 'wrong_ans'
             let wrongResArr = this.answerArr.filter(moveArr => {
               return moveArr[this.currentMoveInArr].wrongResponse.length !== 0
@@ -321,27 +294,23 @@ export default {
             }
             return
           } else {
-            if (ableMoveArr.length > 1) {
+            if (this.ableMoveArr.length > 1) {
               let randomArr = this.getRandomInt(ableMoveArr.length)
-              ableMoveArr = this.answerArr.filter((moveArr, index) => {
+              this.ableMoveArr = this.answerArr.filter((moveArr, index) => {
                 return index === randomArr
               })
             }
             this.createNewMoveInMoveHistory()
             if (
-              ableMoveArr[0][this.currentMoveInArr].rightResponse.length !== 0
+              this.ableMoveArr[0][this.currentMoveInArr].rightResponse.length !== 0
             ) {
               this.gameHistory.push(
-                ableMoveArr[0][this.currentMoveInArr].rightResponse
+                this.ableMoveArr[0][this.currentMoveInArr].rightResponse
               )
             }
-            if (this.currentMoveInArr === ableMoveArr[0].length - 1) {
-              this.$swal('Kết quả', `Hoàn thành`, 'success')
-              this.isPassed = true
-              this.createLearningLog()
-            } else {
+            if (this.currentMoveInArr !== this.ableMoveArr[0].length - 1) {
               this.currentMoveInArr++
-              this.move = ableMoveArr[0][this.currentMoveInArr].moveDirection
+              this.move = this.ableMoveArr[0][this.currentMoveInArr].moveDirection
             }
           }
         } else {
@@ -349,6 +318,11 @@ export default {
             this.createNewMoveInMoveHistory()
             this.currentMoveInArr++
           }
+        }
+        if (this.ableMoveArr.length > 0 && this.currentMoveInArr === this.ableMoveArr[0].length - 1) {
+          this.$swal('Kết quả', `Hoàn thành`, 'success')
+          this.isPassed = true
+          this.createLearningLog()
         }
       } else {
         this.moves = data.hisMoves
@@ -475,10 +449,8 @@ export default {
     },
     calculateMove() {
       let self = this
-      this.sendUCI('setoption name Skill Level value ' + this.level)
-      this.sendUCI(
-        'position fen ' + this.sampleData.fen + ' moves' + this.moves
-      )
+      this.sendUCI('setoption name Skill Level value 20')
+      this.sendUCI('position fen ' + this.currentFen + ' moves' + this.moves)
       this.sendUCI('go depth 15')
       this.engine.onmessage = function(event) {
         console.log(event.data)
