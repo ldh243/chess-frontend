@@ -186,72 +186,8 @@ export default {
     this.setCurrentMove()
   },
   created() {
-    // console.log(this.statusNextLesson)
-    // this.gameHistory.push('Tìm nước đi thích hợp để bên trắng thắng?')
     this.engine = new Worker('../../../../../../stockfish.js')
     this.sendUCI('uci')
-    // this.sampleData = {
-    //   fen: '4k3/8/8/8/8/Q7/K7/8 w - - 0 1',
-    //   answerType: 1
-    // }
-    this.sampleData1 = {
-      fen: '4r2k/1p3rpp/p1q1p3/5p2/3Q1P2/2P1R3/PP4PP/4R2K w - - 0 1',
-      answerType: 2,
-      answerArr: [
-        [
-          {
-            id: 1,
-            moveDirection: 'e3e6',
-            move: 'Rxe6',
-            preId: null,
-            rightResponse: 'Chúc mừng',
-            wrongResponse: 'Sai rồi, vui lòng thực hiện lại'
-          },
-          {
-            id: 2,
-            moveDirection: 'c6e6',
-            move: 'Qxe6',
-            preId: 1,
-            rightResponse: 'Nó mún ngăn chiếu bí đó',
-            wrongResponse: ''
-          },
-          {
-            id: 3,
-            moveDirection: 'e1e6',
-            move: 'Rxe6',
-            preId: 2,
-            rightResponse: 'Chúc mừng',
-            wrongResponse: 'Ocschos tập 2'
-          }
-        ],
-        [
-          {
-            id: 1,
-            moveDirection: 'd4d1',
-            move: 'Qd1',
-            preId: null,
-            rightResponse: 'Chúc mừng',
-            wrongResponse: 'Ocschoss'
-          },
-          {
-            id: 2,
-            moveDirection: 'c6d6',
-            move: 'Qd6',
-            preId: 1,
-            rightResponse: 'LOL ngu quá',
-            wrongResponse: ''
-          },
-          {
-            id: 3,
-            moveDirection: 'd1d6',
-            move: 'Qxd6',
-            preId: 2,
-            rightResponse: 'Chúc mừng, nó phải thua rồi',
-            wrongResponse: 'Ocschos'
-          }
-        ]
-      ]
-    }
     this.getLessonById()
   },
   methods: {
