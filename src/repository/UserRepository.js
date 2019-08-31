@@ -10,14 +10,9 @@ export default {
     return Repository.put(`${resource}/register`, newUser)
   },
   updateProfile(newUser) {
-    return Repository.put(`${resource}/update-profile`, newUser)
+    return Repository.put(`${resource}/profile`, newUser)
   },
   getById(userId) {
-    const data = {
-      params: {
-        userId: userId
-      }
-    }
-    return Repository.get(`${resource}/get-by-id`, data)
+    return Repository.get(`${resource}/`+userId)
   }
 }
