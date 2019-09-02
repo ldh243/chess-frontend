@@ -1,6 +1,7 @@
 import Repository from '@/repository/Repository'
 
 const resource = '/courses'
+const review = '/review'
 
 export default {
   getCoursesPagination(searchParams) {
@@ -26,7 +27,7 @@ export default {
   },
 
   getById(courseId) {
-    return Repository.get(`${resource}/`+courseId)
+    return Repository.get(`${resource}/${courseId}`)
   },
   enrollCourse(courseId) {
     const data = {
@@ -54,17 +55,17 @@ export default {
   },
   createReview(newReview) {
     const data = newReview
-    return Repository.post(`${resource}/review`, data)
+    return Repository.post(`${resource}${review}`, data)
   },
   updateReview(updatedReview) {
     const data = updatedReview
-    return Repository.put(`${resource}/review`, data)
+    return Repository.put(`${resource}${review}`, data)
   },
   removeReview(courseId, reviewId) {
     const data = {
       courseId: courseId,
       reviewId: reviewId
     }
-    return Repository.delete(`${resource}/review`, data)
+    return Repository.put(`${resource}${review}`, data)
   }
 }

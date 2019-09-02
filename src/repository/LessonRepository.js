@@ -4,6 +4,6 @@ const resource = '/lessons'
 
 export default {
   getById(lessonId) {
-    return Repository.get(`${resource}/`+lessonId)
+    return Repository.get(`${resource}/${lessonId}`)
   }
 }

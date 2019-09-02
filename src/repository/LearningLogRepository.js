@@ -4,9 +4,7 @@ const resource = '/learning-logs'
 
 export default {
   getLearningLog(courseId) {
-    return Repository.get(
-      `${resource}/current-user/`+courseId
-    )
+    return Repository.get(`${resource}/current-user/${courseId}`)
   },
   createLearningLog(courseId, lessonId) {
     const data = {
