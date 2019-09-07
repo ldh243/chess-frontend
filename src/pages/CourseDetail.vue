@@ -93,16 +93,16 @@
                   <v-layout wrap>
                     <v-flex xs12 mb-1>
                       <v-layout>
-                        <span class="course-point">Điểm yêu cầu</span>
+                        <span class="course-point">Cấp độ</span>
                         <v-spacer></v-spacer>
-                        <span class="course-point">{{ courseDetail.requiredPoint }} điểm</span>
+                        <span class="course-point">{{ courseDetail.requiredEloName }}</span>
                       </v-layout>
                     </v-flex>
                     <v-flex xs12 mb-1>
                       <v-layout>
-                        <span class="course-point">Điểm nhận được</span>
+                        <span class="course-point">ELO tối thiểu</span>
                         <v-spacer></v-spacer>
-                        <span class="course-point">{{ courseDetail.point }} điểm</span>
+                        <span class="course-point">{{ courseDetail.requiredEloNumber }}</span>
                       </v-layout>
                     </v-flex>
                     <v-flex xs12 mb-2>
@@ -223,8 +223,10 @@ export default {
     async fetchData() {
       this.$store.commit('incrementLoader', 1)
       await this.getCourseById()
-      await this.getCurrentUserDetail()
-      this.checkDoneAllLesson()
+      if (this.user !== null) {
+        await this.getCurrentUserDetail()
+        this.checkDoneAllLesson()
+      }
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)
       }, 500)
@@ -258,6 +260,7 @@ export default {
     async getCourseById() {
       const { data } = await courseRepository.getById(this.courseId)
       this.courseDetail = data.data
+      this.formatListCourse()
       this.breadcrumbs[
         this.breadcrumbs.length - 1
       ].text = this.courseDetail.name
@@ -265,10 +268,17 @@ export default {
         this.getLessonType()
       }
     },
+    formatListCourse() {
+      this.courseDetail.requiredEloName = this.getEloName(
+        this.courseDetail.requiredElo
+      )
+      this.courseDetail.requiredEloNumber =
+        600 + this.courseDetail.requiredElo * 200
+    },
     showConfirmEnrolCourse() {
       this.$swal({
-        title: 'Xác nhận?',
-        html: `Bạn có chắc chắn sử dụng <strong>${this.courseDetail.requiredPoint} điểm</strong> để đăng ký khóa học này`,
+        title: 'Xác nhận',
+        html: `Bạn có chắc chắn muốn đăng ký khóa học này?`,
         type: 'warning',
         showCancelButton: true,
         confirmButtonColor: '#3085d6',
@@ -282,7 +292,7 @@ export default {
       })
     },
     async enrollCourse() {
-      if (this.courseDetail.requiredPoint <= this.$store.state.user.point) {
+      if (this.courseDetail.requiredEloNumber <= this.$store.state.user.elo) {
         const { data } = await courseRepository.enrollCourse(
           this.courseDetail.courseId
         )
@@ -295,17 +305,13 @@ export default {
               'Chúc mừng bạn đã đăng ký thành công. Chào mừng bạn đến với khóa học này.',
             confirmButtonText: 'Xác nhận'
           })
-          let user = JSON.parse(localStorage.getItem('user'))
-          user.point -= this.courseDetail.requiredPoint
-          localStorage.setItem('user', JSON.stringify(user))
-          this.$store.commit('setUser', user)
         }
       } else {
         this.$swal({
           type: 'error',
           title: 'Không thể đăng ký.',
           text:
-            'Bạn chưa đủ điểm để đăng ký khóa học này. Xin thử lại các khóa học khác!',
+            'Bạn chưa điều kiện để đăng ký khóa học này. Xin thử lại các khóa học khác!',
           confirmButtonText: 'Xác nhận'
         })
       }

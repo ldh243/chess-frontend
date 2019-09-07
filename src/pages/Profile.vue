@@ -10,7 +10,7 @@
       </v-flex>
     </v-layout>
     <v-layout>
-      <v-flex xs3 mr-4>
+      <v-flex xs3>
         <v-card class="py-3">
           <v-layout justify-center fill-height align-center class="my-4">
             <v-flex xs4>
@@ -45,7 +45,7 @@
           </v-tabs>
         </v-card>
       </v-flex>
-      <v-flex xs9>
+      <v-flex xs9 pl-4>
         <v-card>
           <v-tabs-items v-model="tabModel">
             <v-tab-item value="tab-edit">

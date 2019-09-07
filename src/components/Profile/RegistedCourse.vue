@@ -47,6 +47,7 @@ export default {
         this.filter
       )
       this.listCourse = data.data.content
+      this.formatListCourse()
       this.listCourse = this.arrayToGroup(this.listCourse, 4)
     },
     arrayToGroup(list, howMany) {
@@ -56,6 +57,12 @@ export default {
         result.push(input.splice(0, howMany))
       }
       return result
+    },
+    formatListCourse() {
+      this.listCourse.forEach(course => {
+        course.requiredEloName = this.getEloName(course.requiredElo)
+        course.requiredEloNumber = 600 + course.requiredElo * 200
+      })
     }
   }
 }
