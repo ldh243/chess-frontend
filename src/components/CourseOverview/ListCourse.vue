@@ -1,20 +1,24 @@
 <template>
   <v-layout>
     <v-flex xs3 mr-2>
-      <v-card class="mx-auto category-container pa-3">
-        <v-list class="category-container" dense>
-          <v-list-item-group v-model="selectedCategory">
-            <v-subheader>Danh mục</v-subheader>
-            <template v-for="(item, index) in listCategories">
-              <v-list-item :key="index" @click="changeFilter(1, item.categoryId, item.name)">
-                <v-list-item-content>
-                  <v-list-item-title class="category-name" v-text="item.name"></v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </template>
-          </v-list-item-group>
-        </v-list>
-      </v-card>
+      <v-layout>
+        <v-flex xs12>
+          <v-card class="mx-auto category-container pa-3 pb-0">
+            <v-list class="category-container" dense>
+              <v-list-item-group v-model="selectedCategory">
+                <v-subheader>Danh mục</v-subheader>
+                <template v-for="(item, index) in listCategories">
+                  <v-list-item :key="index" @click="changeFilter(1, item.categoryId, item.name)">
+                    <v-list-item-content>
+                      <v-list-item-title class="category-name" v-text="item.name"></v-list-item-title>
+                    </v-list-item-content>
+                  </v-list-item>
+                </template>
+              </v-list-item-group>
+            </v-list>
+          </v-card>
+        </v-flex>
+      </v-layout>
     </v-flex>
     <v-flex xs9>
       <v-layout wrap>
@@ -55,7 +59,7 @@
               >
                 {{ sort.name }}
                 <template
-                  v-if="(filter.sortBy === 'required_point' && sort.sortBy === 'required_point') || (filter.sortBy === 'point' && sort.sortBy === 'point')"
+                  v-if="(filter.sortBy === 'required_elo' && sort.sortBy === 'required_elo') "
                 >
                   <v-icon v-if="filter.sortDirection === 'ASC'" class="ml-1">fa-caret-up</v-icon>
                   <v-icon v-if="filter.sortDirection === 'DESC'" class="ml-1">fa-caret-down</v-icon>
@@ -131,8 +135,17 @@ export default {
   data() {
     return {
       selectedCategory: 0,
+      selectedElo: 0,
       listCourses: [],
       listCategories: [],
+      listEloes: [
+        { name: 'Tất cả', eloId: 0 },
+        { name: 'Người mới', eloId: 1 },
+        { name: 'Mới biết chơi', eloId: 2 },
+        { name: 'Nghiệp dư', eloId: 3 },
+        { name: 'Chuyên nghiệp', eloId: 4 },
+        { name: 'Cao thủ', eloId: 5 }
+      ],
       currentCategoryId: 0,
       filter: {
         totalPages: 0,
@@ -156,7 +169,6 @@ export default {
         {
           name: 'Mới nhất',
           sortBy: 'created_date',
-
           sortDirection: ''
         },
         {
@@ -165,13 +177,8 @@ export default {
           sortDirection: 'DESC'
         },
         {
-          name: 'Điểm phí',
-          sortBy: 'required_point',
-          sortDirection: null
-        },
-        {
-          name: 'Điểm thưởng',
-          sortBy: 'point',
+          name: 'Cấp độ',
+          sortBy: 'required_elo',
           sortDirection: null
         }
       ],
@@ -264,7 +271,6 @@ export default {
       this.mergeAllCategories()
       this.filter.totalPages = data.data.totalPages
       this.totalCourse = data.data.totalElements
-      console.log(this.listCourses)
     },
     async getCoursesPaginationByCategoryId() {
       const { data } = await courseRepository.getCoursesPaginationByCategoryId(
@@ -275,13 +281,15 @@ export default {
       this.mergeAllCategories()
       this.filter.totalPages = data.data.totalPages
       this.totalCourse = data.data.totalElements
-      console.log(this.listCourses)
     },
     formatListCourse() {
       this.listCourses.forEach(course => {
         const date = new Date(Date.parse(course.courseCreatedDate))
         course.courseCreatedDate =
           date.getMonth() + 1 + '/' + date.getDate() + '/' + date.getFullYear()
+        course.requiredEloName = this.getEloName(course.requiredElo)
+        course.requiredEloClass = `elo-${course.requiredElo}`
+        course.requiredEloNumber = 600 + course.requiredElo * 200
       })
     },
     async getCategories() {
@@ -293,10 +301,12 @@ export default {
       })
     },
     changeFilter(filterType, categoryId, name) {
-      //filterType = 1 is category, 2 is sortBy
-      if (filterType === 1) {
+      //filterType = 0 is elo, 1 is category, 2 is sortBy
+      if (filterType === 0) {
+      } else if (filterType === 1) {
         this.filter.chips.categoryName = name
         if (categoryId === 0) {
+          //xóa category bằng chip
           this.filter.chips.categoryShow = false
           this.selectedCategory = 0
         } else {
@@ -306,18 +316,12 @@ export default {
         if (this.filter.categoryId !== categoryId) {
           this.filter.page = 1
           this.filter.categoryId = categoryId
-          this.factoryGetCourse()
         }
       } else if (filterType === 2) {
         //categoryId có nghĩa là sortDirection trong trường hợp này
         const sortDirection = categoryId
         if (sortDirection === null) {
-          if (name === 'required_point') {
-            this.filter.sortDirection =
-              this.filter.sortDirection === 'ASC' && this.filter.sortBy === name
-                ? 'DESC'
-                : 'ASC'
-          } else if (name === 'point') {
+          if (name === 'required_elo') {
             this.filter.sortDirection =
               this.filter.sortDirection === 'ASC' && this.filter.sortBy === name
                 ? 'DESC'
@@ -335,22 +339,18 @@ export default {
           name,
           this.filter.sortDirection
         )
-        this.factoryGetCourse()
       }
+      this.factoryGetCourse()
     },
     mappingSortNameOfChips(name, sortDirection) {
       if (name === 'created_date') {
         return 'Mới nhất'
       } else if (name === 'rating') {
         return 'Đánh giá cao nhất'
-      } else if (name === 'required_point' && sortDirection === 'ASC') {
-        return 'Điểm phí: thấp đến cao'
-      } else if (name === 'required_point' && sortDirection === 'DESC') {
-        return 'Điểm phí: cao đến thấp'
-      } else if (name === 'point' && sortDirection === 'ASC') {
-        return 'Điểm thưởng: thấp đến cao'
-      } else if (name === 'point' && sortDirection === 'DESC') {
-        return 'Điểm thưởng: cao đến thấp'
+      } else if (name === 'required_elo' && sortDirection === 'ASC') {
+        return 'Cấp độ: thấp đến cao'
+      } else if (name === 'required_elo' && sortDirection === 'DESC') {
+        return 'Cấp độ: cao đến thấp'
       }
     }
   }

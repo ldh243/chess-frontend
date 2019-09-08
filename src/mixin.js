@@ -45,6 +45,16 @@ export default Vue.mixin({
         return 'Vô hiệu hóa'
       }
     },
+    getEloName(eloId) {
+      const eloEnum = [
+        'Mới bắt đầu',
+        'Sơ cấp',
+        'Nghiệp dư',
+        'Chuyên nghiệp',
+        'Cao thủ'
+      ]
+      return eloEnum[eloId - 1]
+    },
     getDateTimeFormat(datetime) {
       const date = new Date(Date.parse(datetime))
       return date.toLocaleString()

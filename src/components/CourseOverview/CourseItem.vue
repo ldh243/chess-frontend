@@ -29,14 +29,19 @@
                 </span>
               </v-card-title>
             </v-flex>
-            <v-flex xs12 mb-2 class="pl-3">
+            <v-flex xs12 mb-2 pl-3>
               <span class="course-author">T/g {{ courseDetail.author.fullName }}</span>
+            </v-flex>
+            <v-flex pl-3>
+              <span
+                :class="['course-required-elo px-3 py-1 elevation-2', courseDetail.requiredEloClass ]"
+              >{{courseDetail.requiredEloName}}</span>
             </v-flex>
           </v-layout>
         </v-flex>
         <v-flex xs3 class="course-detail-container" pl-3>
           <v-layout column justify-space-between fill-height wrap>
-            <v-flex>
+            <v-flex style="height: 28px">
               <v-layout justify-end class="course-ribbon">
                 <span
                   class="course-inprogress px-3 elevation-4"
@@ -45,18 +50,7 @@
               </v-layout>
             </v-flex>
             <v-flex>
-              <v-layout fill-height justify-center column align-center pt-3>
-                <v-layout justify-center fill-height align-center py-2>
-                  <span class="point-required" style="color: #4caf50 ">
-                    {{courseDetail.point}}
-                    <br />điểm
-                  </span>
-                  <v-divider vertical class="mx-3"></v-divider>
-                  <span class="point-required">
-                    {{courseDetail.requiredPoint}}
-                    <br />điểm
-                  </span>
-                </v-layout>
+              <v-layout justify-center column align-center pt-3>
                 <span class="text-detail text-grey">{{ courseDetail.courseCreatedDate }}</span>
                 <v-layout align-center v-if="courseDetail.rating > 0">
                   <v-rating
@@ -99,13 +93,6 @@ export default {
       default: null
     }
   },
-  data() {
-    return {
-      rateScore: 4.2,
-      imageProfits: require('@/assets/images/profits.png')
-    }
-  },
-  mounted() {},
   methods: {
     goToCourseDetail() {
       this.$router.push(`/course/${this.courseDetail.courseId}`)
@@ -180,5 +167,25 @@ export default {
   font-weight: 600;
   text-align: center;
   color: #ff5252;
+}
+.course-required-elo {
+  border-radius: 3px;
+  color: white;
+  font-size: 14px;
+}
+.elo-1 {
+  background-image: linear-gradient(90deg, #666666, #999999);
+}
+.elo-2 {
+  background-image: linear-gradient(90deg, #075f2a, #0ebe54);
+}
+.elo-3 {
+  background-image: linear-gradient(90deg, #24284d, #225982);
+}
+.elo-4 {
+  background-image: linear-gradient(90deg, #42104b, #990a7e);
+}
+.elo-5 {
+  background-image: linear-gradient(90deg, #6f4604, #cf8f30);
 }
 </style>

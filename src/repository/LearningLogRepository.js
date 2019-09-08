@@ -6,10 +6,11 @@ export default {
   getLearningLog(courseId) {
     return Repository.get(`${resource}/current-user/${courseId}`)
   },
-  createLearningLog(courseId, lessonId) {
+  createLearningLog(courseId, lessonId, passed) {
     const data = {
       courseId: courseId,
-      lessonId: lessonId
+      lessonId: lessonId,
+      passed: passed
     }
     return Repository.post(`${resource}`, data)
   }

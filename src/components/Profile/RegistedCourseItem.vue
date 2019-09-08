@@ -62,7 +62,7 @@
       <v-divider light></v-divider>
       <v-card-actions class="px-3 py-1">
         <v-spacer></v-spacer>
-        <span class="course-point">{{ courseDetail.requiredPoint }} điểm</span>
+        <span class="course-point">{{ courseDetail.requiredEloNumber }} ELO</span>
       </v-card-actions>
     </v-card>
   </v-hover>
@@ -125,7 +125,7 @@ export default {
   color: #686f7a;
 }
 .course-point {
-  font-size: 18px;
+  font-size: 16px;
   color: #29303b;
   font-weight: 600;
 }

@@ -26,8 +26,8 @@
           <v-layout justify-end align-center>
             <v-flex xs3 mr-2>
               <v-layout fill-height align-center justify-end>
-                <v-img :src="coin" height="25" max-width="25" />
-                <span class="ml-3 user-point">{{user.point}}</span>
+                <v-img :src="elo" height="30" max-width="30" />
+                <span class="ml-3 user-point">{{user.elo}}</span>
               </v-layout>
             </v-flex>
             <v-flex xs3>
@@ -73,7 +73,7 @@ export default {
   data() {
     return {
       chessLogo: require('@/assets/images/chess.png'),
-      coin: require('@/assets/images/euro.png'),
+      elo: require('@/assets/images/award.png'),
       loginBackgroundImage: require('@/assets/images/google-logo.png'),
       userMenu: [
         { title: 'Thông tin cá nhân', href: '/profile/edit' },

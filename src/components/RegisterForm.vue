@@ -29,6 +29,20 @@
         <v-radio color="primary" label="Học viên" value="learner"></v-radio>
         <v-radio color="primary" label="Người hướng dẫn" value="instructor"></v-radio>
       </v-radio-group>
+      <p class="subheading grey--text mb-0" v-if="!isInstructor">Trình độ</p>
+      <v-slide-y-transition>
+        <v-select
+          class="pt-1"
+          v-show="!isInstructor"
+          v-model="selectElo"
+          :items="items"
+          item-text="eloName"
+          item-value="eloId"
+          label="Select"
+          return-object
+          single-line
+        ></v-select>
+      </v-slide-y-transition>
       <v-slide-y-transition>
         <v-textarea
           v-show="isInstructor"
@@ -40,15 +54,18 @@
         ></v-textarea>
       </v-slide-y-transition>
       <v-slide-y-transition>
-        <div>
-          <p v-show="isInstructor" class="subheading grey--text">Các chứng nhận</p>
+        <div v-show="isInstructor">
+          <p class="subheading grey--text">Các chứng nhận</p>
           <vue-upload-multiple-image
-            v-show="isInstructor"
             @upload-success="uploadImageSuccess"
             @before-remove="beforeRemove"
           ></vue-upload-multiple-image>
         </div>
       </v-slide-y-transition>
+      <template v-show="!isInstructor">
+        <v-slide-y-transition></v-slide-y-transition>
+      </template>
+
       <v-checkbox
         v-model="checkbox"
         :rules="[v => !!v || 'Bạn phải đồng ý để tiếp tục']"
@@ -105,7 +122,15 @@ export default {
       ],
       imageUrl: null,
       listUpload: [],
-      isChangedAvatar: false
+      isChangedAvatar: false,
+      selectElo: { eloName: 'Mới bắt đầu', eloId: 1 },
+      items: [
+        { eloName: 'Mới bắt đầu', eloId: 1 },
+        { eloName: 'Sơ cấp', eloId: 2 },
+        { eloName: 'Nghiệp dư', eloId: 3 },
+        { eloName: 'Chuyên nghiệp', eloId: 4 },
+        { eloName: 'Cao thủ', eloId: 5 }
+      ]
     }
   },
   watch: {
@@ -160,9 +185,9 @@ export default {
       if (this.isChangedAvatar) {
         this.uploadImageByDataURL(this.user.avatar, match[0], 'ava')
       }
-      this.user.roleId = 2
+      this.user.roleId = this.isInstructor ? 1 : 2
+      this.user.eloId = this.selectElo.eloId
       if (this.isInstructor) {
-        this.user.roleId = 1
         this.certificates.forEach(el => {
           this.uploadImageByDataURL(el.path, match[0] + el.name, 'certificates')
         })

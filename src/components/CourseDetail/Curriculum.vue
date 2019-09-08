@@ -20,7 +20,7 @@
           <v-layout justify-center>
             <span
               class="learning-log-caption"
-            >{{learningLog.size}} trong {{curriculum.length}} bài đã hoàn thành</span>
+            >Đã hoàn thành {{learningLog.size}} trên {{curriculum.length}} bài</span>
           </v-layout>
         </v-flex>
       </template>
@@ -91,7 +91,6 @@ export default {
   },
   mounted() {
     this.fetchData()
-    console.log(this.courseDetail)
   },
   methods: {
     async fetchData() {
@@ -110,7 +109,9 @@ export default {
     },
     getLearningLog() {
       this.courseDetail.listLearningLogLessonIds.forEach(el => {
-        this.learningLog.set(el, true)
+        if (el.passed) {
+          this.learningLog.set(el.learningLogId, true)
+        }
       })
       this.curriculum.forEach(el => {
         el.learned = false

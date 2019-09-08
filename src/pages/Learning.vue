@@ -370,7 +370,8 @@ export default {
       theoryContent: '',
       learningLog: [],
       courseId: this.$route.params.courseId,
-      lessonId: this.$route.params.lessonId
+      lessonId: this.$route.params.lessonId,
+      isCompleted: false
     }
   },
   watch: {
@@ -412,6 +413,7 @@ export default {
   methods: {
     async fetchData() {
       this.$store.commit('incrementLoader', 1)
+      this.isCompleted = false
       await this.getCourseById()
       await this.getLessonById()
       setTimeout(() => {
@@ -507,7 +509,7 @@ export default {
         this.currentFen = this.defaultFen
         this.loadMoveHistory()
       } else if (this.lessonDetails.lessonType == 3) {
-        this.theoryContent = this.lessonDetails.uninteractiveLesson.content
+        this.theoryContent = this.lessonDetails.lessonContent.content
       }
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)
@@ -520,11 +522,19 @@ export default {
     },
     async createLearningLog(courseId, lessonId) {
       await this.getCurrentUserLearningLogByCourseId()
-      if (this.learningLog.indexOf(lessonId) === -1) {
+      const indexOfLearningLog =
+        this.learningLog
+          .map(function(el) {
+            return el.learningLogId
+          })
+          .indexOf(lessonId) === -1
+      if (indexOfLearningLog) {
         const { data } = await learningRepository.createLearningLog(
           courseId,
-          lessonId
+          lessonId,
+          true
         )
+        this.isCompleted = data.data.complete
       }
     },
     loadMoveHistory() {
@@ -611,24 +621,46 @@ export default {
     async changeLesson(val, isPassed) {
       if (0 <= this.activeLesson + val <= this.lessons.length) {
         this.activeLesson += val
-        this.$store.commit('incrementLoader', 1)
         if (isPassed) {
+          this.$store.commit('incrementLoader', 1)
           await this.createLearningLog(
             this.$route.params.courseId,
             this.lessonDetails.lessonId
           )
+          setTimeout(() => {
+            this.$store.commit('incrementLoader', -1)
+          }, 500)
         }
-        const nextLessonId = this.lessons[this.activeLesson].lessonId
-        this.lessonId = nextLessonId
-        this.$router.push(
-          `/learning/course/${this.courseId}/lesson/${nextLessonId}`
-        )
-        this.checkStatusDirectLesson()
-        this.getLessonById()
-        setTimeout(() => {
-          this.$store.commit('incrementLoader', -1)
-        }, 500)
+        if (this.isCompleted) {
+          this.$swal({
+            title: 'Hoàn thành',
+            html: `Bạn đã hoàn thành khóa học này. Bạn có muốn học tiếp?`,
+            type: 'success',
+            showCancelButton: true,
+            confirmButtonColor: '#3085d6',
+            cancelButtonColor: '#d33',
+            confirmButtonText: 'Học tiếp',
+            cancelButtonText: 'Về trang chi tiết'
+          }).then(result => {
+            if (result.value) {
+              this.loadNewLesson()
+            } else {
+              this.$router.push(`/course/${this.courseId}`)
+            }
+          })
+        } else {
+          this.loadNewLesson()
+        }
       }
+    },
+    loadNewLesson() {
+      const nextLessonId = this.lessons[this.activeLesson].lessonId
+      this.lessonId = nextLessonId
+      this.$router.push(
+        `/learning/course/${this.courseId}/lesson/${nextLessonId}`
+      )
+      this.checkStatusDirectLesson()
+      this.getLessonById()
     },
     checkStatusDirectLesson() {
       this.statusNextLesson = this.checkStatusNextLesson()
