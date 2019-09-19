@@ -20,10 +20,13 @@ export default {
     const data = {
       params: searchParams
     }
-    return Repository.get(
-      `${resource}/category-id`,
-      data
-    )
+    return Repository.get(`${resource}/category-id`, data)
+  },
+  getCoursesSuggestion(searchParams) {
+    const data = {
+      params: searchParams
+    }
+    return Repository.get(`${resource}/suggestion`, data)
   },
 
   getById(courseId) {
@@ -61,11 +64,7 @@ export default {
     const data = updatedReview
     return Repository.put(`${resource}${review}`, data)
   },
-  removeReview(courseId, reviewId) {
-    const data = {
-      courseId: courseId,
-      reviewId: reviewId
-    }
-    return Repository.put(`${resource}${review}`, data)
+  removeReview(reviewId) {
+    return Repository.delete(`${resource}${review}/${reviewId}`)
   }
 }

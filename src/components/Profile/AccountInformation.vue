@@ -48,7 +48,7 @@
               <v-text-field value="Học viên" readonly solo label="Vai trò"></v-text-field>
             </v-flex>
             <v-flex xs3>
-              <v-subheader>Điểm ELO</v-subheader>
+              <v-subheader>Điểm</v-subheader>
             </v-flex>
             <v-flex xs9>
               <v-text-field :value="user.elo" readonly solo label="Vai trò"></v-text-field>

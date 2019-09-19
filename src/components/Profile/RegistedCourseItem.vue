@@ -62,7 +62,9 @@
       <v-divider light></v-divider>
       <v-card-actions class="px-3 py-1">
         <v-spacer></v-spacer>
-        <span class="course-point">{{ courseDetail.requiredEloNumber }} ELO</span>
+        <span
+          :class="['course-required-elo px-3 py-1 elevation-2', courseDetail.requiredEloClass ]"
+        >{{courseDetail.requiredEloName}}</span>
       </v-card-actions>
     </v-card>
   </v-hover>
@@ -124,13 +126,28 @@ export default {
   font-weight: 400;
   color: #686f7a;
 }
-.course-point {
-  font-size: 16px;
-  color: #29303b;
-  font-weight: 600;
-}
 .no-rating {
   font-size: 13px;
   height: 24.72px;
+}
+.course-required-elo {
+  border-radius: 3px;
+  color: white;
+  font-size: 14px;
+}
+.elo-1 {
+  background-image: linear-gradient(90deg, #666666, #999999);
+}
+.elo-2 {
+  background-image: linear-gradient(90deg, #075f2a, #0ebe54);
+}
+.elo-3 {
+  background-image: linear-gradient(90deg, #24284d, #225982);
+}
+.elo-4 {
+  background-image: linear-gradient(90deg, #42104b, #990a7e);
+}
+.elo-5 {
+  background-image: linear-gradient(90deg, #6f4604, #cf8f30);
 }
 </style>

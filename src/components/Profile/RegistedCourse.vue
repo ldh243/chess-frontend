@@ -62,6 +62,7 @@ export default {
       this.listCourse.forEach(course => {
         course.requiredEloName = this.getEloName(course.requiredElo)
         course.requiredEloNumber = 600 + course.requiredElo * 200
+        course.requiredEloClass = `elo-${course.requiredElo}`
       })
     }
   }

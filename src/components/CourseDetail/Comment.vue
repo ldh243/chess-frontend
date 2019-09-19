@@ -290,22 +290,33 @@ export default {
         this.newReview.content.length <= 100 &&
         this.newReview.content.length >= 6
       ) {
-        const { data } = await courseRepository.createReview(this.newReview)
-        if (data.data.success) {
+        this.$store.commit('incrementLoader', 1)
+        let data = null
+        const self = this
+        await courseRepository
+          .createReview(this.newReview)
+          .then(result => (data = result.data))
+          .catch(error => {
+            this.$store.commit('incrementLoader', -1)
+            if (error.response.status === 406) {
+              self.$swal({
+                type: 'error',
+                title: 'Lỗi',
+                text:
+                  'Đánh giá không thành công. Bạn đã đánh giá khóa học này rồi.',
+                confirmButtonText: 'Xác nhận'
+              })
+            }
+          })
+        if (data && data.data.success) {
           this.showNewReview(data.data.savedId)
           this.$emit('getCourseOverview')
+          this.$store.commit('incrementLoader', -1)
           this.$swal({
             type: 'success',
             title: 'Thành công',
             text:
               'Đánh giá thành công. Cảm ơn bạn đã đánh giá về khóa học này.',
-            confirmButtonText: 'Xác nhận'
-          })
-        } else {
-          this.$swal({
-            type: 'error',
-            title: 'Lỗi',
-            text: 'Đánh giá thất bại. Nội dung phải từ 6 đến 100 kí tự!',
             confirmButtonText: 'Xác nhận'
           })
         }
@@ -334,15 +345,12 @@ export default {
       }
     },
     async removeReview(reviewId) {
-      const { data } = await courseRepository.removeReview(
-        this.courseId,
-        reviewId
-      )
+      this.$store.commit('incrementLoader', 1)
+      const { data } = await courseRepository.removeReview(reviewId)
       this.courseReview.content = this.courseReview.content.filter(
         element => element.reviewId != reviewId
       )
       if (data.data) {
-        this.$store.commit('incrementLoader', 1)
         this.$emit('getCourseOverview')
         this.emptyListReview()
         await this.getReviewPagination()

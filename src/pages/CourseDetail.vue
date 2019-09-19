@@ -54,7 +54,7 @@
     </v-flex>
     <v-flex xs12>
       <v-container px-0>
-        <v-layout>
+        <v-layout wrap>
           <v-flex id="content-container" xs8>
             <v-layout wrap>
               <v-flex xs12 class="title-direction">
@@ -83,6 +83,9 @@
               </v-flex>
             </v-layout>
           </v-flex>
+          <v-flex xs12 mt-3>
+            <CourseSuggestion />
+          </v-flex>
           <div id="enrol-course">
             <v-card class="pa-1">
               <v-layout wrap>
@@ -100,7 +103,7 @@
                     </v-flex>
                     <v-flex xs12 mb-1>
                       <v-layout>
-                        <span class="course-point">ELO tối thiểu</span>
+                        <span class="course-point">Điểm yêu cầu</span>
                         <v-spacer></v-spacer>
                         <span class="course-point">{{ courseDetail.requiredEloNumber }}</span>
                       </v-layout>
@@ -144,6 +147,7 @@ import Review from '@/components/CourseDetail/Review'
 import InstructorInfo from '@/components/CourseDetail/InstructorInfo'
 import Curriculum from '@/components/CourseDetail/Curriculum'
 import About from '@/components/CourseDetail/About'
+import CourseSuggestion from '@/components/CourseDetail/CourseSuggestion'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const courseRepository = RepositoryFactory.get('course')
 const userRepository = RepositoryFactory.get('user')
@@ -152,7 +156,8 @@ export default {
     Review,
     InstructorInfo,
     Curriculum,
-    About
+    About,
+    CourseSuggestion
   },
   data() {
     return {
@@ -260,6 +265,7 @@ export default {
     async getCourseById() {
       const { data } = await courseRepository.getById(this.courseId)
       this.courseDetail = data.data
+      console.log(this.courseDetail)
       this.formatListCourse()
       this.breadcrumbs[
         this.breadcrumbs.length - 1
