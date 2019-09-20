@@ -97,16 +97,30 @@
                 <v-layout wrap>
                   <v-flex xs12>
                     <v-subheader class="pl-0">Cấp độ</v-subheader>
-                    <v-slider
-                      v-model="level"
-                      step="1"
-                      :tick-labels="tickLabels"
-                      ticks="always"
-                      :min="1"
-                      :max="5"
-                      tick-size="2"
-                      color="primary"
-                    ></v-slider>
+                    <v-layout mx-1>
+                      <v-flex xs1 mt-3>
+                        <v-layout justify-end>
+                          <span class="note-level text-grey">Thấp</span>
+                        </v-layout>
+                      </v-flex>
+                      <v-flex xs10>
+                        <v-slider
+                          v-model="level"
+                          step="1"
+                          :tick-labels="tickLabels"
+                          ticks="always"
+                          :min="1"
+                          :max="5"
+                          tick-size="2"
+                          color="primary"
+                        ></v-slider>
+                      </v-flex>
+                      <v-flex xs1 mt-3>
+                        <v-layout justify-start>
+                          <span class="note-level text-grey">Cao</span>
+                        </v-layout>
+                      </v-flex>
+                    </v-layout>
                   </v-flex>
                   <v-flex xs7>
                     <v-subheader class="pl-0">Chọn màu quân (mặc định ngẫu nhiên)</v-subheader>
@@ -185,7 +199,7 @@ import { mapState } from 'vuex'
 import Chessboard from '@/components/plugins/vue-chessboard/index.vue'
 import Player from '../components/PlayChess/Player'
 import { setInterval, clearInterval } from 'timers'
-import {RepositoryFactory} from '@/repository/RepositoryFactory'
+import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const gameHistoryRepository = RepositoryFactory.get('gameHistory')
 const userRepository = RepositoryFactory.get('user')
 export default {
@@ -484,8 +498,8 @@ export default {
       )
       //perform minus point in db
       this.player.point = this.player.point - point.required
-            localStorage.setItem('user', JSON.stringify(this.player))
-            this.$store.commit('setUser', this.player)
+      localStorage.setItem('user', JSON.stringify(this.player))
+      this.$store.commit('setUser', this.player)
       this.gameHistory.push(
         `Thắng +${this.currentGame.winPoint} - Thua +${this.currentGame.requiredPoint} - Hòa +${this.currentGame.drawPoint}`
       )
@@ -498,7 +512,10 @@ export default {
       let date = new Date()
       const newGame = {
         color: this.userColor === 'white' ? 1 : 0,
-        gameTime: parseInt(timeArr[0]) * 60 * 60 + parseInt(timeArr[1]) * 60 + parseInt(timeArr[2]),
+        gameTime:
+          parseInt(timeArr[0]) * 60 * 60 +
+          parseInt(timeArr[1]) * 60 +
+          parseInt(timeArr[2]),
         level: this.level
       }
       const data = await gameHistoryRepository.createGame(newGame).then(res => {
@@ -508,9 +525,9 @@ export default {
     async updateGameHistory(updateGameObj) {
       const data = gameHistoryRepository.updateGame(updateGameObj).then(res => {
         if (res.status === 200) {
-            this.player.point += updateGameObj.point
-            localStorage.setItem('user', JSON.stringify(this.player))
-            this.$store.commit('setUser', this.player)
+          this.player.point += updateGameObj.point
+          localStorage.setItem('user', JSON.stringify(this.player))
+          this.$store.commit('setUser', this.player)
         }
       })
     },
@@ -603,9 +620,7 @@ export default {
         }
       }
     },
-    promote() {
-      
-    }
+    promote() {}
   }
 }
 </script>
@@ -626,6 +641,9 @@ export default {
 }
 .game-information-item:nth-child(even) {
   background-color: #9db9cc;
+}
+.note-level {
+  font-size: 13px;
 }
 </style>
 
