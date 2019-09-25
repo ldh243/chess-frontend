@@ -31,17 +31,28 @@
       </v-radio-group>
       <p class="subheading grey--text mb-0" v-if="!isInstructor">Trình độ</p>
       <v-slide-y-transition>
-        <v-select
-          class="pt-1"
-          v-show="!isInstructor"
-          v-model="selectElo"
-          :items="items"
-          item-text="eloName"
-          item-value="eloId"
-          label="Select"
-          return-object
-          single-line
-        ></v-select>
+        <v-layout>
+          <v-flex xs11>
+            <v-select
+              class="pt-1"
+              v-show="!isInstructor"
+              v-model="selectElo"
+              :items="items"
+              item-text="eloName"
+              item-value="eloId"
+              label="Select"
+              return-object
+              single-line
+            ></v-select>
+          </v-flex>
+          <v-flex xs1 pt-3>
+            <v-layout justify-center>
+              <span class="btn-faq" @click="levelDialog = true">
+                <img :src="faqLogo" height="30" width="30" />
+              </span>
+            </v-layout>
+          </v-flex>
+        </v-layout>
       </v-slide-y-transition>
       <v-slide-y-transition>
         <v-textarea
@@ -76,7 +87,6 @@
       <v-dialog v-model="avaDialog" max-width="382">
         <v-card>
           <v-card-title class="headline">Ảnh đại diện</v-card-title>
-
           <vue-avatar
             :width="300"
             :height="300"
@@ -84,6 +94,27 @@
             :border-radius="150"
             @finished="handlerUploadImage"
           ></vue-avatar>
+        </v-card>
+      </v-dialog>
+      <v-dialog v-model="levelDialog" width="500px">
+        <v-card>
+          <v-card-title>
+            <span class="headline">Các cấp độ</span>
+          </v-card-title>
+          <v-layout wrap px-5>
+            <template v-for="(item,index) in levelNote">
+              <v-flex xs3 :key="index*2" mt-2>
+                <span class="level-title">{{item.levelTitle}}</span>
+              </v-flex>
+              <v-flex xs9 :key="index*2+1" mt-2>
+                <span class="level-description">{{item.levelDescription}}</span>
+              </v-flex>
+            </template>
+          </v-layout>
+          <v-card-actions>
+            <div class="flex-grow-1"></div>
+            <v-btn color="green darken-1" text @click="levelDialog = false">Đã hiểu</v-btn>
+          </v-card-actions>
         </v-card>
       </v-dialog>
       <v-card-actions>
@@ -110,10 +141,12 @@ export default {
   },
   data() {
     return {
+      faqLogo: require('@/assets/images/faq.png'),
       valid: true,
       role: 'learner',
       isInstructor: false,
       avaDialog: false,
+      levelDialog: false,
       checkbox: false,
       user: '',
       fullNameRules: [
@@ -130,6 +163,31 @@ export default {
         { eloName: 'Nghiệp dư', eloId: 3 },
         { eloName: 'Chuyên nghiệp', eloId: 4 },
         { eloName: 'Cao thủ', eloId: 5 }
+      ],
+      levelNote: [
+        {
+          levelTitle: 'Mới bắt đầu',
+          levelDescription: 'Dành cho người chưa biết gì về cờ vua'
+        },
+        {
+          levelTitle: 'Sơ cấp',
+          levelDescription:
+            'Dành cho người mới biết các nước đi cơ bản và các luật chơi về cơ vua'
+        },
+        {
+          levelTitle: 'Nghiệp dư',
+          levelDescription:
+            'Dành cho người đã từng tham gia các giải cờ vua nhỏ lẻ'
+        },
+        {
+          levelTitle: 'Chuyên nghiệp',
+          levelDescription:
+            'Dành cho người đã từng đi thi các giải đấu lớn, cấp khu vực trở lên'
+        },
+        {
+          levelTitle: 'Cao thủ',
+          levelDescription: 'Dành cho người muốn đi thi đấu quốc gia, quốc tế'
+        }
       ]
     }
   },
@@ -303,5 +361,15 @@ export default {
 .upload-file .v-icon {
   width: 23px;
   height: 23px;
+}
+.btn-faq:hover {
+  cursor: pointer;
+}
+.level-title {
+  font-size: 14px;
+  font-weight: 600;
+}
+.level-description {
+  font-size: 13px;
 }
 </style>
