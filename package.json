@@ -17,6 +17,7 @@
     "vue": "^2.6.10",
     "vue-agile": "^1.0.11",
     "vue-chessboard": "git+https://github.com/nganphtgit/vue-chessboard.git",
+    "vue-native-websocket": "^2.0.13",
     "vue-quill-editor": "^3.0.6",
     "vue-router": "^3.0.3",
     "vue-sweetalert2": "^2.1.1",

@@ -185,7 +185,7 @@ import { mapState } from 'vuex'
 import Chessboard from '@/components/plugins/vue-chessboard/index.vue'
 import Player from '../components/PlayChess/Player'
 import { setInterval, clearInterval } from 'timers'
-import {RepositoryFactory} from '@/repository/RepositoryFactory'
+import { RepositoryFactory } from '@/repository/RepositoryFactory'
 const gameHistoryRepository = RepositoryFactory.get('gameHistory')
 const userRepository = RepositoryFactory.get('user')
 export default {
@@ -226,7 +226,8 @@ export default {
         winPoint: 0
       },
       currentGameStatus: '',
-      sampleData: {}
+      sampleData: {},
+      socket: null
     }
   },
   computed: {
@@ -350,6 +351,16 @@ export default {
         this.turn = data.turn
       }
       this.totalMove++
+      console.log(newMove)
+      if (data.history.length !== 0) {
+        let moveSocket = {
+          status: 1,
+          turnPlayer: this.userColor == this.turn ? 2 : 1,
+          move: newMove,
+          fen: data.fen
+        }
+        this.sendMessage(JSON.stringify(data))
+      }
       if (this.turn === black) {
         //tạo thêm turn mới
         const newTurn = {
@@ -380,6 +391,12 @@ export default {
         }
         this.pgn = data.pgn
       }
+    },
+    async addMoveToSocket(newMove) {
+      const data = await gameHistoryRepository.addMove(
+        newMove,
+        this.currentGame.gameId
+      )
     },
     setCurrentMove() {
       //set highlight div dựa trên this.current move hiện tại
@@ -470,25 +487,14 @@ export default {
       let point = this.calculatePoint()
       this.currentGame = {
         userColor: this.userColor,
-        time: this.time,
-        requiredPoint: point.required,
-        winPoint: point.win,
-        drawPoint: point.draw
+        time: this.time
       }
       let newGame = `Ván ${this.gameNumber} - Người chơi: ${
         this.userColor === 'white' ? 'Trắng' : 'Đen'
       }`
       this.gameHistory.push(newGame)
-      this.gameHistory.push(
-        `Người chơi: ${this.player.point} - Cọc: ${this.currentGame.requiredPoint}`
-      )
+      this.gameHistory.push(`Người chơi: ${this.player.point}`)
       //perform minus point in db
-      this.player.point = this.player.point - point.required
-            localStorage.setItem('user', JSON.stringify(this.player))
-            this.$store.commit('setUser', this.player)
-      this.gameHistory.push(
-        `Thắng +${this.currentGame.winPoint} - Thua +${this.currentGame.requiredPoint} - Hòa +${this.currentGame.drawPoint}`
-      )
       let gameHistoryEl = document.getElementById('game-information-area')
       // gameHistoryEl.scrollTop = document.getElementById(`game-information-item-${this.gameHistory.length - 1}`).offsetTop
       this.createGameHistory()
@@ -498,19 +504,33 @@ export default {
       let date = new Date()
       const newGame = {
         color: this.userColor === 'white' ? 1 : 0,
-        gameTime: parseInt(timeArr[0]) * 60 * 60 + parseInt(timeArr[1]) * 60 + parseInt(timeArr[2]),
+        gameTime:
+          parseInt(timeArr[0]) * 60 * 60 +
+          parseInt(timeArr[1]) * 60 +
+          parseInt(timeArr[2]),
         level: this.level
       }
       const data = await gameHistoryRepository.createGame(newGame).then(res => {
+        console.log(res)
         this.currentGame['gameId'] = res.data.data.savedId
+        this.currentGame['winPoint'] =
+          res.data.data.predictionEloStockfish.predictionWinningElo
+        this.currentGame['losePoint'] =
+          res.data.data.predictionEloStockfish.predictionLoseElo
+        this.currentGame['drawPoint'] =
+          res.data.data.predictionEloStockfish.predictionDrawnElo
+        this.gameHistory.push(
+          `Thắng: ${this.currentGame.winPoint} - Thua: ${this.currentGame.losePoint} - Hòa: ${this.currentGame.drawPoint}`
+        )
+        this.socket = new WebSocket(`ws://cols-be.ml/chess-socket/${this.currentGame.gameId}`);
       })
     },
     async updateGameHistory(updateGameObj) {
       const data = gameHistoryRepository.updateGame(updateGameObj).then(res => {
         if (res.status === 200) {
-            this.player.point += updateGameObj.point
-            localStorage.setItem('user', JSON.stringify(this.player))
-            this.$store.commit('setUser', this.player)
+          this.player.point += updateGameObj.point
+          localStorage.setItem('user', JSON.stringify(this.player))
+          this.$store.commit('setUser', this.player)
         }
       })
     },
@@ -603,9 +623,7 @@ export default {
         }
       }
     },
-    promote() {
-      
-    }
+    promote() {}
   }
 }
 </script>
