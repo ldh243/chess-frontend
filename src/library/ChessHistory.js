@@ -2,7 +2,7 @@ export default class MoveHistory {
   constructor(lessonDetails) {
     this.lessonDetails = lessonDetails
     this.moveHistory = []
-    this.steps = lessonDetails.interactiveLesson.steps
+    this.steps = lessonDetails.lessonContent.steps
     this.totalMove = 0
   }
   formatMoveHistory() {
@@ -18,12 +18,12 @@ export default class MoveHistory {
       el.class = 'move'
       const parent = this.steps.find(pr => pr.id === el.preId)
       if (this.isEmpty(parent)) {
-        el.preFen = this.lessonDetails.interactiveLesson.initCode
+        el.preFen = this.lessonDetails.lessonContent.initCode
       } else {
         el.preFen = parent.fen
       }
     })
-    this.steps[0].fen = this.lessonDetails.interactiveLesson.initCode
+    this.steps[0].fen = this.lessonDetails.lessonContent.initCode
   }
 
   isEmpty(obj) {

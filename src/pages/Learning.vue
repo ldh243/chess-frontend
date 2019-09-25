@@ -187,7 +187,7 @@
                   <span class="title-table">Nội dung</span>
                 </v-card-title>
                 <div class="lesson-content">
-                  <v-card-text v-if="lessonDetails.interactiveLesson != null">{{ stepContent }}</v-card-text>
+                  <v-card-text v-if="lessonDetails.lessonType == 2">{{ stepContent }}</v-card-text>
                 </div>
               </v-flex>
               <v-flex class="lesson-direction">
@@ -405,7 +405,7 @@ export default {
   },
   created() {
     this.currentFen = this.defaultFen
-    // console.log(JSON.stringify(this.sampleLesson))
+    console.log(JSON.stringify(this.sampleLesson))
   },
   mounted() {
     this.fetchData()
@@ -447,7 +447,7 @@ export default {
             clearInterval(timerInterval)
           }
         })
-        .then(result => {
+        .then(() => {
           this.$router.push(`/course/${courseId}`)
         })
     },
@@ -462,7 +462,7 @@ export default {
       document.getElementsByClassName('lesson-content')[0].style.height =
         lessonHeight + 'px'
     },
-    showInfo(data) {
+    showInfo() {
       // console.log(data.history[data.history.length - 1])
       // console.log(data.fen)
       // console.log(data)
@@ -505,7 +505,7 @@ export default {
       this.lessonDetails = data.data
       this.checkStatusDirectLesson()
       if (this.lessonDetails.lessonType == 2) {
-        this.defaultFen = this.lessonDetails.interactiveLesson.initCode
+        this.defaultFen = this.lessonDetails.lessonContent.initCode
         this.currentFen = this.defaultFen
         this.loadMoveHistory()
       } else if (this.lessonDetails.lessonType == 3) {
@@ -538,7 +538,7 @@ export default {
       }
     },
     loadMoveHistory() {
-      this.loadFen(this.lessonDetails.interactiveLesson.initCode)
+      this.loadFen(this.lessonDetails.lessonContent.initCode)
       const moveHistory = new MoveHistory(this.lessonDetails)
       moveHistory.formatMoveHistory()
       this.moveHistory = moveHistory.getMoveHistory

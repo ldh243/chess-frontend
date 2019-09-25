@@ -200,8 +200,7 @@ export default {
       imageIcon: {
         classMates: require('@/assets/images/classmates.png'),
         lessons: require('@/assets/images/lessons.png')
-      },
-      newPoint: 0
+      }
     }
   },
   computed: {
@@ -230,7 +229,6 @@ export default {
       await this.getCourseById()
       if (this.user !== null) {
         await this.getCurrentUserDetail()
-        this.checkDoneAllLesson()
       }
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)
@@ -353,20 +351,8 @@ export default {
       document.getElementById('enrol-course').style.marginLeft =
         widthContent + 16 + 'px'
     },
-    checkDoneAllLesson() {
-      if (this.newPoint > this.user.point) {
-        this.$swal({
-          title: 'Chúc mừng',
-          html: `Chúc mừng bạn đã hoàn thành xong hết tất cả bài học. Bạn được cộng thêm <strong>${this.courseDetail.point} điểm.</strong>`,
-          type: 'success'
-        })
-        this.user.point = this.newPoint
-        localStorage.setItem('user', JSON.stringify(this.user))
-      }
-    },
     async getCurrentUserDetail() {
       const { data } = await userRepository.getCurrentUserDetail()
-      this.newPoint = data.data.point
     }
   }
 }
