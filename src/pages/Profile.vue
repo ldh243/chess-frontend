@@ -109,7 +109,6 @@ export default {
   },
   mounted() {
     this.renderMenuTab()
-    console.log(this.user)
   },
   watch: {
     $route(to, from) {

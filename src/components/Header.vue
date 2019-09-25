@@ -27,7 +27,7 @@
             <v-flex xs3 mr-2>
               <v-layout fill-height align-center justify-end>
                 <v-img :src="elo" height="30" max-width="30" />
-                <span class="ml-3 user-point">{{user.elo}}</span>
+                <span class="ml-3 user-point">{{user.point}}</span>
               </v-layout>
             </v-flex>
             <v-flex xs3>

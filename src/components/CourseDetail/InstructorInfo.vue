@@ -32,9 +32,6 @@ export default {
       default: null
     }
   },
-  created() {
-    console.log(this.courseDetail)
-  },
   methods: {
     goToInstructorPage() {
       this.$router.push(`/instructor/${this.author.userId}`)

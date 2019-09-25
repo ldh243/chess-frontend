@@ -97,16 +97,30 @@
                 <v-layout wrap>
                   <v-flex xs12>
                     <v-subheader class="pl-0">Cấp độ</v-subheader>
-                    <v-slider
-                      v-model="level"
-                      step="1"
-                      :tick-labels="tickLabels"
-                      ticks="always"
-                      :min="1"
-                      :max="5"
-                      tick-size="2"
-                      color="primary"
-                    ></v-slider>
+                    <v-layout mx-1>
+                      <v-flex xs1 mt-3>
+                        <v-layout justify-end>
+                          <span class="note-level text-grey">Thấp</span>
+                        </v-layout>
+                      </v-flex>
+                      <v-flex xs10>
+                        <v-slider
+                          v-model="level"
+                          step="1"
+                          :tick-labels="tickLabels"
+                          ticks="always"
+                          :min="1"
+                          :max="5"
+                          tick-size="2"
+                          color="primary"
+                        ></v-slider>
+                      </v-flex>
+                      <v-flex xs1 mt-3>
+                        <v-layout justify-start>
+                          <span class="note-level text-grey">Cao</span>
+                        </v-layout>
+                      </v-flex>
+                    </v-layout>
                   </v-flex>
                   <v-flex xs7>
                     <v-subheader class="pl-0">Chọn màu quân (mặc định ngẫu nhiên)</v-subheader>
@@ -644,6 +658,9 @@ export default {
 }
 .game-information-item:nth-child(even) {
   background-color: #9db9cc;
+}
+.note-level {
+  font-size: 13px;
 }
 </style>
 

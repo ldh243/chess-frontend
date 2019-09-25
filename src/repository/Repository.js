@@ -12,7 +12,18 @@ const instance = axios.create({
     Authorization: localStorage.getItem('access-token')
   }
 })
-
+axios.interceptors.response.use(
+  response => {
+    return response
+  },
+  function(error) {
+    // Do something with response error
+    if (error.response.status === 401) {
+      console.log('unauthorized, logging out ...')
+    }
+    return Promise.reject(error.response)
+  }
+)
 export default instance
 
 export const setAuthorizationHeader = (axiosInstance, token) => {

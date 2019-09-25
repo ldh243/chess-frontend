@@ -241,7 +241,10 @@ export default {
         this.filter.chips.courseShow = false
       }
       this.$store.commit('incrementLoader', 1)
-      if (this.filter.categoryId === 0) {
+      if (this.filter.categoryId === -1) {
+        //course suggestion
+        await this.getCoursesSuggestion()
+      } else if (this.filter.categoryId === 0) {
         //search all
         await this.getCoursesPagination()
       } else {
@@ -282,6 +285,14 @@ export default {
       this.filter.totalPages = data.data.totalPages
       this.totalCourse = data.data.totalElements
     },
+    async getCoursesSuggestion() {
+      const { data } = await courseRepository.getCoursesSuggestion(this.filter)
+      this.listCourses = data.data.content
+      this.formatListCourse()
+      this.mergeAllCategories()
+      this.filter.totalPages = data.data.totalPages
+      this.totalCourse = data.data.totalElements
+    },
     formatListCourse() {
       this.listCourses.forEach(course => {
         const date = new Date(Date.parse(course.courseCreatedDate))
@@ -299,14 +310,17 @@ export default {
         categoryId: 0,
         name: 'Tất cả'
       })
+      this.listCategories.push({
+        categoryId: -1,
+        name: 'Khóa học phù hợp'
+      })
     },
     changeFilter(filterType, categoryId, name) {
-      //filterType = 0 is elo, 1 is category, 2 is sortBy
-      if (filterType === 0) {
-      } else if (filterType === 1) {
+      //filterType = 1 is category, 2 is sortBy
+      if (filterType === 1) {
         this.filter.chips.categoryName = name
         if (categoryId === 0) {
-          //xóa category bằng chip
+          //category tất cả - xóa category bằng chip
           this.filter.chips.categoryShow = false
           this.selectedCategory = 0
         } else {
