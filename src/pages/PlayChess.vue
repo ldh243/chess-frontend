@@ -241,7 +241,7 @@ export default {
       },
       currentGameStatus: '',
       sampleData: {},
-      socket: null
+      isFirstLoad: false
     }
   },
   computed: {
@@ -269,6 +269,7 @@ export default {
       if (this.turn != null) {
         this.interval = setInterval(this.runClock, 1000)
       }
+      console.log(this.turn !== this.userColor && this.isStart)
       if (this.turn !== this.userColor && this.isStart) {
         this.calculateMove()
       }
@@ -298,7 +299,7 @@ export default {
             this.gameHistory.push(`Kết quả: Hòa`)
             break
           case 2:
-            point = this.currentGame.requiredPoint
+            point = this.currentGame.losePoint
             this.gameHistory.push(`Kết quả: Thua`)
             break
           case 4:
@@ -316,7 +317,15 @@ export default {
         }
         console.log(result)
         this.updateGameHistory(result)
-        this.$swal('Kết quả', `+${point}`, 'success')
+        this.$swal(
+          'Kết quả',
+          `${this.formatGameResult(this.currentGame.result)} ${point}`,
+          'success'
+        )
+        let moveSocket = {
+          status: this.currentGame.result
+        }
+        this.postMessage(moveSocket)
         //update db, reload player
       }
     }
@@ -330,8 +339,50 @@ export default {
     this.botTime = this.playerTime = this.time
     this.engine = new Worker('stockfish.js')
     this.sendUCI('uci')
+    this.socket = null
+    this.loadGame()
   },
   methods: {
+    async loadGame() {
+      const { data } = await gameHistoryRepository.reloadGame()
+      console.log(data.data)
+      if (data.data !== null) {
+        this.isFirstLoad = true
+        this.isStart = true
+        this.currentFen = data.data.currentFen
+        this.userColor = data.data.color === 0 ? 'black' : 'white'
+        this.turn = this.currentFen.split(' ')[1] == 'b' ? 'black' : 'white'
+        this.socket = new WebSocket(
+          `ws://cols-be.ml/chess-socket/${data.data.gameHistoryId}`
+        )
+        console.log(this.turn)
+        if (this.userColor == this.turn) {
+          this.gameHistory.push(`Lượt đi: ${this.userColor === 'black' ? 'Đen' : 'Trắng'}`)
+        } else {
+          this.gameHistory.push(`Lượt đi: ${this.userColor === 'black' ? 'Trắng' : 'Đen'}`)
+        }
+        let moveArr = data.data.gameContent.split(' ')
+        moveArr.forEach((move, index) => {
+          this.totalMove = index + 1
+          let newHalfMove = {
+            move: move,
+            fen: '',
+            moveCount: 'move-' + this.totalMove
+          }
+          if (index % 2 === 0) {
+            this.addWhiteMove(newHalfMove)
+          } else {
+            this.addBlackMove(newHalfMove)
+          }
+          if (index === moveArr.length - 1) {
+            this.currentMove = index
+          }
+        })
+      }
+    },
+    reloadMoveHistory() {
+      const black = 'black'
+    },
     resetBoard() {
       this.moveHistory = []
       this.moves = ''
@@ -355,7 +406,6 @@ export default {
       const black = 'black'
       let moveHistory = this.moveHistory
       let newMove = data.history[data.history.length - 1]
-      let lastMove = moveHistory[moveHistory.length - 1]
       if (newMove === undefined || !this.currentFen) return
       if (data.turn === undefined) {
         //end game
@@ -365,35 +415,24 @@ export default {
         this.turn = data.turn
       }
       this.totalMove++
-      console.log(newMove)
       if (data.history.length !== 0) {
         let moveSocket = {
           status: 1,
-          turnPlayer: this.userColor == this.turn ? 2 : 1,
+          turnPlayer: this.userColor == this.turn ? 1 : 2,
           move: newMove,
-          fen: data.fen
+          currentFen: data.fen
         }
-        this.sendMessage(JSON.stringify(data))
+        this.postMessage(moveSocket)
+      }
+      let newHalfMove = {
+        move: newMove,
+        fen: data.fen,
+        moveCount: 'move-' + this.totalMove
       }
       if (this.turn === black) {
-        //tạo thêm turn mới
-        const newTurn = {
-          index: moveHistory.length + 1,
-          whiteMove: {
-            move: newMove,
-            fen: data.fen,
-            moveCount: 'move-' + this.totalMove
-          },
-          blackMove: null
-        }
-        moveHistory.push(newTurn)
+        this.addWhiteMove(newHalfMove)
       } else {
-        //nước đi tiếp theo của turn cũ
-        lastMove.blackMove = {
-          move: newMove,
-          fen: data.fen,
-          moveCount: 'move-' + this.totalMove
-        }
+        this.addBlackMove(newHalfMove)
       }
       this.currentMove = this.totalMove
       if (data.end_game !== undefined) {
@@ -406,11 +445,17 @@ export default {
         this.pgn = data.pgn
       }
     },
-    async addMoveToSocket(newMove) {
-      const data = await gameHistoryRepository.addMove(
-        newMove,
-        this.currentGame.gameId
-      )
+    addWhiteMove(newHalfMove) {
+      const newTurn = {
+        index: this.moveHistory.length + 1,
+        whiteMove: newHalfMove,
+        blackMove: null
+      }
+      this.moveHistory.push(newTurn)
+    },
+    addBlackMove(newHalfMove) {
+      let lastMove = this.moveHistory[this.moveHistory.length - 1]
+      lastMove.blackMove = newHalfMove
     },
     setCurrentMove() {
       //set highlight div dựa trên this.current move hiện tại
@@ -498,7 +543,6 @@ export default {
       }
       this.interval = setInterval(this.runClock, 1000)
       this.gameNumber++
-      let point = this.calculatePoint()
       this.currentGame = {
         userColor: this.userColor,
         time: this.time
@@ -536,7 +580,12 @@ export default {
         this.gameHistory.push(
           `Thắng: ${this.currentGame.winPoint} - Thua: ${this.currentGame.losePoint} - Hòa: ${this.currentGame.drawPoint}`
         )
-        this.socket = new WebSocket(`ws://cols-be.ml/chess-socket/${this.currentGame.gameId}`);
+        this.socket = new WebSocket(
+          `ws://cols-be.ml/chess-socket/${this.currentGame.gameId}`
+        )
+        this.socket.onmessage = function(e) {
+          console.log(e.data)
+        }
       })
     },
     async updateGameHistory(updateGameObj) {
@@ -547,39 +596,6 @@ export default {
           this.$store.commit('setUser', this.player)
         }
       })
-    },
-    calculatePoint() {
-      let point = {}
-      switch (this.level) {
-        case 1:
-          point['win'] = 100
-          point['draw'] = 75
-          point['required'] = 50
-          break
-        case 2:
-          point['win'] = 200
-          point['draw'] = 150
-          point['required'] = 100
-          break
-        case 3:
-          point['win'] = 300
-          point['draw'] = 225
-          point['required'] = 150
-          break
-        case 4:
-          point['win'] = 400
-          point['draw'] = 300
-          point['required'] = 200
-          break
-        case 5:
-          point['win'] = 500
-          point['draw'] = 375
-          point['required'] = 250
-          break
-        default:
-          break
-      }
-      return point
     },
     countDownTime(time) {
       const timeArr = time.split(':')
@@ -621,10 +637,14 @@ export default {
       console.log('Send: ' + str)
       this.engine.postMessage(str)
     },
+    postMessage(message) {
+      console.log(message)
+      this.socket.send(JSON.stringify(message))
+    },
     calculateMove() {
       let self = this
       this.sendUCI('setoption name Skill Level value ' + this.level)
-      this.sendUCI('position startpos moves' + this.moves)
+      this.sendUCI('position fen ' + this.currentFen + ' moves ' + this.moves)
       this.sendUCI('go depth 15')
       this.engine.onmessage = function(event) {
         let line = event.data
@@ -637,7 +657,17 @@ export default {
         }
       }
     },
-    promote() {}
+    promote() {},
+    formatGameResult(gameResult) {
+      switch (gameResult) {
+        case 2:
+          return 'Thua'
+        case 3:
+          return 'Hòa'
+        case 4:
+          return 'Thắng'
+      }
+    }
   }
 }
 </script>

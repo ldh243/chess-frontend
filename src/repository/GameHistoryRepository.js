@@ -1,7 +1,6 @@
 import Repository from '@/repository/Repository'
 
 const resource = 'game-history'
-const socket = 'chess-socket'
 
 export default {
     createGame(data) {
@@ -10,4 +9,7 @@ export default {
     updateGame(data) {
         return Repository.put(`${resource}`, data)
     },
+    reloadGame() {
+        return Repository.get(`${resource}/current-user/redis-data`)
+    }
 }
