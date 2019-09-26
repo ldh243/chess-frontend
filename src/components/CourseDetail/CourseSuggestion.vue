@@ -21,7 +21,8 @@ export default {
     return {
       filter: {
         page: 1,
-        pageSize: 5
+        pageSize: 5,
+        courseId: this.$route.params.courseId
       },
       listCourse: null
     }
@@ -32,13 +33,13 @@ export default {
   methods: {
     async fetchData() {
       this.$store.commit('incrementLoader', 1)
-      await this.getCoursesSuggestion()
+      await this.getCommonSuggestion()
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)
       }, 500)
     },
-    async getCoursesSuggestion() {
-      const { data } = await courseRepository.getCoursesSuggestion(this.filter)
+    async getCommonSuggestion() {
+      const { data } = await courseRepository.getCommonSuggestion(this.filter)
       this.listCourse = data.data.content
       this.formatListCourse()
     },

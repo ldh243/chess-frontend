@@ -28,7 +28,12 @@ export default {
     }
     return Repository.get(`${resource}/suggestion`, data)
   },
-
+  getCommonSuggestion(searchParams) {
+    const data = {
+      params: searchParams
+    }
+    return Repository.get(`${resource}/common-suggestion`, data)
+  },
   getById(courseId) {
     return Repository.get(`${resource}/${courseId}`)
   },

@@ -16,8 +16,12 @@ export default new Router({
   base: process.env.BASE_URL,
   routes: [
     { path: '/', name: 'home', component: Introduce },
-    { path: '/course', component: CourseOverview },
-    { path: '/course/:courseId', component: CourseDetail },
+    { path: '/course', name: 'courseOverView', component: CourseOverview },
+    {
+      path: '/course/:courseId',
+      component: CourseDetail,
+      name: 'courseDetail'
+    },
     {
       path: '/learning/course/:courseId/lesson/:lessonId',
       component: Learning
