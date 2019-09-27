@@ -364,7 +364,9 @@ export default {
         )
         //update result
         let moveSocket = {
-          status: this.currentGame.result
+          status: this.currentGame.result,
+          turnPlayer: 1,
+          move: ''
         }
         this.postMessage(moveSocket)
         //update db, reload player
@@ -391,6 +393,24 @@ export default {
           move: ''
         }
         this.postMessage(moveSocket)
+        this.giveUpDialog = false
+        this.currentGameStatus = 'end_game'
+        this.turn = ''
+        let point = this.currentGame.losePoint
+        this.gameHistory.push(`Kết quả: Thua`)
+        this.currentGame.result = 2
+        this.$swal(
+          `Kết quả: ${this.formatGameResult(this.currentGame.result)}`,
+          `Điểm cộng: ${point}`,
+          'success'
+        )
+        this.resetBoard()
+    },
+    convertTimeFromSecond(time) {
+      let hour = Math.floor(time / 3600)
+      let minute = Math.floor((time % 3600) / 60)
+      let second = (time % 3600) % 60
+      return `${hour == 0 ? '00' : hour}:${minute == 0 ? '00' : minute}:${second == 0 ? '00' : second}`
     },
     async loadGame() {
       const { data } = await gameHistoryRepository.reloadGame()
@@ -400,6 +420,8 @@ export default {
         this.isStart = true
         this.currentFen = data.data.currentFen
         this.userColor = data.data.color === 1 ? 'black' : 'white'
+        this.playerTime = this.convertTimeFromSecond(data.data.player1.secondCountDown)
+        this.botTime = this.convertTimeFromSecond(data.data.player2.secondCountDown)
         this.turn = this.currentFen.split(' ')[1] == 'b' ? 'black' : 'white'
         this.socket = new WebSocket(
           `ws://${this.path}/chess-socket/${data.data.gameHistoryId}`
@@ -722,6 +744,8 @@ export default {
           return 'Hòa'
         case 4:
           return 'Thắng'
+          default:
+            return ''
       }
     }
   }
