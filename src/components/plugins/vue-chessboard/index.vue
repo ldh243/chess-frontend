@@ -78,9 +78,10 @@ export default {
       if (this.status === 'new') {
         this.game.reset()
         this.loadPosition()
-      }
-      console.log(this.status)
-      if (this.status === 'wrong_ans') {
+      } else if (this.status === 'reload') {
+        this.game.reset()
+        this.loadPosition()
+      } else if (this.status === 'wrong_ans') {
         console.log(this.fen)
         let timeout = window.setTimeout(() => {
           this.game.undo()

@@ -301,6 +301,7 @@
           :statusPreviousLesson="statusPreviousLesson"
           :statusNextLesson="statusNextLesson"
           :lessonId="parseInt(lessonId)"
+          :lessonType="lessonDetails.lessonType"
         />
       </v-layout>
     </v-container>
@@ -405,7 +406,6 @@ export default {
   },
   created() {
     this.currentFen = this.defaultFen
-    console.log(JSON.stringify(this.sampleLesson))
   },
   mounted() {
     this.fetchData()
@@ -619,6 +619,7 @@ export default {
       this.setCurrentMove()
     },
     async changeLesson(val, isPassed) {
+      this.lessonDetails.lessonType = 1
       if (0 <= this.activeLesson + val <= this.lessons.length) {
         this.activeLesson += val
         if (isPassed) {

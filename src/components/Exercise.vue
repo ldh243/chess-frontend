@@ -134,6 +134,10 @@ export default {
     lessonId: {
       type: Number,
       default: -1
+    },
+    lessonType: {
+      type: Number,
+      default: -1
     }
   },
   components: {
@@ -182,15 +186,25 @@ export default {
       return false
     }
   },
-  watch: {},
+  watch: {
+    // '$route.params.lessonId': {
+    //   handler: function() {
+    //     if (this.lessonType === 5) {
+    //       this.gameHistory = []
+    //       this.getLessonById()
+    //     }
+    //   },
+    //   deep: true,
+    //   immediate: true
+    // }
+  },
   updated() {
     this.setCurrentMove()
   },
   created() {
     this.engine = new Worker('../../../../../../stockfish.js')
     this.sendUCI('uci')
-    this.lessonId = this.$route.params.lessonId
-    this.getLessonById()
+          this.getLessonById()
   },
   methods: {
     performWrongMove() {
@@ -452,6 +466,7 @@ export default {
           : 'black'
       this.answerArr = data.data.lessonContent.answer.answerArr
       this.currentGameStatus = 'new'
+      console.log("get")
       this.gameHistory.push(data.data.lessonContent.question)
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)

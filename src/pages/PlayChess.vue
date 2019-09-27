@@ -277,7 +277,7 @@ export default {
       currentGame: {
         winPoint: 0
       },
-      currentGameStatus: '',
+      currentGameStatus: 'new',
       sampleData: {},
       isFirstLoad: false,
       path: 'cols-be.ml'
@@ -349,6 +349,9 @@ export default {
           default:
             break
         }
+        this.player.point = this.player.point + parseInt(point)
+         localStorage.setItem('user', JSON.stringify(this.player))
+            this.$store.commit('setUser', this.player)
         const result = {
           gameHistoryId: this.currentGame.gameId,
           record: this.pgn,
@@ -358,8 +361,8 @@ export default {
         console.log(result)
         this.updateGameHistory(result)
         this.$swal(
-          'Kết quả',
-          `${this.formatGameResult(this.currentGame.result)} ${point}`,
+          `Kết quả: ${this.formatGameResult(this.currentGame.result)}`,
+          `Điểm: ${point}`,
           'success'
         )
         //update result
@@ -383,6 +386,7 @@ export default {
     this.engine = new Worker('stockfish.js')
     this.sendUCI('uci')
     this.socket = null
+    this.currentGameStatus = 'new'
     this.loadGame()
   },
   methods: {
@@ -394,17 +398,8 @@ export default {
         }
         this.postMessage(moveSocket)
         this.giveUpDialog = false
-        this.currentGameStatus = 'end_game'
-        this.turn = ''
-        let point = this.currentGame.losePoint
-        this.gameHistory.push(`Kết quả: Thua`)
         this.currentGame.result = 2
-        this.$swal(
-          `Kết quả: ${this.formatGameResult(this.currentGame.result)}`,
-          `Điểm cộng: ${point}`,
-          'success'
-        )
-        this.resetBoard()
+        this.isStart = false
     },
     convertTimeFromSecond(time) {
       let hour = Math.floor(time / 3600)
@@ -422,11 +417,17 @@ export default {
         this.userColor = data.data.color === 1 ? 'black' : 'white'
         this.playerTime = this.convertTimeFromSecond(data.data.player1.secondCountDown)
         this.botTime = this.convertTimeFromSecond(data.data.player2.secondCountDown)
+        this.currentGame['losePoint'] = data.data.predictionEloStockfish.predictionLoseElo
+        this.currentGame['winPoint'] = data.data.predictionEloStockfish.predictionWinningElo
+        this.currentGame['drawPoint'] = data.data.predictionEloStockfish.predictionDrawnElo
+        this.gameHistory.push(
+          `Thắng: ${this.currentGame.winPoint} - Thua: ${this.currentGame.losePoint} - Hòa: ${this.currentGame.drawPoint}`
+        )
         this.turn = this.currentFen.split(' ')[1] == 'b' ? 'black' : 'white'
+        this.currentGameStatus = 'reload'
         this.socket = new WebSocket(
           `ws://${this.path}/chess-socket/${data.data.gameHistoryId}`
         )
-        console.log(this.turn)
         if (this.userColor == this.turn) {
           this.gameHistory.push(
             `Lượt đi: ${this.userColor === 'black' ? 'Đen' : 'Trắng'}`
@@ -436,7 +437,8 @@ export default {
             `Lượt đi: ${this.userColor === 'black' ? 'Trắng' : 'Đen'}`
           )
         }
-        let moveArr = data.data.gameContent.split(' ')
+        let moveArr = data.data.gameContent.trim().split(' ')
+        console.log(moveArr)
         moveArr.forEach((move, index) => {
           this.totalMove = index + 1
           let newHalfMove = {
@@ -449,10 +451,8 @@ export default {
           } else {
             this.addBlackMove(newHalfMove)
           }
-          if (index === moveArr.length - 1) {
-            this.currentMove = index
-          }
         })
+        this.currentMove = moveArr.length
       }
     },
     reloadMoveHistory() {
@@ -722,7 +722,7 @@ export default {
     calculateMove() {
       let self = this
       this.sendUCI('setoption name Skill Level value ' + this.level)
-      this.sendUCI('position fen ' + this.currentFen + ' moves ' + this.moves)
+      this.sendUCI('position fen ' + this.currentFen + ' moves' + this.moves)
       this.sendUCI('go depth 15')
       this.engine.onmessage = function(event) {
         let line = event.data
