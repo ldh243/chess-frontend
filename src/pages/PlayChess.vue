@@ -281,7 +281,7 @@ export default {
       sampleData: {},
       isFirstLoad: false,
       path: 'cols-be.ml'
-      // path: 'localhost:5000'
+      //path: 'localhost:5000'
     }
   },
   computed: {
@@ -387,7 +387,7 @@ export default {
     giveUpGame() {
       let moveSocket = {
           status: 2,
-          turnPlayer: 0,
+          turnPlayer: 1,
           move: ''
         }
         this.postMessage(moveSocket)
@@ -399,7 +399,7 @@ export default {
         this.isFirstLoad = true
         this.isStart = true
         this.currentFen = data.data.currentFen
-        this.userColor = data.data.color === 0 ? 'black' : 'white'
+        this.userColor = data.data.color === 1 ? 'black' : 'white'
         this.turn = this.currentFen.split(' ')[1] == 'b' ? 'black' : 'white'
         this.socket = new WebSocket(
           `ws://${this.path}/chess-socket/${data.data.gameHistoryId}`
@@ -471,7 +471,7 @@ export default {
       if (data.history.length !== 0) {
         let moveSocket = {
           status: 1,
-          turnPlayer: this.userColor == this.turn ? 1 : 2,
+          turnPlayer: this.userColor != this.turn ? 1 : 2,
           move: newMove,
           currentFen: data.fen
         }
@@ -614,7 +614,7 @@ export default {
       let timeArr = this.time.split(':')
       let date = new Date()
       const newGame = {
-        color: this.userColor === 'white' ? 1 : 0,
+        color: this.userColor === 'white' ? 0 : 1,
         gameTime:
           parseInt(timeArr[0]) * 60 * 60 +
           parseInt(timeArr[1]) * 60 +
@@ -637,7 +637,10 @@ export default {
           `ws://${this.path}/chess-socket/${this.currentGame.gameId}`
         )
         this.socket.onmessage = function(e) {
-          console.log(e.data)
+          var data = JSON.parse(e.data);
+          if(!data.data){
+            console.log(JSON.parse(e.data).message)
+          }
         }
       })
     },
