@@ -188,6 +188,7 @@ export default {
   created() {
     this.engine = new Worker('../../../../../../stockfish.js')
     this.sendUCI('uci')
+    this.lessonId = this.$route.params.lessonId
     this.getLessonById()
   },
   methods: {

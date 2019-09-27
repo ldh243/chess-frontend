@@ -30,6 +30,19 @@
                   <v-icon>fa-plus</v-icon>
                 </v-btn>
               </v-fab-transition>
+              <v-fab-transition>
+                <v-btn
+                  v-show="isStart"
+                  color="primary"
+                  fab
+                  dark
+                  small
+                  class="ml-3"
+                  @click="giveUpDialog = true"
+                >
+                  <v-icon>fa-flag</v-icon>
+                </v-btn>
+              </v-fab-transition>
             </v-card-title>
             <div class="move-history-content">
               <div v-for="(item, index) in moveHistory" :key="index">
@@ -188,6 +201,30 @@
               </v-card-actions>
             </v-card>
           </v-dialog>
+          <v-dialog v-model="giveUpDialog" persistent max-width="300px">
+            <v-card>
+              <v-card-title class="title">Bỏ cuộc</v-card-title>
+              <v-card-text>
+                Bạn có muốn bỏ trận đấu này?
+              </v-card-text>
+              <v-card-actions>
+          <div class="flex-grow-1"></div>
+          <v-btn
+            color="primary darken-1"
+            text
+            @click="giveUpDialog = false"
+          >
+            Hủy bỏ
+          </v-btn>
+          <v-btn
+            color="primary darken-1"
+            @click="giveUpGame"
+          >
+            Đồng ý
+          </v-btn>
+        </v-card-actions>
+            </v-card>
+          </v-dialog>
         </v-layout>
       </v-flex>
     </v-layout>
@@ -217,6 +254,7 @@ export default {
       currentMove: 0,
       totalMove: 0,
       startDialog: false,
+      giveUpDialog: false,
       tickLabels: [1, 2, 3, 4, 5],
       player: JSON.parse(localStorage.getItem('user')),
       time: '01:00:00',
@@ -322,6 +360,7 @@ export default {
           `${this.formatGameResult(this.currentGame.result)} ${point}`,
           'success'
         )
+        //update result
         let moveSocket = {
           status: this.currentGame.result
         }
@@ -343,6 +382,14 @@ export default {
     this.loadGame()
   },
   methods: {
+    giveUpGame() {
+      let moveSocket = {
+          status: 2,
+          turnPlayer: 0,
+          move: ''
+        }
+        this.postMessage(moveSocket)
+    },
     async loadGame() {
       const { data } = await gameHistoryRepository.reloadGame()
       console.log(data.data)
