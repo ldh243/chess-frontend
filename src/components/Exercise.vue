@@ -164,7 +164,8 @@ export default {
       moveData: {},
       isPassed: false,
       turn: '',
-      ableMoveArr: []
+      ableMoveArr: [],
+      isBotMove: false
     }
   },
   computed: {
@@ -207,15 +208,20 @@ export default {
       const black = 'black'
       this.moveData = data
       let fen = data.fen
-      this.turn = data.turn
       this.newMove = data.history[data.history.length - 1]
+      if (data.turn === undefined) {
+              //end game
+              this.turn = this.turn === 'white' ? 'black' : 'white'
+            } else {
+              this.turn = data.turn
+            }
       //manual answer
       if (this.answerType === 2) {
         //after user turn
-        if (data.turn !== this.userColor) {
-          this.ableMoveArr = this.answerArr.filter(moveArr => {
+        this.ableMoveArr = this.answerArr.filter(moveArr => {
             return moveArr[this.currentMoveInArr].move === this.newMove
           })
+        if (data.turn !== this.userColor) {
           if (this.ableMoveArr.length === 0) {
             this.currentGameStatus = 'wrong_ans'
             let wrongResArr = this.answerArr.filter(moveArr => {
@@ -233,43 +239,55 @@ export default {
             }
             return
           } else {
+            console.log('right')
             //right answer
             if (this.ableMoveArr.length > 1) {
               //more 1 answer, get random answer
-              let randomArr = this.getRandomInt(ableMoveArr.length)
+              let randomArr = this.getRandomInt(this.ableMoveArr.length)
               this.ableMoveArr = this.answerArr.filter((moveArr, index) => {
                 return index === randomArr
               })
             }
             this.createNewMoveInMoveHistory()
             if (
-              this.ableMoveArr[0][this.currentMoveInArr].rightResponse.length !== 0
+              this.ableMoveArr[0][this.currentMoveInArr].rightResponse
+                .length !== 0
             ) {
               this.gameHistory.push(
                 this.ableMoveArr[0][this.currentMoveInArr].rightResponse
               )
             }
-            if (this.currentMoveInArr !== this.ableMoveArr[0].length - 1) {
+            if (this.currentMoveInArr < this.ableMoveArr[0].length - 1) {
               this.currentMoveInArr++
-              this.move = this.ableMoveArr[0][this.currentMoveInArr].moveDirection
-            } else if (this.ableMoveArr.length > 0 && this.currentMoveInArr === this.ableMoveArr[0].length - 1) {
+              this.move = this.ableMoveArr[0][
+                this.currentMoveInArr
+              ].moveDirection
+              this.isBotMove = true
+            } else if (
+              this.ableMoveArr.length > 0 &&
+              this.currentMoveInArr === this.ableMoveArr[0].length - 1
+            ) {
               this.$swal('Kết quả', `Hoàn thành`, 'success')
-          this.isPassed = true
-          this.createLearningLog()
+              this.isPassed = true
+              this.createLearningLog()
             }
           }
         } else {
-          if (data.history.length > 0) {
+          if (this.ableMoveArr.length > 0) {
             this.createNewMoveInMoveHistory()
+            console.log(this.turn)
+            console.log('plus')
             this.currentMoveInArr++
+            if (
+              this.ableMoveArr.length > 0 &&
+              this.currentMoveInArr === this.ableMoveArr[0].length
+            ) {
+              this.$swal('Kết quả', `Hoàn thành`, 'success')
+              this.isPassed = true
+              this.createLearningLog()
+            }
           }
         }
-        console.log(this.currentMoveInArr)
-        // if (this.ableMoveArr.length > 0 && this.currentMoveInArr === this.ableMoveArr[0].length - 1) {
-        //   this.$swal('Kết quả', `Hoàn thành`, 'success')
-        //   this.isPassed = true
-        //   this.createLearningLog()
-        // }
       } else {
         this.moves = data.hisMoves
         if (this.newMove === undefined || !this.currentFen) return
@@ -295,7 +313,6 @@ export default {
       const black = 'black'
       let moveHistory = this.moveHistory
       let lastMove = moveHistory[moveHistory.length - 1]
-      console.log(this.moveData.turn)
       if (this.turn === black) {
         //tạo thêm turn mới
         const newTurn = {
@@ -430,7 +447,9 @@ export default {
       this.currentFen = data.data.lessonContent.answer.fen
       this.answerType = data.data.lessonContent.answer.answerType
       this.userColor =
-        data.data.lessonContent.answer.fen.split(' ')[1] === 'w' ? 'white' : 'black'
+        data.data.lessonContent.answer.fen.split(' ')[1] === 'w'
+          ? 'white'
+          : 'black'
       this.answerArr = data.data.lessonContent.answer.answerArr
       this.currentGameStatus = 'new'
       this.gameHistory.push(data.data.lessonContent.question)
