@@ -1,6 +1,7 @@
 import axios from 'axios'
 
 const baseDomain = 'http://cols-be.ml'
+// const baseDomain = 'http://localhost:5000'
 const baseURL = `${baseDomain}`
 
 const instance = axios.create({

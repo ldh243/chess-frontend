@@ -76,7 +76,9 @@
       <template v-show="!isInstructor">
         <v-slide-y-transition></v-slide-y-transition>
       </template>
-
+      <div class="terms">
+        <v-card-text v-for="(item,index) in terms" :key="index" class="pb-0">{{item}}</v-card-text>
+      </div>
       <v-checkbox
         v-model="checkbox"
         :rules="[v => !!v || 'Bạn phải đồng ý để tiếp tục']"
@@ -119,7 +121,7 @@
       </v-dialog>
       <v-card-actions>
         <v-spacer></v-spacer>
-        <v-btn :disabled="!valid" color="primary" @click="submit">Xác nhận</v-btn>
+        <v-btn :disabled="!checkbox" color="primary" @click="submit">Xác nhận</v-btn>
       </v-card-actions>
     </v-form>
   </v-card>
@@ -130,6 +132,7 @@ import VueUploadMultipleImage from '@/components/plugins/vue-upload-multiple-ima
 import VueAvatar from '@/components/plugins/vue-avatar/VueAvatarEditor'
 import Repository, { setAuthorizationHeader } from '@/repository/Repository.js'
 import { RepositoryFactory } from '@/repository/RepositoryFactory'
+import terms from '@/data/terms.json'
 const userRepository = RepositoryFactory.get('user')
 import firebase from 'firebase'
 import { setInterval, clearInterval } from 'timers'
@@ -141,6 +144,7 @@ export default {
   },
   data() {
     return {
+      terms,
       faqLogo: require('@/assets/images/faq.png'),
       valid: true,
       role: 'learner',
@@ -167,26 +171,27 @@ export default {
       levelNote: [
         {
           levelTitle: 'Mới bắt đầu',
-          levelDescription: 'Dành cho người chưa biết gì về cờ vua'
+          levelDescription: '800 điểm - dành cho người chưa biết gì về cờ vua'
         },
         {
           levelTitle: 'Sơ cấp',
           levelDescription:
-            'Dành cho người mới biết các nước đi cơ bản và các luật chơi về cơ vua'
+            '1000 điểm - dành cho người mới biết các nước đi cơ bản và các luật chơi về cơ vua'
         },
         {
           levelTitle: 'Nghiệp dư',
           levelDescription:
-            'Dành cho người đã từng tham gia các giải cờ vua nhỏ lẻ'
+            '1200 điểm - dành cho người đã từng tham gia các giải cờ vua nhỏ lẻ'
         },
         {
           levelTitle: 'Chuyên nghiệp',
           levelDescription:
-            'Dành cho người đã từng đi thi các giải đấu lớn, cấp khu vực trở lên'
+            '1400 điểm - dành cho người đã từng đi thi các giải đấu lớn, cấp khu vực trở lên'
         },
         {
           levelTitle: 'Cao thủ',
-          levelDescription: 'Dành cho người muốn đi thi đấu quốc gia, quốc tế'
+          levelDescription:
+            '1600 điểm - dành cho người muốn đi thi đấu quốc gia, quốc tế'
         }
       ]
     }
@@ -324,7 +329,7 @@ export default {
             this.$router.push('/')
           }
         } else {
-          this.$router.push({ name: 'home', params: { isNew: true } })
+          this.$router.push({ name: 'courseOverView', params: { isNew: true } })
         }
       }
       setTimeout(() => {
@@ -371,5 +376,11 @@ export default {
 }
 .level-description {
   font-size: 13px;
+}
+.terms {
+  box-shadow: 0px 3px 1px -2px rgba(0, 0, 0, 0.2),
+    0px 2px 2px 0px rgba(0, 0, 0, 0.14), 0px 1px 5px 0px rgba(0, 0, 0, 0.12);
+  height: 320px;
+  overflow-y: scroll;
 }
 </style>

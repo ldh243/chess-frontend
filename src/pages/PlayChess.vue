@@ -279,7 +279,9 @@ export default {
       },
       currentGameStatus: '',
       sampleData: {},
-      isFirstLoad: false
+      isFirstLoad: false,
+      path: 'cols-be.ml'
+      // path: 'localhost:5000'
     }
   },
   computed: {
@@ -400,13 +402,17 @@ export default {
         this.userColor = data.data.color === 0 ? 'black' : 'white'
         this.turn = this.currentFen.split(' ')[1] == 'b' ? 'black' : 'white'
         this.socket = new WebSocket(
-          `ws://cols-be.ml/chess-socket/${data.data.gameHistoryId}`
+          `ws://${this.path}/chess-socket/${data.data.gameHistoryId}`
         )
         console.log(this.turn)
         if (this.userColor == this.turn) {
-          this.gameHistory.push(`Lượt đi: ${this.userColor === 'black' ? 'Đen' : 'Trắng'}`)
+          this.gameHistory.push(
+            `Lượt đi: ${this.userColor === 'black' ? 'Đen' : 'Trắng'}`
+          )
         } else {
-          this.gameHistory.push(`Lượt đi: ${this.userColor === 'black' ? 'Trắng' : 'Đen'}`)
+          this.gameHistory.push(
+            `Lượt đi: ${this.userColor === 'black' ? 'Trắng' : 'Đen'}`
+          )
         }
         let moveArr = data.data.gameContent.split(' ')
         moveArr.forEach((move, index) => {
@@ -628,7 +634,7 @@ export default {
           `Thắng: ${this.currentGame.winPoint} - Thua: ${this.currentGame.losePoint} - Hòa: ${this.currentGame.drawPoint}`
         )
         this.socket = new WebSocket(
-          `ws://cols-be.ml/chess-socket/${this.currentGame.gameId}`
+          `ws://${this.path}/chess-socket/${this.currentGame.gameId}`
         )
         this.socket.onmessage = function(e) {
           console.log(e.data)

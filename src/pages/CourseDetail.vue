@@ -216,6 +216,13 @@ export default {
       return value
     }
   },
+  watch: {
+    $route(to, from) {
+      if (to.path !== from.path) {
+        location.reload()
+      }
+    }
+  },
   mounted() {
     this.fetchData()
   },
@@ -227,9 +234,6 @@ export default {
     async fetchData() {
       this.$store.commit('incrementLoader', 1)
       await this.getCourseById()
-      if (this.user !== null) {
-        await this.getCurrentUserDetail()
-      }
       setTimeout(() => {
         this.$store.commit('incrementLoader', -1)
       }, 500)
@@ -263,7 +267,7 @@ export default {
     async getCourseById() {
       const { data } = await courseRepository.getById(this.courseId)
       this.courseDetail = data.data
-      console.log(this.courseDetail)
+      console.log(this.courseDetail.courseId)
       this.formatListCourse()
       this.breadcrumbs[
         this.breadcrumbs.length - 1
@@ -350,9 +354,6 @@ export default {
 
       document.getElementById('enrol-course').style.marginLeft =
         widthContent + 16 + 'px'
-    },
-    async getCurrentUserDetail() {
-      const { data } = await userRepository.getCurrentUserDetail()
     }
   }
 }
